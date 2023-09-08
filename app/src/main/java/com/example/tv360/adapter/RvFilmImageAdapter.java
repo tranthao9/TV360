@@ -8,15 +8,17 @@ import android.widget.ImageView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.tv360.R;
 import com.example.tv360.model.FilmImageModel;
+import com.example.tv360.model.FilmModel;
 
 import java.util.List;
 
 public class RvFilmImageAdapter extends  RecyclerView.Adapter<RvFilmImageAdapter.RvFilmImageViewHolder>{
 
-    private List<FilmImageModel> categoryList;
-    public void setData(List<FilmImageModel> list){
+    private List<FilmModel> categoryList;
+    public void setData(List<FilmModel> list){
         this.categoryList = list;
         notifyDataSetChanged();
     }
@@ -29,11 +31,13 @@ public class RvFilmImageAdapter extends  RecyclerView.Adapter<RvFilmImageAdapter
 
     @Override
     public void onBindViewHolder(@NonNull RvFilmImageViewHolder holder, int position) {
-        FilmImageModel category = categoryList.get(position);
+        FilmModel category = categoryList.get(position);
         if (category == null){
             return;
         }
-        holder.imgCategory.setImageResource(category.getImgFilm());
+
+        Glide.with(holder.itemView.getContext()).load(category.getCoverImage()).into(holder.imgCategory);
+//        holder.imgCategory.setImageResource(category.getImgFilm());
     }
 
     @Override

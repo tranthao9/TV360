@@ -31,4 +31,18 @@ public class HomePresenter {
         }
         return  listbanner;
     }
+
+    public  List<HomeModel> getlistfilm(List<HomeModel> homeModelList)
+    {
+        List<HomeModel> listfilm = new ArrayList<>();
+        for (HomeModel a : homeModelList)
+        {
+            if(a.getType().equals("COLLECTION"))
+            {
+                listfilm.add(a);
+            }
+
+        }
+        return  listfilm;
+    }
 }

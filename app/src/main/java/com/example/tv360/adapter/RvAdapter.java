@@ -2,17 +2,16 @@ package com.example.tv360.adapter;
 
 import static android.app.PendingIntent.getActivity;
 
-import static androidx.core.content.ContentProviderCompat.requireContext;
-
 import android.content.Context;
 import android.graphics.PorterDuff;
 import android.os.Handler;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
@@ -20,22 +19,16 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
-import com.bumptech.glide.Glide;
-import com.example.tv360.MainActivity;
 import com.example.tv360.R;
-import com.example.tv360.model.FilmImageModel;
 import com.example.tv360.model.FilmModel;
 import com.example.tv360.model.HomeModel;
-import com.example.tv360.model.ImageModel;
-import com.example.tv360.model.ItemModel;
-import com.example.tv360.model.ListFilmModel;
 import com.example.tv360.presenter.HomePresenter;
 
 import java.util.ArrayList;
 import java.util.List;
 
 
-public class RvAdapter extends  RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class RvAdapter extends  RecyclerView.Adapter<RvAdapter.RowHolder> {
 
     Context context;
     private List<HomeModel> listitems;
@@ -43,10 +36,14 @@ public class RvAdapter extends  RecyclerView.Adapter<RecyclerView.ViewHolder> {
     Runnable runnable;
     Handler handler;
 
-
+    private RecyclerView rcvData;
     private List<HomeModel> item;
 
     private List<FilmModel> banner;
+
+    private List<HomeModel> listflim;
+
+    private  List<FilmModel> films;
 
     private LinearLayout layout_dots;
     private ViewPager viewPager;
@@ -55,21 +52,20 @@ public class RvAdapter extends  RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     ListFilmAdapter listFilmAdapter;
 
-    private RecyclerView rcvData;
+    HomePresenter homePresenter;
+
     public RvAdapter(Context context,List<HomeModel> item) {
+        this.homePresenter = new HomePresenter();
         this.context = context;
         this.item = item;
-        this.banner = new HomePresenter().getbanner(this.item);
+        this.banner = homePresenter.getbanner(this.item);
+        this.listflim = homePresenter.getlistfilm(this.item);
+        notifyDataSetChanged();
     }
-    public static class  RowHolder extends  RecyclerView.ViewHolder{
-        public  RowHolder (@NonNull View itemView)
-        {
-            super(itemView);
-        }
-    }
+
     @NonNull
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public RowHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 
 //        Log.e(getClass().getSimpleName(), "onCreateViewHolder: " + viewType);
         if (viewType == 0)
@@ -99,32 +95,44 @@ public class RvAdapter extends  RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 public void onPageScrollStateChanged(int state) {
                 }
             });
-//            final  int currentItem = viewPager.getCurrentItem();
             startAutoSlider(adapterImageSlider.getCount());
-
-
             return  new RowHolder(view);
 
         }
         else
         {
             View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.film_rcv,parent,false);
-            listFilmAdapter = new ListFilmAdapter();
-            listFilmAdapter.setData(parent.getContext(),getListData());
-            LinearLayoutManager linearLayoutManager = new LinearLayoutManager(parent.getContext());
-            rcvData = (RecyclerView) view.findViewById(R.id.rcv_film);
-            rcvData.setLayoutManager(linearLayoutManager);
-
-            listFilmAdapter.setData(parent.getContext(),getListData());
-            rcvData.setAdapter(listFilmAdapter);
             return  new RowHolder(view);
         }
 
     }
 
+
     @Override
-    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        Log.e(getClass().getSimpleName(), "onBindViewHolder: " + holder);
+    public void onBindViewHolder(@NonNull RowHolder holder, int position) {
+
+//
+//        Log.e(getClass().getSimpleName(), "onBindViewHolder: " + holder);
+//        listFilmAdapter = new ListFilmAdapter();
+//        //LinearLayoutManager linearLayoutManager = new LinearLayoutManager(parent.getContext());
+//        rcvData = (RecyclerView) view.findViewById(R.id.rcv_film);
+//        rcvData.setLayoutManager(linearLayoutManager);
+//        listFilmAdapter.setData(parent.getContext(),listflim);
+//        rcvData.setAdapter(listFilmAdapter);
+
+        HomeModel listData = listflim.get(position);
+        if (listData == null){
+            return;
+        }
+        if(holder.rcvData != null)
+        {
+            LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context,RecyclerView.HORIZONTAL,false);
+            holder.rcvData.setLayoutManager(linearLayoutManager);
+            holder.rcvData.setFocusable(false);//ko focus con tro
+            ListFilmAdapter modelAdapter = new ListFilmAdapter();
+            modelAdapter.setData(listflim.get(position));
+            holder.rcvData.setAdapter(modelAdapter);
+        }
     }
 
     @Override
@@ -139,7 +147,7 @@ public class RvAdapter extends  RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     @Override
     public int getItemCount() {
-        return this.item.size();
+        return listflim.size();
     }
 
 
@@ -179,30 +187,14 @@ public class RvAdapter extends  RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }
     }
 
-    private List<ListFilmModel> getListData() {
-        List<ListFilmModel> listData = new ArrayList<>();
 
-        List<FilmModel> listModel = new ArrayList<>();
-//        listModel.add(new FilmModel("Kênh TV"));
+        public class RowHolder extends RecyclerView.ViewHolder {
 
-
-        List<FilmImageModel> listCategory = new ArrayList<>();
-        listCategory.add(new FilmImageModel(R.drawable.a1));
-        listCategory.add(new FilmImageModel(R.drawable.a2));
-        listCategory.add(new FilmImageModel(R.drawable.a3));
-        listCategory.add(new FilmImageModel(R.drawable.a4));
-        listCategory.add(new FilmImageModel(R.drawable.a5));
-        listCategory.add(new FilmImageModel(R.drawable.facebook));
-
-
-        listData.add(new ListFilmModel(ListFilmAdapter.TYPE_MODEL,listModel,null));
-        listData.add(new ListFilmModel(ListFilmAdapter.TYPE_CATEGORY,null,listCategory));
-        listData.add(new ListFilmModel(ListFilmAdapter.TYPE_MODEL,listModel,null));
-        listData.add(new ListFilmModel(ListFilmAdapter.TYPE_CATEGORY,null,listCategory));
-        listData.add(new ListFilmModel(ListFilmAdapter.TYPE_MODEL,listModel,null));
-        listData.add(new ListFilmModel(ListFilmAdapter.TYPE_CATEGORY,null,listCategory));
-
-        return listData;
-    }
-
+        private RecyclerView  rcvData;
+            public RowHolder(@NonNull View itemView ) {
+                super(itemView);
+                rcvData =  itemView.findViewById(R.id.rcv_film);
+//                Toast.makeText(context,""+rcvData,Toast.LENGTH_SHORT).show();
+            }
+        }
 }

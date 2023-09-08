@@ -19,6 +19,7 @@ import androidx.viewpager.widget.ViewPager;
 import com.example.tv360.R;
 import com.example.tv360.model.FilmImageModel;
 import com.example.tv360.model.FilmModel;
+import com.example.tv360.model.HomeModel;
 import com.example.tv360.model.ImageModel;
 import com.example.tv360.model.ItemModel;
 
@@ -27,9 +28,12 @@ import java.util.List;
 
 public class RvFilmAdapter extends  RecyclerView.Adapter<RvFilmAdapter.ModelViewHolder>  {
 
-    List<FilmModel> listfilm;
+    List<HomeModel> listfilm;
 
-    public  void setData(List<FilmModel> filmModelList)
+    public RvFilmAdapter(List<HomeModel> homeModels) {
+    }
+
+    public  void setData(List<HomeModel> filmModelList)
     {
         this.listfilm = filmModelList;
         notifyDataSetChanged();
@@ -43,7 +47,7 @@ public class RvFilmAdapter extends  RecyclerView.Adapter<RvFilmAdapter.ModelView
 
     @Override
     public void onBindViewHolder(@NonNull ModelViewHolder holder, int position) {
-        FilmModel filmModel = listfilm.get(position);
+        HomeModel filmModel = listfilm.get(position);
         if (filmModel == null){
             return;
         }
