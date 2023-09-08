@@ -70,9 +70,7 @@ public class HomeFragment extends Fragment {
                 for (HomeModel homeModel : dataObject.getData()) {
                     listitem.add(homeModel);
                 }
-                listitembanner =  homePresenter.getbanner(dataObject.getData());
-
-                rvAdapter=new RvAdapter(getContext(), listitem, listitembanner);
+                rvAdapter=new RvAdapter(getContext(), listitem);
                 binding.viewhome.setAdapter(rvAdapter);
             }
 

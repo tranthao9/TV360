@@ -29,6 +29,7 @@ import com.example.tv360.model.HomeModel;
 import com.example.tv360.model.ImageModel;
 import com.example.tv360.model.ItemModel;
 import com.example.tv360.model.ListFilmModel;
+import com.example.tv360.presenter.HomePresenter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,10 +56,10 @@ public class RvAdapter extends  RecyclerView.Adapter<RecyclerView.ViewHolder> {
     ListFilmAdapter listFilmAdapter;
 
     private RecyclerView rcvData;
-    public RvAdapter(Context context,List<HomeModel> item, List<FilmModel> banner) {
+    public RvAdapter(Context context,List<HomeModel> item) {
         this.context = context;
         this.item = item;
-        this.banner = banner;
+        this.banner = new HomePresenter().getbanner(this.item);
     }
     public static class  RowHolder extends  RecyclerView.ViewHolder{
         public  RowHolder (@NonNull View itemView)
