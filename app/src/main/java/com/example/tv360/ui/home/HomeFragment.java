@@ -36,7 +36,7 @@ public class HomeFragment extends Fragment {
     private FragmentHomeBinding binding;
 
     RvAdapter rvAdapter;
-    final List<HomeModel> listitem = new ArrayList<HomeModel>();
+    List<HomeModel> listitem = new ArrayList<HomeModel>();
     List<FilmModel> listitembanner = new ArrayList<FilmModel>();
     HomeService apiInterface;
 
@@ -67,9 +67,9 @@ public class HomeFragment extends Fragment {
             public void onResponse(Call<DataObject> call, Response<DataObject> response) {
 
                 DataObject dataObject = response.body();
-                for (HomeModel homeModel : dataObject.getData()) {
-                    listitem.add(homeModel);
-                }
+
+                listitem = new HomePresenter().getdata(dataObject.getData());
+
                 rvAdapter=new RvAdapter(getContext(), listitem);
                 binding.viewhome.setAdapter(rvAdapter);
             }

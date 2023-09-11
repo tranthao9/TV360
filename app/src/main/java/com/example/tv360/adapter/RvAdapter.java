@@ -5,6 +5,7 @@ import static android.app.PendingIntent.getActivity;
 import android.content.Context;
 import android.graphics.PorterDuff;
 import android.os.Handler;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -97,7 +98,6 @@ public class RvAdapter extends  RecyclerView.Adapter<RvAdapter.RowHolder> {
             });
             startAutoSlider(adapterImageSlider.getCount());
             return  new RowHolder(view);
-
         }
         else
         {
@@ -110,39 +110,27 @@ public class RvAdapter extends  RecyclerView.Adapter<RvAdapter.RowHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull RowHolder holder, int position) {
-
-//
-//        Log.e(getClass().getSimpleName(), "onBindViewHolder: " + holder);
-//        listFilmAdapter = new ListFilmAdapter();
-//        //LinearLayoutManager linearLayoutManager = new LinearLayoutManager(parent.getContext());
-//        rcvData = (RecyclerView) view.findViewById(R.id.rcv_film);
-//        rcvData.setLayoutManager(linearLayoutManager);
-//        listFilmAdapter.setData(parent.getContext(),listflim);
-//        rcvData.setAdapter(listFilmAdapter);
-
         HomeModel listData = listflim.get(position);
-        if (listData == null){
+        if (listflim.get(position) == null){
             return;
         }
         if(holder.rcvData != null)
         {
-            LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context,RecyclerView.HORIZONTAL,false);
+            LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context,RecyclerView.VERTICAL,false);
             holder.rcvData.setLayoutManager(linearLayoutManager);
             holder.rcvData.setFocusable(false);//ko focus con tro
             ListFilmAdapter modelAdapter = new ListFilmAdapter();
-            modelAdapter.setData(listflim.get(position));
+            modelAdapter.setData(listflim.get(position-1));
             holder.rcvData.setAdapter(modelAdapter);
         }
+
+
     }
 
     @Override
     public  int getItemViewType (int position)
     {
-            if(position > 0)
-            {
-                return  1;
-            }
-        return  position % 2;
+        return  position ;
     }
 
     @Override
@@ -191,10 +179,10 @@ public class RvAdapter extends  RecyclerView.Adapter<RvAdapter.RowHolder> {
         public class RowHolder extends RecyclerView.ViewHolder {
 
         private RecyclerView  rcvData;
-            public RowHolder(@NonNull View itemView ) {
+            public RowHolder(@NonNull View itemView  ) {
                 super(itemView);
                 rcvData =  itemView.findViewById(R.id.rcv_film);
-//                Toast.makeText(context,""+rcvData,Toast.LENGTH_SHORT).show();
+
             }
         }
 }

@@ -46,7 +46,7 @@ public class ListFilmAdapter extends RecyclerView.Adapter<ListFilmAdapter.ListFi
         }
         else
         {
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.listfilm, parent,false);
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.film_rcv, parent,false);
             return new ListFilmViewHolder(view);
         }
     }
@@ -54,15 +54,23 @@ public class ListFilmAdapter extends RecyclerView.Adapter<ListFilmAdapter.ListFi
     @Override
     public void onBindViewHolder(@NonNull ListFilmViewHolder holder, int position) {
 
-        holder.tvModelname.setText(mListData.getName());
-        if(holder.imgCategory != null)
+        if(mListData == null)
+        {
+            return;
+        }
+        if(holder.textView != null)
+        {
+            holder.textView.setText(mListData.getName());
+
+        }
+        if(holder.rcvItem != null)
         {
             LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context,RecyclerView.HORIZONTAL,false);
-            holder.imgCategory.setLayoutManager(linearLayoutManager);
-            holder.imgCategory.setFocusable(false);//ko focus con tro
+            holder.rcvItem.setLayoutManager(linearLayoutManager);
+            holder.rcvItem.setFocusable(false);//ko focus con tro
             RvFilmImageAdapter modelAdapter = new RvFilmImageAdapter();
             modelAdapter.setData(mListData.getContent());
-            holder.imgCategory.setAdapter(modelAdapter);
+            holder.rcvItem.setAdapter(modelAdapter);
         }
     }
 
@@ -80,13 +88,14 @@ public class ListFilmAdapter extends RecyclerView.Adapter<ListFilmAdapter.ListFi
 
     public static class ListFilmViewHolder extends RecyclerView.ViewHolder {
 
-        private RecyclerView imgCategory;
+        private RecyclerView rcvItem;
 
-        private TextView tvModelname;
+        private  TextView textView;
+
         public ListFilmViewHolder(@NonNull View itemView) {
             super(itemView);
-            tvModelname = itemView.findViewById(R.id.film_model);
-            imgCategory = itemView.findViewById(R.id.listviewfilm);
+            rcvItem = itemView.findViewById(R.id.rcv_film);
+            textView = itemView.findViewById(R.id.film_model);
         }
 
     }

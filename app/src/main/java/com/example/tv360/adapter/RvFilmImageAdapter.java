@@ -35,7 +35,6 @@ public class RvFilmImageAdapter extends  RecyclerView.Adapter<RvFilmImageAdapter
         if (category == null){
             return;
         }
-
         Glide.with(holder.itemView.getContext()).load(category.getCoverImage()).into(holder.imgCategory);
 //        holder.imgCategory.setImageResource(category.getImgFilm());
     }
