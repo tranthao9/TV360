@@ -26,7 +26,6 @@ public class ListFilmAdapter extends RecyclerView.Adapter<ListFilmAdapter.ListFi
 
     private HomeModel mListData;
 
-    private RvFilmAdapter filmAdapter;
 
     private Context context;
     public void setData( HomeModel listData){

@@ -1,8 +1,9 @@
 package com.example.tv360.presenter;
 import com.example.tv360.Interface.LoginInterface;
+import com.example.tv360.model.DataObjectLogin;
 import com.example.tv360.model.FilmModel;
 import com.example.tv360.model.HomeModel;
-import com.example.tv360.model.UserModel;
+import com.example.tv360.model.LoginModel;
 
 import java.util.List;
 
@@ -14,11 +15,11 @@ public class LoginPresenter {
         this.mloginInterface = mloginInterface;
     }
 
-    public  void  login(UserModel userModel)
+    public  void  login(DataObjectLogin userModel)
     {
-        if(userModel.getUsername().equals("a") && userModel.getPassword().equals("a"))
+        if(userModel.getErrorCode() == 200)
         {
-            mloginInterface.loginSuccess();
+            mloginInterface.loginSuccess(userModel.getData().getAccessToken(),userModel.getData().getRefreshToken());
         }
         else
         {

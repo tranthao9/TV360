@@ -1,5 +1,7 @@
 package com.example.tv360.ui.home;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -37,8 +39,12 @@ public class HomeFragment extends Fragment {
 
     RvAdapter rvAdapter;
     List<HomeModel> listitem = new ArrayList<HomeModel>();
-    List<FilmModel> listitembanner = new ArrayList<FilmModel>();
     HomeService apiInterface;
+    private  static  final  String SHARED_PREF_NAME = "mypref";
+
+    private  static  final  String KEY_ACCESSTOKEN ="accessToken";
+    private  static  final  String KEY_REFRESHTOKEN = "refreshToken";
+
 
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -54,6 +60,9 @@ public class HomeFragment extends Fragment {
 
         binding.viewhome.setLayoutManager(new LinearLayoutManager(requireContext()));
         GetData();
+        SharedPreferences sharedPref = getActivity().getSharedPreferences(SHARED_PREF_NAME,getContext().MODE_PRIVATE);
+        String accessToken = sharedPref.getString(KEY_ACCESSTOKEN,"");
+        Toast.makeText(getContext(),"Accesstoken : "+accessToken,Toast.LENGTH_SHORT).show();
         return root;
     }
 
@@ -76,7 +85,6 @@ public class HomeFragment extends Fragment {
 
             @Override
             public void onFailure(Call<DataObject> call, Throwable throwable) {
-                Toast.makeText(getContext(), "error"  , Toast.LENGTH_SHORT).show();
                 call.cancel();
             }
         });

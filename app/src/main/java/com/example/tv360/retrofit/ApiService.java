@@ -51,10 +51,13 @@ public class ApiService {
                         Request original = chain.request();
                         String userAgent = System.getProperty("http.agent");
                         Request.Builder builder = original.newBuilder();
+                        builder.addHeader("authorization", "bearer kadfkasfksf");
                         builder.addHeader("Content-Type", "application/json");
                         builder.addHeader("lang","vi");
                         builder.addHeader("zoneid","1");
                         builder.addHeader("osapptype","WAP");
+
+
 
                         Request request = builder.method(original.method(), original.body()).build();
                         return chain.proceed(request);
@@ -73,3 +76,5 @@ public class ApiService {
 
     }
 }
+
+//baseUrl("https://api.tv360.vn/")

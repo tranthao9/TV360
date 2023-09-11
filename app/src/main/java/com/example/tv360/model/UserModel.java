@@ -1,29 +1,38 @@
 package com.example.tv360.model;
 
 public class UserModel {
-    private  String Username;
-    private  String Password;
+    private  String accessToken;
+    private  String refreshToken;
 
-    public UserModel(String username, String password) {
-        Username = username;
-        Password = password;
+    private  String profileId;
+
+    public UserModel(String accessToken, String refreshToken, String profileId) {
+        this.accessToken = accessToken;
+        this.refreshToken = refreshToken;
+        this.profileId = profileId;
     }
 
-    public String getUsername() {
-        return Username;
+    public String getAccessToken() {
+        return accessToken;
     }
 
-    public void setUsername(String username) {
-        Username = username;
+    public void setAccessToken(String accessToken) {
+        this.accessToken = accessToken;
     }
 
-    public String getPassword() {
-        return Password;
+    public String getRefreshToken() {
+        return refreshToken;
     }
 
-    public void setPassword(String password) {
-        Password = password;
+    public void setRefreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
     }
 
+    public String getProfileId() {
+        return profileId;
+    }
+
+    public void setProfileId(String profileId) {
+        this.profileId = profileId;
+    }
 }
-

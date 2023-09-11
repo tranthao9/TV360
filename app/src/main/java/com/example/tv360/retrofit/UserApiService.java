@@ -1,8 +1,13 @@
 package com.example.tv360.retrofit;
 
+import com.example.tv360.model.DataObjectLogin;
+import com.example.tv360.model.DeviceInfo;
+import com.example.tv360.model.LoginModel;
 import com.example.tv360.model.UserModel;
+import com.google.gson.JsonElement;
 
 import retrofit2.Call;
+import retrofit2.http.Body;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.POST;
@@ -10,14 +15,6 @@ import retrofit2.http.POST;
 public interface UserApiService {
 
     @POST("public/v1/auth/login")
-    @FormUrlEncoded
-    Call<UserModel> authorize(
-            @Field("grant_type") String grantType,
-            @Field("msisdn") String msisdn,
-            @Field("username") String username,
-            @Field("password") String password,
-            @Field("refresh_token") String refreshToken,
-            @Field("captcha") String captcha,
-            @Field("os_type") String osType,
-            @Field("os_version_code") String osVersion);
+    Call<DataObjectLogin> login(@Body LoginModel body);
+
 }
