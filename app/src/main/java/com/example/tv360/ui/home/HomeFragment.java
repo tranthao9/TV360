@@ -55,9 +55,6 @@ public class HomeFragment extends Fragment {
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-//        final TextView textView = binding.textHome;
-//        homeViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
-
         binding.viewhome.setLayoutManager(new LinearLayoutManager(requireContext()));
         GetData();
 
@@ -87,32 +84,6 @@ public class HomeFragment extends Fragment {
             }
         });
 
-//        apiInterface = ApiService.getClient().create(HomeService.class);
-//        Call<DataObject> data = apiInterface.getHomeBox();
-//       data.enqueue(new Callback<DataObject>() {
-//          @Override
-//           public void onResponse(Call<DataObject> call, Response<DataObject> response) {
-//               DataObject dataObject = response.body();
-//               Toast.makeText(getContext(), "success" + dataObject.getMessage()  , Toast.LENGTH_SHORT).show();
-//               if (response.isSuccessful() && response.body() != null) {
-//                   List<HomeModel> listdata = response.body();
-//
-//                   Toast.makeText(getContext(), "" + listdata.size(), Toast.LENGTH_SHORT).show();
-//                   for (int i = 0; i < listdata.size(); i++) {
-//                       for (FilmModel l : listdata.get(i).getContent()) {
-//
-//                       }
-//                   }
-//               } else {
-//                   Toast.makeText(getContext(), "nỗi ", Toast.LENGTH_SHORT).show();
-//               }
-//           }
-//
-//           @Override
-//           public void onFailure(Call<List<HomeModel>> call, Throwable throwable) {
-//
-//           }
-//       });
 
     }
 
