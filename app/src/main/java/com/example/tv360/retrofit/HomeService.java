@@ -1,6 +1,7 @@
 package com.example.tv360.retrofit;
 
 import com.example.tv360.model.DataObject;
+import com.example.tv360.model.DataObjectUrlVideo;
 import com.example.tv360.model.HomeModel;
 import com.google.gson.JsonElement;
 
@@ -19,7 +20,7 @@ public interface HomeService {
     Call<DataObject> getHomeBox();
 
     @GET("public/v1/composite/get-link")
-    Call<JsonElement> getlinka(
+    Call<DataObjectUrlVideo> getlinka(
                               @Query("id") String id,
                               @Query("type") String type);
 }

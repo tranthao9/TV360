@@ -20,7 +20,7 @@ public class HomePresenter {
         List<HomeModel> listfilm = new ArrayList<>();
         for (HomeModel a : homeModelList)
         {
-            if(a.getType().equals("COLLECTION") || a.getType().equals("BANNER") && a.getContent() != null)
+            if(a.getType().equals("COLLECTION") || a.getType().equals("BANNER"))
             {
                 listfilm.add(a);
             }
@@ -51,12 +51,16 @@ public class HomePresenter {
         List<HomeModel> listfilm = new ArrayList<>();
         for (HomeModel a : homeModelList)
         {
-            if(a.getType().equals("COLLECTION") )
+            if(a.getType().equals("COLLECTION") && a.getContent() != null )
             {
-                listfilm.add(a);
+                if(a.getContent().size() != 0)
+                {
+                    listfilm.add(a);
+                }
             }
 
         }
+        listfilm.add(homeModelList.get(0));
         return  listfilm;
     }
 }

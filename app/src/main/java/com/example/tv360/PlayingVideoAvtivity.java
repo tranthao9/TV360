@@ -2,7 +2,9 @@ package com.example.tv360;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
 import android.app.Notification;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.media.browse.MediaBrowser;
 import android.os.Bundle;
@@ -10,7 +12,9 @@ import android.provider.Settings;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.example.tv360.adapter.RvFilmImageAdapter;
 import com.example.tv360.model.DataObject;
+import com.example.tv360.model.DataObjectUrlVideo;
 import com.example.tv360.retrofit.ApiService;
 import com.example.tv360.retrofit.HomeService;
 import com.google.android.exoplayer2.ExoPlayer;
@@ -22,7 +26,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class PlayingVideoAvtivity extends AppCompatActivity {
+public class PlayingVideoAvtivity extends AppCompatActivity{
 
     ExoPlayer player;
     private  static  final  String SHARED_PREF_NAME = "mypref";
@@ -46,31 +50,36 @@ public class PlayingVideoAvtivity extends AppCompatActivity {
         String accessToken = sharedPref.getString(KEY_ACCESSTOKEN,"");
         String m_andoid = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
 
-//        apiserver = ApiService.getClient().create(HomeService.class);
-//        Call<DataObject> data = apiserver.getHomeBox();
         apiserver = ApiService.getlink(profileID,userID, m_andoid,"Bearer " + accessToken).create(HomeService.class);
-        Call<JsonElement> data = apiserver.getlinka("1901","FILM");
+        Call<DataObjectUrlVideo> data = apiserver.getlinka(getIntent().getStringExtra("id"), getIntent().getStringExtra("type"));
+        Log.d("TAG : " + getIntent().getStringExtra("id"),"id");
 
-        data.enqueue(new Callback<JsonElement>() {
+        Log.d("TAG : " + getIntent().getStringExtra("type"),"type");
+
+        data.enqueue(new Callback<DataObjectUrlVideo>() {
             @Override
-            public void onResponse(Call<JsonElement> call, Response<JsonElement> response) {
+            public void onResponse(Call<DataObjectUrlVideo> call, Response<DataObjectUrlVideo> response) {
+                DataObjectUrlVideo urlVideo = response.body();
                 Log.d("TAG : " + response.body(),"ok");
                 StyledPlayerView styledPlayerView = findViewById(R.id.playvideo);
                 player = new ExoPlayer.Builder(PlayingVideoAvtivity.this).build();
                 styledPlayerView.setPlayer(player);
-                MediaItem mediaItem = MediaItem.fromUri(UrlVideo);
+                MediaItem mediaItem = MediaItem.fromUri(urlVideo.getData().getUrlStreaming());
                 player.setMediaItem(mediaItem);
                 player.prepare();
                 player.setPlayWhenReady(true);
             }
 
             @Override
-            public void onFailure(Call<JsonElement> call, Throwable t) {
-                    call.cancel();
+            public void onFailure(Call<DataObjectUrlVideo> call, Throwable t) {
+                call.cancel();
             }
         });
-
     }
+
+
+
+
 
     @Override
     protected void  onStop()

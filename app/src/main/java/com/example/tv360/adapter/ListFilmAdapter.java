@@ -28,9 +28,10 @@ public class ListFilmAdapter extends RecyclerView.Adapter<ListFilmAdapter.ListFi
 
 
     private Context context;
-    public void setData( HomeModel listData){
+    public void setData( HomeModel listData,Context context){
 
         this.mListData = listData;
+        this.context = context;
         notifyDataSetChanged();
     }
 
@@ -68,7 +69,7 @@ public class ListFilmAdapter extends RecyclerView.Adapter<ListFilmAdapter.ListFi
             holder.rcvItem.setLayoutManager(linearLayoutManager);
             holder.rcvItem.setFocusable(false);//ko focus con tro
             RvFilmImageAdapter modelAdapter = new RvFilmImageAdapter();
-            modelAdapter.setData(mListData.getContent());
+            modelAdapter.setData(context, mListData.getContent());
             holder.rcvItem.setAdapter(modelAdapter);
         }
     }

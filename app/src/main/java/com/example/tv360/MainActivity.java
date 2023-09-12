@@ -2,11 +2,13 @@ package com.example.tv360;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.Window;
 import android.view.WindowManager;
 
+import com.example.tv360.adapter.RvFilmImageAdapter;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -17,7 +19,7 @@ import androidx.navigation.ui.NavigationUI;
 
 import com.example.tv360.databinding.ActivityMainBinding;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements RvFilmImageAdapter.DetailFilmListener {
 
     private ActivityMainBinding binding;
 
@@ -43,4 +45,11 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupWithNavController(binding.navView, navController);
     }
 
+    @Override
+    public void detailFilmListener(Intent intent) {
+        Intent intent1  = new Intent(MainActivity.this, PlayingVideoAvtivity.class);
+        intent1.putExtra("id",intent.getStringExtra("id"));
+        intent1.putExtra("type",intent.getStringExtra("type"));
+        startActivity(intent1);
+    }
 }

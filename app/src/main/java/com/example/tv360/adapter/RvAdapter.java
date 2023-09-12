@@ -116,11 +116,12 @@ public class RvAdapter extends  RecyclerView.Adapter<RvAdapter.RowHolder> {
         }
         if(holder.rcvData != null)
         {
+
             LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context,RecyclerView.VERTICAL,false);
             holder.rcvData.setLayoutManager(linearLayoutManager);
             holder.rcvData.setFocusable(false);//ko focus con tro
             ListFilmAdapter modelAdapter = new ListFilmAdapter();
-            modelAdapter.setData(listflim.get(position-1));
+            modelAdapter.setData(listflim.get(position-1),context);
             holder.rcvData.setAdapter(modelAdapter);
         }
 

@@ -3,7 +3,7 @@ package com.example.tv360.model;
 import java.security.PublicKey;
 
 public class FilmModel {
-    private   int id;
+    private   String id;
 
     private   String name;
 
@@ -13,9 +13,11 @@ public class FilmModel {
     private  String resolution;
     private String coverImage;
 
+    private String type;
+
     private  String animationImage;
 
-    public FilmModel(int id, String name, String description, String slug, String durationStr, String resolution, String coverImage, String animationImage) {
+    public FilmModel(String id, String name, String description, String slug, String durationStr, String resolution, String coverImage, String animationImage,String type) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -24,13 +26,14 @@ public class FilmModel {
         this.resolution = resolution;
         this.coverImage = coverImage;
         this.animationImage = animationImage;
+        this.type = type;
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -88,5 +91,13 @@ public class FilmModel {
 
     public void setAnimationImage(String animationImage) {
         this.animationImage = animationImage;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 }

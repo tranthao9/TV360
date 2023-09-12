@@ -106,7 +106,7 @@ public class LoginActivity extends AppCompatActivity implements LoginInterface {
         editor.putString(KEY_USERID, userID);
         editor.putString(KEY_PROFILEID, profileId);
         editor.apply();
-        Intent intent = new Intent(LoginActivity.this, PlayingVideoAvtivity.class);
+        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
         startActivity(intent);
         Toast.makeText(LoginActivity.this,"Login success",Toast.LENGTH_SHORT).show();
 
