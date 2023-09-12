@@ -19,7 +19,7 @@ public class LoginPresenter {
     {
         if(userModel.getErrorCode() == 200)
         {
-            mloginInterface.loginSuccess(userModel.getData().getAccessToken(),userModel.getData().getRefreshToken());
+            mloginInterface.loginSuccess(userModel.getData().getAccessToken(),userModel.getData().getRefreshToken(),userModel.getData().getUserId(),userModel.getData().getProfileid());
         }
         else
         {

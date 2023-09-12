@@ -60,9 +60,7 @@ public class HomeFragment extends Fragment {
 
         binding.viewhome.setLayoutManager(new LinearLayoutManager(requireContext()));
         GetData();
-        SharedPreferences sharedPref = getActivity().getSharedPreferences(SHARED_PREF_NAME,getContext().MODE_PRIVATE);
-        String accessToken = sharedPref.getString(KEY_ACCESSTOKEN,"");
-        Toast.makeText(getContext(),"Accesstoken : "+accessToken,Toast.LENGTH_SHORT).show();
+
         return root;
     }
 

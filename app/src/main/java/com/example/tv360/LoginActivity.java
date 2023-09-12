@@ -50,6 +50,10 @@ public class LoginActivity extends AppCompatActivity implements LoginInterface {
     private  static  final  String SHARED_PREF_NAME = "mypref";
     private  static  final  String KEY_ACCESSTOKEN ="accessToken";
     private  static  final  String KEY_REFRESHTOKEN = "refreshToken";
+
+    private  static  final  String KEY_USERID = "userId";
+
+    private  static  final  String KEY_PROFILEID = "profileId";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -95,12 +99,14 @@ public class LoginActivity extends AppCompatActivity implements LoginInterface {
     }
 
     @Override
-    public void loginSuccess(String accessToke, String refeshToken) {
+    public void loginSuccess(String accessToke, String refeshToken, String userID, String profileId) {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString(KEY_ACCESSTOKEN, accessToke);
         editor.putString(KEY_REFRESHTOKEN, refeshToken);
+        editor.putString(KEY_USERID, userID);
+        editor.putString(KEY_PROFILEID, profileId);
         editor.apply();
-        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+        Intent intent = new Intent(LoginActivity.this, PlayingVideoAvtivity.class);
         startActivity(intent);
         Toast.makeText(LoginActivity.this,"Login success",Toast.LENGTH_SHORT).show();
 
