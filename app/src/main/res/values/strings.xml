@@ -7,4 +7,6 @@
     <string name="exo_track_selection_title_video">Video</string>
     <string name="exo_track_selection_title_audio">Audio</string>
     <string name="exo_track_selection_title_text">Text</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

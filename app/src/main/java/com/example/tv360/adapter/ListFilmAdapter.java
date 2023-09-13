@@ -1,9 +1,11 @@
 package com.example.tv360.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
@@ -26,12 +28,18 @@ public class ListFilmAdapter extends RecyclerView.Adapter<ListFilmAdapter.ListFi
 
     private HomeModel mListData;
 
-
+    private  LoadMoreHomeListener loadMoreHomeListener;
     private Context context;
     public void setData( HomeModel listData,Context context){
 
         this.mListData = listData;
         this.context = context;
+        try {
+            this.loadMoreHomeListener = ((ListFilmAdapter.LoadMoreHomeListener)context) ;
+        }catch (ClassCastException ex)
+        {
+            throw new ClassCastException(ex.getMessage());
+        }
         notifyDataSetChanged();
     }
 
@@ -61,7 +69,14 @@ public class ListFilmAdapter extends RecyclerView.Adapter<ListFilmAdapter.ListFi
         if(holder.textView != null)
         {
             holder.textView.setText(mListData.getName());
-
+            holder.loadmoreView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent();
+                    intent.putExtra("id",mListData.getId());
+                    loadMoreHomeListener.LoadMoreHomeListener(intent);
+                }
+            });
         }
         if(holder.rcvItem != null)
         {
@@ -91,12 +106,19 @@ public class ListFilmAdapter extends RecyclerView.Adapter<ListFilmAdapter.ListFi
         private RecyclerView rcvItem;
 
         private  TextView textView;
+        private ImageButton loadmoreView;
 
         public ListFilmViewHolder(@NonNull View itemView) {
             super(itemView);
             rcvItem = itemView.findViewById(R.id.rcv_film);
             textView = itemView.findViewById(R.id.film_model);
+            loadmoreView = itemView.findViewById(R.id.film_model_loadmore);
         }
 
+    }
+
+    public  interface  LoadMoreHomeListener
+    {
+        public  void  LoadMoreHomeListener(Intent intent);
     }
 }

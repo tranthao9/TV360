@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/black">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:orientation="horizontal"
+        android:padding="5dp"
+        >
+        <ImageButton
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:background="@drawable/previous_24"
+            />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Phim đề xuất"
+            android:textColor="@color/white"
+            android:layout_gravity="center"
+            android:gravity="center"/>
+    </LinearLayout>
+
+    <GridView
+        android:id="@+id/loadmore_home"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+    </GridView>
+</LinearLayout>

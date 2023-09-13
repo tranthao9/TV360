@@ -68,8 +68,6 @@ public class PlayingVideoAvtivity extends AppCompatActivity{
     String[] speed = {"0.25x", "0.5x", "Normal", "1.5x", "2x"};
     private boolean isShowingTrackSelectionDialog = false;
     private DefaultTrackSelector trackSelector;
-    private ImageButton exo_pause;
-    private ImageButton exo_play;
 
     ImageView fullscreen;
 
@@ -303,8 +301,6 @@ public class PlayingVideoAvtivity extends AppCompatActivity{
                                 Log.d("TAG: " + trackSelections.get(0).getFormat(0).height +"p" , "ok1");
                                 text_quality.setText(trackSelections.get(0).getFormat(0).height +"p");
                             }
-
-
                         }
 
                     });
