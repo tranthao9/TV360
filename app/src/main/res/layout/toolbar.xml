@@ -17,35 +17,34 @@
             android:src="@drawable/logo1"/>
         <Button
             android:id="@+id/muagoi"
-            android:layout_marginLeft="70dp"
+            android:layout_marginLeft="60dp"
             android:layout_width="80dp"
             android:layout_height="40dp"
             android:layout_marginTop="18dp"
             android:backgroundTint="#F40505"
             android:text="Mua gói"
-            android:textSize="7sp"/>
+            android:textSize="10dp"/>
 
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/baseline_notifications_none_24"
             android:id="@+id/notication"
-            android:layout_marginLeft="20dp"
+            android:layout_marginLeft="15dp"
             android:layout_marginTop="23dp"/>
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/baseline_search_24"
             android:id="@+id/search"
-            android:layout_marginLeft="20dp"
+            android:layout_marginLeft="15dp"
             android:layout_marginTop="23dp"/>
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/baseline_person_24"
             android:id="@+id/profile"
-            android:layout_marginLeft="20dp"
-            android:layout_marginTop="23dp"
-            android:layout_marginRight="10dp"/>
+            android:layout_marginLeft="15dp"
+            android:layout_marginTop="23dp"/>
     </LinearLayout>
 </androidx.appcompat.widget.Toolbar>

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/bg_setting_playvideo"
+    android:padding="10dp">
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="16dp"
+        android:id="@+id/exo_playback_quality"
+        >
+        <ImageButton
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:src="@drawable/qualities_24"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="Chất lượng"
+            android:gravity="center"
+            android:textSize="16dp"
+            android:layout_marginLeft="10dp"
+            />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="right|center"
+            android:text="Tự động( 480p )"
+            android:textSize="14dp"
+            android:id="@+id/exo_playback_quality_content"
+            />
+    </androidx.appcompat.widget.LinearLayoutCompat>
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_margin="16dp"
+        android:id="@+id/exo_playback_speed"
+        >
+        <ImageView
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:background="@drawable/speed_play_24"
+            android:backgroundTint="@color/grey40"
+            android:id="@+id/exo_playback_speed_icon"
+            />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="Tốc độ phát"
+            android:gravity="center"
+            android:textSize="16dp"
+            android:layout_marginLeft="10dp"
+            />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="right|center"
+            android:text="Nomal"
+            android:textSize="14dp"
+            android:id="@+id/exo_playback_speed_content"
+            />
+    </androidx.appcompat.widget.LinearLayoutCompat>
+</LinearLayout>

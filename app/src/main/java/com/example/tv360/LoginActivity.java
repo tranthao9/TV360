@@ -82,7 +82,7 @@ public class LoginActivity extends AppCompatActivity implements LoginInterface {
         String Password =   password.getText().toString();
 //        UserModel userModel = new UserModel(Username,Password,deviceInfo);
         apiInterface = ApiService.getClient().create(UserApiService.class);
-        Call<DataObjectLogin> data = apiInterface.login(new LoginModel(Username,Password,"PASS",null,deviceInfo));
+        Call<DataObjectLogin> data = apiInterface.login(new LoginModel("0385891395","888888","PASS",null,deviceInfo));
         data.enqueue(new Callback<DataObjectLogin>() {
             @Override
             public void onResponse(Call<DataObjectLogin> call, Response<DataObjectLogin> response) {

@@ -11,7 +11,10 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/playvideo"
-        app:controller_layout_id="@layout/custom_player_control"/>
+        app:controller_layout_id="@layout/custom_player_control"
+        app:resize_mode="fixed_width"
+        app:show_buffering="when_playing"
+        />
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cardView2"

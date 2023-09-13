@@ -1,18 +1,29 @@
 package com.example.tv360;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.LinearLayoutCompat;
+import androidx.cardview.widget.CardView;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.Notification;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.media.browse.MediaBrowser;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.text.Layout;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -24,10 +35,17 @@ import com.example.tv360.model.DataObject;
 import com.example.tv360.model.DataObjectUrlVideo;
 import com.example.tv360.retrofit.ApiService;
 import com.example.tv360.retrofit.HomeService;
+import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.MediaItem;
+import com.google.android.exoplayer2.PlaybackParameters;
 import com.google.android.exoplayer2.Player;
+import com.google.android.exoplayer2.source.TrackGroupArray;
+import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
+import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
+import com.google.android.exoplayer2.trackselection.TrackSelectionParameters;
 import com.google.android.exoplayer2.ui.StyledPlayerView;
+import com.google.android.exoplayer2.util.MimeTypes;
 import com.google.android.exoplayer2.util.Util;
 import com.google.gson.JsonElement;
 
@@ -47,6 +65,9 @@ public class PlayingVideoAvtivity extends AppCompatActivity{
 
     private  static  final  String KEY_ACCESSTOKEN ="accessToken";
 
+    String[] speed = {"0.25x", "0.5x", "Normal", "1.5x", "2x"};
+    private boolean isShowingTrackSelectionDialog = false;
+    private DefaultTrackSelector trackSelector;
     private ImageButton exo_pause;
     private ImageButton exo_play;
 
@@ -58,6 +79,12 @@ public class PlayingVideoAvtivity extends AppCompatActivity{
     ProgressBar progressBar;
 
     Boolean ispause = false;
+
+    TextView text_speed;
+
+    TextView text_quality;
+
+    StyledPlayerView styledPlayerView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -78,13 +105,24 @@ public class PlayingVideoAvtivity extends AppCompatActivity{
             public void onResponse(Call<DataObjectUrlVideo> call, Response<DataObjectUrlVideo> response) {
                 DataObjectUrlVideo urlVideo = response.body();
                 Log.d("TAG : " + response.body(),"ok");
-                StyledPlayerView styledPlayerView = findViewById(R.id.playvideo);
+                styledPlayerView = findViewById(R.id.playvideo);
                 fullscreen = styledPlayerView.findViewById(R.id.exo_fullscreen_icon);
                 TextView info = findViewById(R.id.textView);
 //                info.setText(urlVideo.getData().);
                 progressBar = findViewById(R.id.progressBar);
 
-                ImageButton play = styledPlayerView.findViewById(R.id.pause_button);
+                ImageView setiing_play = styledPlayerView.findViewById(R.id.exo_settings_icon);
+
+                ImageView play = styledPlayerView.findViewById(R.id.pause_button);
+
+
+
+                setiing_play.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        openSettingPlayVideo(Gravity.BOTTOM);
+                    }
+                });
                 play.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -146,13 +184,26 @@ public class PlayingVideoAvtivity extends AppCompatActivity{
                         }
                     }
                 });
-                player = new ExoPlayer.Builder(PlayingVideoAvtivity.this).build();
+
+                trackSelector = new DefaultTrackSelector(PlayingVideoAvtivity.this);
+
+
+                TrackSelectionParameters newParameters = trackSelector.getParameters()
+                        .buildUpon().build();
+//                        .setForceLowestBitrate(true)
+//                        .build();
+
+
+                trackSelector.setParameters((DefaultTrackSelector.Parameters) newParameters);
+                player = new ExoPlayer.Builder(PlayingVideoAvtivity.this).setTrackSelector(trackSelector).build();
                 styledPlayerView.setPlayer(player);
 
+//               MediaItem mediaItem = MediaItem.fromUri(urlVideo.getData().getUrlStreaming());
                 MediaItem mediaItem = MediaItem.fromUri(urlVideo.getData().getUrlStreaming());
                 player.setMediaItem(mediaItem);
                 player.prepare();
                 player.setPlayWhenReady(true);
+                player.play();
                 player.addListener(new Player.Listener() {
                     @Override
                     public void onPlaybackStateChanged(int playbackState) {
@@ -168,7 +219,11 @@ public class PlayingVideoAvtivity extends AppCompatActivity{
                             player.setPlayWhenReady(true);
                         }
                     }
+
+
                 });
+
+
             }
 
             @Override
@@ -183,10 +238,136 @@ public class PlayingVideoAvtivity extends AppCompatActivity{
     protected void  onStop()
     {
         super.onStop();
+        styledPlayerView.setPlayer(null);
         player.setPlayWhenReady(false);
+        player.release();
+        player = null;
 
     }
 
+    private  void  openSettingPlayVideo(int gravity)
+    {
+        final Dialog dialog = new Dialog(this);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.dialog_settting);
+        Window window = dialog.getWindow();
+        if(window == null)
+        {
+            return;
+        }
+        window.setLayout(WindowManager.LayoutParams.MATCH_PARENT,WindowManager.LayoutParams.WRAP_CONTENT);
+        window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        WindowManager.LayoutParams windownAttribute = window.getAttributes();
+        windownAttribute.gravity = gravity;
+        window.setAttributes(windownAttribute);
+
+        if(Gravity.BOTTOM == gravity)
+        {
+            dialog.setCancelable(true);
+        }
+        else
+        {
+            dialog.setCancelable(false);
+        }
+        LinearLayoutCompat speedBtn = dialog.findViewById(R.id.exo_playback_speed);
+
+        LinearLayoutCompat qualitiesbtn = dialog.findViewById(R.id.exo_playback_quality);
+        text_speed = dialog.findViewById(R.id.exo_playback_speed_content);
+
+        text_quality = dialog.findViewById(R.id.exo_playback_quality_content);
+        speedBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                changeSpeed();
+            }
+        });
 
 
+        qualitiesbtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                if (!isShowingTrackSelectionDialog && TrackSelectionDialog.willHaveContent(trackSelector)) {
+                    isShowingTrackSelectionDialog = true;
+                    TrackSelectionDialog trackSelectionDialog = TrackSelectionDialog.createForTrackSelector(trackSelector,
+                            /* onDismissListener= */ dismissedDialog -> isShowingTrackSelectionDialog = false);
+                    trackSelectionDialog.show(getSupportFragmentManager(), /* tag= */ null);
+                    player.addListener(new Player.Listener() {
+
+                        @Override
+                        public void onTracksChanged(TrackGroupArray trackGroups, TrackSelectionArray trackSelections) {
+                            Player.Listener.super.onTracksChanged(trackGroups, trackSelections);
+
+                            Log.d("TAG: " + trackSelections.get(0).getFormat(0).height +"p" , "okg");
+                            if (trackSelections.get(0) != null) {
+                                Log.d("TAG: " + trackSelections.get(0).getFormat(0).height +"p" , "ok1");
+                                text_quality.setText(trackSelections.get(0).getFormat(0).height +"p");
+                            }
+
+
+                        }
+
+                    });
+                }
+            }
+
+
+        });
+        dialog.show();
+    }
+
+    private  void changeSpeed()
+    {
+        AlertDialog.Builder builder = new AlertDialog.Builder(PlayingVideoAvtivity.this);
+        builder.setTitle("Set Speed");
+        builder.setItems(speed, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // the user clicked on colors[which]
+
+                if (which == 0) {
+
+                    text_speed.setVisibility(View.VISIBLE);
+                    text_speed.setText("0.25X");
+                    PlaybackParameters param = new PlaybackParameters(0.5f);
+                    player.setPlaybackParameters(param);
+
+
+                }
+                if (which == 1) {
+
+                    text_speed.setVisibility(View.VISIBLE);
+                    text_speed.setText("0.5X");
+                    PlaybackParameters param = new PlaybackParameters(0.5f);
+                    player.setPlaybackParameters(param);
+
+
+                }
+                if (which == 2) {
+
+                    text_speed.setVisibility(View.GONE);
+                    PlaybackParameters param = new PlaybackParameters(1f);
+                    player.setPlaybackParameters(param);
+
+
+                }
+                if (which == 3) {
+                    text_speed.setVisibility(View.VISIBLE);
+                    text_speed.setText("1.5X");
+                    PlaybackParameters param = new PlaybackParameters(1.5f);
+                    player.setPlaybackParameters(param);
+
+                }
+                if (which == 4) {
+                    text_speed.setVisibility(View.VISIBLE);
+                    text_speed.setText("2X");
+                    PlaybackParameters param = new PlaybackParameters(2f);
+                    player.setPlaybackParameters(param);
+                }
+
+
+            }
+        });
+        builder.show();
+    }
 }

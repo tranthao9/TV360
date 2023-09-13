@@ -70,5 +70,19 @@
                 android:scaleType="fitCenter"
                 android:src="@drawable/exo_controls_fullscreen_enter"/>
         </FrameLayout>
+        <FrameLayout
+            android:id="@+id/exo_settings_button"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_gravity="right">
+            <ImageView
+                android:id="@+id/exo_settings_icon"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_gravity="center"
+                android:adjustViewBounds="true"
+                android:scaleType="fitCenter"
+                android:src="@drawable/baseline_settings_suggest_24"/>
+        </FrameLayout>
     </LinearLayout>
 </LinearLayout>
