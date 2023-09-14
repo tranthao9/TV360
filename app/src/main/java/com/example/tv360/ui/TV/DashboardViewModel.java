@@ -1,4 +1,4 @@
-package com.example.tv360.ui.dashboard;
+package com.example.tv360.ui.TV;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;

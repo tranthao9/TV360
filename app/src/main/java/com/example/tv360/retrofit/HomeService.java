@@ -1,6 +1,7 @@
 package com.example.tv360.retrofit;
 
 import com.example.tv360.model.DataObject;
+import com.example.tv360.model.DataObjectLoadMore;
 import com.example.tv360.model.DataObjectUrlVideo;
 import com.example.tv360.model.HomeModel;
 import com.google.gson.JsonElement;
@@ -19,13 +20,16 @@ public interface HomeService {
     @GET("public/v1/composite/get-home")
     Call<DataObject> getHomeBox();
 
+    @GET("public/v1/composite/get-home-live")
+    Call<DataObject> getTVBox();
+
     @GET("public/v1/composite/get-link")
     Call<DataObjectUrlVideo> getlinka(
                               @Query("id") String id,
                               @Query("type") String type);
 
     @GET("public/v1/vod/get-list-item-collection")
-    Call<JsonElement> getCollectionDetail(
+    Call<DataObjectLoadMore> getCollectionDetail(
             @Query("id") String id,
             @Query("limit") int limit,
             @Query("offset") int offset);

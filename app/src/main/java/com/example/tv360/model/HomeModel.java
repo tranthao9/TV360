@@ -8,20 +8,21 @@ public class HomeModel {
     private  String name;
     private  String type;
 
-    private String  itemType;
-
-    private int  orderKey;
-
     private int display;
-    private  String slug;
+
     private  String description;
     private List<FilmModel> content;
 
-    public HomeModel(String id, String name, String type, List<FilmModel> content) {
+    private  DetailTVmodel contentPlaying;
+
+    public HomeModel(String id, String name, String type, int display, String description, List<FilmModel> content, DetailTVmodel contentPlaying) {
         this.id = id;
         this.name = name;
         this.type = type;
+        this.display = display;
+        this.description = description;
         this.content = content;
+        this.contentPlaying = contentPlaying;
     }
 
     public String getId() {
@@ -48,6 +49,21 @@ public class HomeModel {
         this.type = type;
     }
 
+    public int getDisplay() {
+        return display;
+    }
+
+    public void setDisplay(int display) {
+        this.display = display;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
     public List<FilmModel> getContent() {
         return content;
@@ -55,5 +71,13 @@ public class HomeModel {
 
     public void setContent(List<FilmModel> content) {
         this.content = content;
+    }
+
+    public DetailTVmodel getContentPlaying() {
+        return contentPlaying;
+    }
+
+    public void setContentPlaying(DetailTVmodel contentPlaying) {
+        this.contentPlaying = contentPlaying;
     }
 }

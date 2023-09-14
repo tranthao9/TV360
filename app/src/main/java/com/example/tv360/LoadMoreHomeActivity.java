@@ -2,11 +2,20 @@ package com.example.tv360;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
+import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
+import android.widget.AdapterView;
+import android.widget.GridView;
+import android.widget.TextView;
 
+import com.example.tv360.adapter.LoadMoreAdapter;
+import com.example.tv360.model.DataObjectLoadMore;
 import com.example.tv360.model.DataObjectUrlVideo;
 import com.example.tv360.retrofit.ApiService;
 import com.example.tv360.retrofit.HomeService;
@@ -29,7 +38,10 @@ public class LoadMoreHomeActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_load_more_home);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        getSupportActionBar().hide();
+        setContentView(R.layout.loadmorehome);
         loadData();
     }
 
@@ -41,15 +53,35 @@ public class LoadMoreHomeActivity extends AppCompatActivity {
         String accessToken = sharedPref.getString(KEY_ACCESSTOKEN,"");
         String m_andoid = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
         apiserver = ApiService.getlink(profileID,userID, m_andoid,"Bearer " + accessToken).create(HomeService.class);
-        Call<JsonElement> data = apiserver.getCollectionDetail(getIntent().getStringExtra("id"),6,12);
-        data.enqueue(new Callback<JsonElement>() {
+        Call<DataObjectLoadMore> data = apiserver.getCollectionDetail(getIntent().getStringExtra("id"),6,24);
+        data.enqueue(new Callback<DataObjectLoadMore>() {
             @Override
-            public void onResponse(Call<JsonElement> call, Response<JsonElement> response) {
-                Log.d("TAG : " + response.body(), "getmore");
+            public void onResponse(Call<DataObjectLoadMore> call, Response<DataObjectLoadMore> response) {
+                DataObjectLoadMore dataObjectLoadMore = response.body();
+                TextView textload = findViewById(R.id.loadmore_home_text);
+                textload.setText(dataObjectLoadMore.getData().getName());
+                GridView simpleGrid = (GridView) findViewById(R.id.loadmore_home); // init GridView
+                // Create an object of CustomAdapter and set Adapter to GirdView
+                LoadMoreAdapter customAdapter = new LoadMoreAdapter(getApplicationContext(), dataObjectLoadMore.getData());
+                simpleGrid.setAdapter(customAdapter);
+                simpleGrid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+                    @Override
+                    public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
+                                            long arg3) {
+
+                        Intent intent = new Intent(LoadMoreHomeActivity.this, PlayingVideoAvtivity.class);
+                        String id = dataObjectLoadMore.getData().getContent().get(arg2).getId();
+                        String type = dataObjectLoadMore.getData().getContent().get(arg2).getType();
+                        intent.putExtra("id",id);
+                        intent.putExtra("type",type);
+                        startActivity(intent);
+                    }
+                });
             }
 
             @Override
-            public void onFailure(Call<JsonElement> call, Throwable t) {
+            public void onFailure(Call<DataObjectLoadMore> call, Throwable t) {
                 call.cancel();
             }
         });

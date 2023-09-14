@@ -2,40 +2,29 @@ package com.example.tv360;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.LinearLayoutCompat;
-import androidx.cardview.widget.CardView;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.Notification;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.media.browse.MediaBrowser;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.text.Layout;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.example.tv360.adapter.RvFilmImageAdapter;
-import com.example.tv360.model.DataObject;
 import com.example.tv360.model.DataObjectUrlVideo;
 import com.example.tv360.retrofit.ApiService;
 import com.example.tv360.retrofit.HomeService;
-import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.MediaItem;
 import com.google.android.exoplayer2.PlaybackParameters;
@@ -44,17 +33,14 @@ import com.google.android.exoplayer2.source.TrackGroupArray;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
 import com.google.android.exoplayer2.trackselection.TrackSelectionParameters;
+import com.google.android.exoplayer2.ui.PlayerView;
 import com.google.android.exoplayer2.ui.StyledPlayerView;
-import com.google.android.exoplayer2.util.MimeTypes;
-import com.google.android.exoplayer2.util.Util;
-import com.google.gson.JsonElement;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-
-public class PlayingVideoAvtivity extends AppCompatActivity{
+public class PLayVieoTV extends AppCompatActivity {
 
     ExoPlayer player;
     private  static  final  String SHARED_PREF_NAME = "mypref";
@@ -89,7 +75,8 @@ public class PlayingVideoAvtivity extends AppCompatActivity{
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,WindowManager.LayoutParams.FLAG_FULLSCREEN);
         getSupportActionBar().hide();
-        setContentView(R.layout.activity_playing_video_avtivity);
+        setContentView(R.layout.videotv);
+
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         SharedPreferences sharedPref = getSharedPreferences(SHARED_PREF_NAME,MODE_PRIVATE);
@@ -104,11 +91,10 @@ public class PlayingVideoAvtivity extends AppCompatActivity{
             @Override
             public void onResponse(Call<DataObjectUrlVideo> call, Response<DataObjectUrlVideo> response) {
                 DataObjectUrlVideo urlVideo = response.body();
-                styledPlayerView = findViewById(R.id.playvideo);
+                styledPlayerView = findViewById(R.id.playvideo_tv);
                 fullscreen = styledPlayerView.findViewById(R.id.exo_fullscreen_icon);
-                TextView info = findViewById(R.id.textView);
-//                info.setText(urlVideo.getData().);
-                progressBar = findViewById(R.id.progressBar);
+
+                progressBar = findViewById(R.id.progressBar_tv);
 
                 ImageView setiing_play = styledPlayerView.findViewById(R.id.exo_settings_icon);
 
@@ -181,7 +167,7 @@ public class PlayingVideoAvtivity extends AppCompatActivity{
                     }
                 });
 
-                trackSelector = new DefaultTrackSelector(PlayingVideoAvtivity.this);
+                trackSelector = new DefaultTrackSelector(PLayVieoTV.this);
 
 
                 TrackSelectionParameters newParameters = trackSelector.getParameters()
@@ -191,7 +177,7 @@ public class PlayingVideoAvtivity extends AppCompatActivity{
 
 
                 trackSelector.setParameters((DefaultTrackSelector.Parameters) newParameters);
-                player = new ExoPlayer.Builder(PlayingVideoAvtivity.this).setTrackSelector(trackSelector).build();
+                player = new ExoPlayer.Builder(PLayVieoTV.this).setTrackSelector(trackSelector).build();
                 styledPlayerView.setPlayer(player);
 
 //               MediaItem mediaItem = MediaItem.fromUri(urlVideo.getData().getUrlStreaming());
@@ -224,11 +210,12 @@ public class PlayingVideoAvtivity extends AppCompatActivity{
 
             @Override
             public void onFailure(Call<DataObjectUrlVideo> call, Throwable t) {
+
                 call.cancel();
             }
         });
-    }
 
+    }
 
     @Override
     protected void  onStop()
@@ -312,7 +299,7 @@ public class PlayingVideoAvtivity extends AppCompatActivity{
 
     private  void changeSpeed()
     {
-        AlertDialog.Builder builder = new AlertDialog.Builder(PlayingVideoAvtivity.this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(PLayVieoTV.this);
         builder.setTitle("Set Speed");
         builder.setItems(speed, new DialogInterface.OnClickListener() {
             @Override

@@ -5,11 +5,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.Window;
 import android.view.WindowManager;
 
 import com.example.tv360.adapter.ListFilmAdapter;
 import com.example.tv360.adapter.RvFilmImageAdapter;
+import com.example.tv360.adapter.RvTVAdapter;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -20,7 +23,7 @@ import androidx.navigation.ui.NavigationUI;
 
 import com.example.tv360.databinding.ActivityMainBinding;
 
-public class MainActivity extends AppCompatActivity implements RvFilmImageAdapter.DetailFilmListener, ListFilmAdapter.LoadMoreHomeListener {
+public class MainActivity extends AppCompatActivity implements RvFilmImageAdapter.DetailFilmListener, ListFilmAdapter.LoadMoreHomeListener , RvTVAdapter.TVListener {
 
     private ActivityMainBinding binding;
 
@@ -57,8 +60,24 @@ public class MainActivity extends AppCompatActivity implements RvFilmImageAdapte
 
     @Override
     public void LoadMoreHomeListener(Intent intent) {
-        Intent intent1  = new Intent(MainActivity.this, LoadMoreHomeActivity.class);
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                Intent intent1  = new Intent(MainActivity.this, LoadMoreHomeActivity.class);
+                intent1.putExtra("id",intent.getStringExtra("id"));
+                startActivity(intent1);
+            }
+        };
+        Handler handler = new Handler(Looper.getMainLooper());
+        handler.postDelayed(runnable,1000);
+
+    }
+
+    @Override
+    public void TVListener(Intent intent) {
+        Intent intent1  = new Intent(MainActivity.this, PLayVieoTV.class);
         intent1.putExtra("id",intent.getStringExtra("id"));
+        intent1.putExtra("type",intent.getStringExtra("type"));
         startActivity(intent1);
     }
 }

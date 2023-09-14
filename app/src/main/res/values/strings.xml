@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">TV360</string>
-    <string name="title_home">Home</string>
-    <string name="title_dashboard">Dashboard</string>
+    <string name="title_home">Trang chủ</string>
+    <string name="title_dashboard">Truyền hình</string>
     <string name="title_notifications">Notifications</string>
     <string name="select_quality">Select Quality</string>
     <string name="exo_track_selection_title_video">Video</string>
@@ -9,4 +9,11 @@
     <string name="exo_track_selection_title_text">Text</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="taball">Tất cả</string>
+    <string name="tabxemlai">Xem lại - Lịch PS</string>
+    <string name="tabfree">Miễn phí</string>
+    <string name="tabchild">Thiếu nhi</string>
+    <string name="tabfilm">Phim truyện</string>
+    <string name="tabthethao">Thể Thao</string>
+    <string name="tabnew">Tin tức</string>
 </resources>

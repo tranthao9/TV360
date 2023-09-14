@@ -5,6 +5,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
@@ -106,10 +108,16 @@ public class LoginActivity extends AppCompatActivity implements LoginInterface {
         editor.putString(KEY_USERID, userID);
         editor.putString(KEY_PROFILEID, profileId);
         editor.apply();
-        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-        startActivity(intent);
-        Toast.makeText(LoginActivity.this,"Login success",Toast.LENGTH_SHORT).show();
-
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                startActivity(intent);
+                Toast.makeText(LoginActivity.this,"Login success",Toast.LENGTH_SHORT).show();
+            }
+        };
+        Handler handler = new Handler(Looper.getMainLooper());
+        handler.postDelayed(runnable,1000);
     }
 
     @Override
