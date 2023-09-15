@@ -1,6 +1,7 @@
 package com.example.tv360.adapter;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,12 +40,19 @@ public class RvTabTVAdapter extends RecyclerView.Adapter<RvTabTVAdapter.RvTabTVV
             return;
         }
         holder.rcvData.setText(filmModel.getName());
+        holder.rcvData.setTextColor(Color.GRAY);
+        holder.rcvData.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                holder.rcvData.setTextColor(Color.WHITE);
+            }
+        });
 
     }
 
     @Override
     public int getItemCount() {
-        return 0;
+        return filmModels.size();
     }
 
     public class RvTabTVViewHolder extends  RecyclerView.ViewHolder {

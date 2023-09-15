@@ -23,7 +23,7 @@ import androidx.navigation.ui.NavigationUI;
 
 import com.example.tv360.databinding.ActivityMainBinding;
 
-public class MainActivity extends AppCompatActivity implements RvFilmImageAdapter.DetailFilmListener, ListFilmAdapter.LoadMoreHomeListener , RvTVAdapter.TVListener {
+public class MainActivity extends AppCompatActivity implements RvFilmImageAdapter.DetailFilmListener, ListFilmAdapter.LoadMoreHomeListener  {
 
     private ActivityMainBinding binding;
 
@@ -73,11 +73,4 @@ public class MainActivity extends AppCompatActivity implements RvFilmImageAdapte
 
     }
 
-    @Override
-    public void TVListener(Intent intent) {
-        Intent intent1  = new Intent(MainActivity.this, PLayVieoTV.class);
-        intent1.putExtra("id",intent.getStringExtra("id"));
-        intent1.putExtra("type",intent.getStringExtra("type"));
-        startActivity(intent1);
-    }
 }

@@ -23,85 +23,53 @@ public class RvTVAdapter extends RecyclerView.Adapter<RvTVAdapter.RvTVHolder> {
 
     private  Context context;
 
-    private  List<HomeModel> item ;
+    private HomeModel item ;
 
     private  HomePresenter homePresenter;
 
-    private  TVListener tvListener;
 
-    public RvTVAdapter(Context context, List<HomeModel> item) {
+    public RvTVAdapter(Context context, HomeModel item) {
         this.homePresenter = new HomePresenter();
         this.context = context;
         this.item = item;
-
-        try {
-            this.tvListener = ((RvTVAdapter.TVListener)context) ;
-        }catch (ClassCastException ex)
-        {
-            throw new ClassCastException(ex.getMessage());
-        }
         notifyDataSetChanged();
     }
     @NonNull
     @Override
     public RvTVHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        if (viewType == 0)
-        {
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.videotv,parent,false);
-            return  new RvTVHolder(view);
-        }
-        else
-        {
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.tab_tv_load,parent,false);
-            return  new RvTVHolder(view);
-        }
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.tab_tv_load,parent,false);
+        return  new RvTVHolder(view);
 
     }
 
     @Override
     public void onBindViewHolder(@NonNull RvTVHolder holder, int position) {
-        HomeModel homeModel = item.get(position);
-        if(homeModel == null)
+
+        if(item == null)
         {
             return;
         }
-        if(holder.rcvVideo != null)
-        {
-            Intent intent = new Intent();
-            intent.putExtra("id",item.get(0).getContentPlaying().getDetail().getId());
-            intent.putExtra("type",item.get(0).getContentPlaying().getDetail().getType());
-            tvListener.TVListener(intent);
-        }
-       if (holder.rcvtab != null)
-       {
-           LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context,RecyclerView.HORIZONTAL,false);
-           holder.rcvtab.setLayoutManager(linearLayoutManager);
-           holder.rcvtab.setFocusable(false);//ko focus con tro
-           RvTabTVAdapter modelAdapter = new RvTabTVAdapter(context, item.get(1).getContent());
-           holder.rcvtab.setAdapter(modelAdapter);
-       }
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context,RecyclerView.HORIZONTAL,false);
+        holder.rcvtab.setLayoutManager(linearLayoutManager);
+        holder.rcvtab.setFocusable(false);//ko focus con tro
+        RvTabTVAdapter modelAdapter = new RvTabTVAdapter(context, item.getContent());
+        holder.rcvtab.setAdapter(modelAdapter);
     }
 
     @Override
     public int getItemCount() {
-        return item.size();
+        return 1;
     }
 
     public class RvTVHolder  extends RecyclerView.ViewHolder {
 
-        private StyledPlayerView rcvVideo;
 
         private RecyclerView rcvtab;
 
         public RvTVHolder(@NonNull View itemView) {
             super(itemView);
-            rcvVideo = itemView.findViewById(R.id.playvideo_tv);
             rcvtab = itemView.findViewById(R.id.rcv_tab_tv);
         }
     }
 
-    public  interface  TVListener
-    {
-        public  void  TVListener(Intent intent);
-    }
 }
