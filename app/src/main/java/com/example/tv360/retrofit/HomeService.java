@@ -33,4 +33,10 @@ public interface HomeService {
             @Query("id") String id,
             @Query("limit") int limit,
             @Query("offset") int offset);
+
+    @GET("public/v1/live/get-detail-category")
+    Call<DataObject> getCategoryLive(
+            @Query("id") String id,
+            @Query("limit") int limit,
+            @Query("offset") int offset);
 }

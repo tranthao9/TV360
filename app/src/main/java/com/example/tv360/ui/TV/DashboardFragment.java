@@ -29,15 +29,18 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.viewpager.widget.ViewPager;
 
 import com.example.tv360.PlayingVideoAvtivity;
 import com.example.tv360.R;
 import com.example.tv360.TrackSelectionDialog;
+import com.example.tv360.adapter.CustomViewPagerAdapter;
 import com.example.tv360.adapter.RvAdapter;
 import com.example.tv360.adapter.RvTVAdapter;
 import com.example.tv360.databinding.FragmentTvBinding;
 import com.example.tv360.model.DataObject;
 import com.example.tv360.model.DataObjectUrlVideo;
+import com.example.tv360.model.FilmModel;
 import com.example.tv360.model.HomeModel;
 import com.example.tv360.presenter.HomePresenter;
 import com.example.tv360.retrofit.ApiService;
@@ -51,6 +54,8 @@ import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
 import com.google.android.exoplayer2.trackselection.TrackSelectionParameters;
 import com.google.android.exoplayer2.ui.StyledPlayerView;
+import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.tabs.TabLayoutMediator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -64,7 +69,6 @@ public class DashboardFragment extends Fragment {
     ExoPlayer playerTV;
     private FragmentTvBinding binding;
 
-    RvTVAdapter tvAdapter;
 
     HomeService apiInterface;
 
@@ -96,13 +100,15 @@ public class DashboardFragment extends Fragment {
 
     StyledPlayerView styledPlayerViewTV;
 
+    TabLayout tabLayout;
+    List<FilmModel> listData;
+
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
 
         binding = FragmentTvBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-        binding.viewtv.setLayoutManager(new LinearLayoutManager(requireContext()));
         GetData();
 
 //        final TextView textView = binding.textDashboard;
@@ -120,9 +126,62 @@ public class DashboardFragment extends Fragment {
 
                 DataObject dataObject = response.body();
 
+                tabLayout = binding.tabLayoutMain;
+
                 PlayVideo(dataObject.getData().get(0).getContentPlaying().getDetail().getId(),dataObject.getData().get(0).getContentPlaying().getDetail().getType());
-                tvAdapter=new RvTVAdapter(getContext(), dataObject.getData().get(1));
-                binding.viewtv.setAdapter(tvAdapter);
+                listData = dataObject.getData().get(1).getContent();
+
+//                tabLayout.addTab(tabLayout.newTab().setText("Tất cả"));
+                for (int i =0 ; i<listData.size();i++)
+                {
+                    binding.tabLayoutMain.addTab(binding.tabLayoutMain.newTab().setText(listData.get(i).getName()));
+                }
+
+                for (int i = 0;i<binding.tabLayoutMain.getTabCount();i++)
+                {
+                    View view  = ((ViewGroup) binding.tabLayoutMain.getChildAt(0)).getChildAt(i);
+                    ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
+                    params.setMargins(20,0,30,20);
+                    view.requestLayout();
+                }
+                binding.tabLayoutMain.getTabAt(0).view.setBackgroundResource(R.drawable.select_layouttab);
+                binding.viewlayoutPager.setAdapter(new CustomViewPagerAdapter(getContext(),listData));
+                binding.viewlayoutPager.setCurrentItem(0);
+                binding.tabLayoutMain.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+                   @Override
+                   public void onTabSelected(TabLayout.Tab tab) {
+                       binding.viewlayoutPager.setCurrentItem(tab.getPosition());
+                       binding.tabLayoutMain.getTabAt(tab.getPosition()).view.setBackgroundResource(R.drawable.select_layouttab);
+                   }
+
+                   @Override
+                   public void onTabUnselected(TabLayout.Tab tab) {
+                        binding.tabLayoutMain.getTabAt(tab.getPosition()).view.setBackgroundResource(R.drawable.unselect_tablayout);
+                   }
+
+                   @Override
+                   public void onTabReselected(TabLayout.Tab tab) {
+
+                   }
+               });
+                binding.viewlayoutPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+                    @Override
+                    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+                        binding.tabLayoutMain.selectTab(binding.tabLayoutMain.getTabAt(position));
+                    }
+
+                    @Override
+                    public void onPageSelected(int position) {
+
+                    }
+
+                    @Override
+                    public void onPageScrollStateChanged(int state) {
+
+                    }
+                });
+//                tvAdapter=new RvTVAdapter(getContext(), dataObject.getData().get(1));
+//                binding.viewtv.setAdapter(tvAdapter);
             }
 
             @Override

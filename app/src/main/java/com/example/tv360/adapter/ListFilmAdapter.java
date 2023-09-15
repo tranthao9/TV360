@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -15,6 +16,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.tv360.R;
 import com.example.tv360.model.FilmModel;
 import com.example.tv360.model.HomeModel;
@@ -80,11 +82,12 @@ public class ListFilmAdapter extends RecyclerView.Adapter<ListFilmAdapter.ListFi
         }
         if(holder.rcvItem != null)
         {
+
             LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context,RecyclerView.HORIZONTAL,false);
             holder.rcvItem.setLayoutManager(linearLayoutManager);
             holder.rcvItem.setFocusable(false);//ko focus con tro
             RvFilmImageAdapter modelAdapter = new RvFilmImageAdapter();
-            modelAdapter.setData(context, mListData.getContent());
+            modelAdapter.setData(context, mListData.getContent(),mListData.getDisplay());
             holder.rcvItem.setAdapter(modelAdapter);
         }
     }

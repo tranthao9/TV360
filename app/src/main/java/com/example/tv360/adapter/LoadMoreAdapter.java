@@ -11,6 +11,7 @@ import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 import com.bumptech.glide.Glide;
 import com.example.tv360.R;
@@ -53,6 +54,12 @@ public class LoadMoreAdapter extends BaseAdapter {
 
         convertView	=	inflter.inflate(R.layout.activity_load_more_home, null);
         ImageView icon	=	(ImageView) convertView.findViewById(R.id.icon);
+        if(homeModel.getDisplay() == 0)
+        {
+            LinearLayout.LayoutParams l = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,320);
+
+            convertView.setLayoutParams(l);
+        }
         Glide.with(parent.getContext()).load(homeModel.getContent().get(position).getCoverImage()).into(icon);
 
         return convertView;

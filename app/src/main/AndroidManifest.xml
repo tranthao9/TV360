@@ -15,10 +15,7 @@
         android:theme="@style/Theme.TV360"
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
-        <activity
-            android:name=".PLayVieoTV"
-            android:configChanges="keyboardHidden|orientation|screenSize"
-            android:exported="false" />
+
         <activity
             android:name=".LoadMoreHomeActivity"
             android:exported="false" />

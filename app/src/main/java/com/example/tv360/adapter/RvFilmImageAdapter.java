@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
 
@@ -27,8 +28,10 @@ public class RvFilmImageAdapter extends  RecyclerView.Adapter<RvFilmImageAdapter
 
     private List<FilmModel> categoryList;
     private  DetailFilmListener detailFilmListener;
-    public void setData(Context context, List<FilmModel> list){
+    private  int display;
+    public void setData(Context context, List<FilmModel> list, int display){
         this.categoryList = list;
+        this.display = display;
         try {
             this.detailFilmListener = ((DetailFilmListener)context) ;
         }catch (ClassCastException ex)
@@ -49,6 +52,11 @@ public class RvFilmImageAdapter extends  RecyclerView.Adapter<RvFilmImageAdapter
         FilmModel category = categoryList.get(position);
         if (category == null){
             return;
+        }
+        if(display == 1)
+        {
+            LinearLayout.LayoutParams l = new LinearLayout.LayoutParams(320,400);
+            holder.imgCategory.setLayoutParams(l);
         }
         Glide.with(holder.itemView.getContext()).load(category.getCoverImage()).into(holder.imgCategory);
         holder.imgCategory.setOnClickListener(new View.OnClickListener() {
