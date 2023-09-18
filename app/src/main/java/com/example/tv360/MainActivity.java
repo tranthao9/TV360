@@ -11,8 +11,10 @@ import android.view.Window;
 import android.view.WindowManager;
 
 import com.example.tv360.adapter.ListFilmAdapter;
+import com.example.tv360.adapter.PlayingVideoTVAdapter;
 import com.example.tv360.adapter.RvFilmImageAdapter;
 import com.example.tv360.adapter.RvTVAdapter;
+import com.example.tv360.ui.TV.DashboardFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -23,7 +25,7 @@ import androidx.navigation.ui.NavigationUI;
 
 import com.example.tv360.databinding.ActivityMainBinding;
 
-public class MainActivity extends AppCompatActivity implements RvFilmImageAdapter.DetailFilmListener, ListFilmAdapter.LoadMoreHomeListener  {
+public class MainActivity extends AppCompatActivity implements RvFilmImageAdapter.DetailFilmListener, ListFilmAdapter.LoadMoreHomeListener  , PlayingVideoTVAdapter.DetailFilmTVListener {
 
     private ActivityMainBinding binding;
 
@@ -73,4 +75,14 @@ public class MainActivity extends AppCompatActivity implements RvFilmImageAdapte
 
     }
 
+    @Override
+    public void detailFilmTVListener(Intent intent) {
+        DashboardFragment tvfrgment = new DashboardFragment();
+        Bundle bundle = new Bundle();
+        bundle.putString("id",intent.getStringExtra("id"));
+        bundle.putString("type",intent.getStringExtra("type"));
+        tvfrgment.setArguments(bundle);
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container_tv,tvfrgment).commit();
+
+    }
 }

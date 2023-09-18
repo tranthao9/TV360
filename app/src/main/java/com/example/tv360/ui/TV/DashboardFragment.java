@@ -103,6 +103,8 @@ public class DashboardFragment extends Fragment {
     TabLayout tabLayout;
     List<FilmModel> listData;
 
+    List<HomeModel> listcontentFirst = new ArrayList<>();
+
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
 
@@ -111,8 +113,6 @@ public class DashboardFragment extends Fragment {
 
         GetData();
 
-//        final TextView textView = binding.textDashboard;
-//        dashboardViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
         return root;
     }
 
@@ -127,11 +127,25 @@ public class DashboardFragment extends Fragment {
                 DataObject dataObject = response.body();
 
                 tabLayout = binding.tabLayoutMain;
-
-                PlayVideo(dataObject.getData().get(0).getContentPlaying().getDetail().getId(),dataObject.getData().get(0).getContentPlaying().getDetail().getType());
+                Bundle bundle  = getArguments();
+                if(bundle != null)
+                {
+                    String id = bundle.getString("id");
+                    String type = bundle.getString("type");
+                    PlayVideo( id, type);
+                }
+                else {
+                    PlayVideo(dataObject.getData().get(0).getContentPlaying().getDetail().getId(),dataObject.getData().get(0).getContentPlaying().getDetail().getType());
+                }
                 listData = dataObject.getData().get(1).getContent();
-
-//                tabLayout.addTab(tabLayout.newTab().setText("Tất cả"));
+                for (int i =2 ; i < dataObject.getData().size() ; i++)
+                {
+                    if (dataObject.getData().get(i).getContent() != null)
+                    {
+                        listcontentFirst.add(dataObject.getData().get(i));
+                    }
+                }
+                binding.tabLayoutMain.addTab(binding.tabLayoutMain.newTab().setText("Tất cả"));
                 for (int i =0 ; i<listData.size();i++)
                 {
                     binding.tabLayoutMain.addTab(binding.tabLayoutMain.newTab().setText(listData.get(i).getName()));
@@ -144,14 +158,17 @@ public class DashboardFragment extends Fragment {
                     params.setMargins(20,0,30,20);
                     view.requestLayout();
                 }
+
                 binding.tabLayoutMain.getTabAt(0).view.setBackgroundResource(R.drawable.select_layouttab);
-                binding.viewlayoutPager.setAdapter(new CustomViewPagerAdapter(getContext(),listData));
+                binding.viewlayoutPager.setAdapter(new CustomViewPagerAdapter(getContext(),listData,listcontentFirst));
                 binding.viewlayoutPager.setCurrentItem(0);
                 binding.tabLayoutMain.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
                    @Override
                    public void onTabSelected(TabLayout.Tab tab) {
+                       int i = tab.getPosition();
+                       Log.d("Position " + i, "ok");
                        binding.viewlayoutPager.setCurrentItem(tab.getPosition());
-                       binding.tabLayoutMain.getTabAt(tab.getPosition()).view.setBackgroundResource(R.drawable.select_layouttab);
+                       binding.tabLayoutMain.selectTab(binding.tabLayoutMain.getTabAt(tab.getPosition()));
                    }
 
                    @Override
@@ -180,8 +197,7 @@ public class DashboardFragment extends Fragment {
 
                     }
                 });
-//                tvAdapter=new RvTVAdapter(getContext(), dataObject.getData().get(1));
-//                binding.viewtv.setAdapter(tvAdapter);
+
             }
 
             @Override

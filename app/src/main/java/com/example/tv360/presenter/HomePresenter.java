@@ -97,7 +97,7 @@ public class HomePresenter {
         String accessToken = sharedPref.getString(KEY_ACCESSTOKEN,"");
         String m_andoid = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
         apiserver = ApiService.getlink(profileID,userID, m_andoid,"Bearer " + accessToken).create(HomeService.class);
-        Call<DataObject> data  = apiserver.getCategoryLive(filmModel.getId(),6,24);
+        Call<DataObject> data  = apiserver.getCategoryLive(filmModel.getId(),6,0);
         data.enqueue(new Callback<DataObject>() {
             @Override
             public void onResponse(Call<DataObject> call, Response<DataObject> response) {

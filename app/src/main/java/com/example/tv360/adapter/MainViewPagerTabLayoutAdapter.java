@@ -24,20 +24,42 @@ import pl.droidsonroids.gif.GifImageView;
 public class MainViewPagerTabLayoutAdapter extends RecyclerView.Adapter<MainViewPagerTabLayoutAdapter.MainViewPagerTabLayoutViewHolder> {
 
     private Context context;
-
     private List<HomeModel> listhomemodels;
-
 
     public MainViewPagerTabLayoutAdapter(Context context, List<HomeModel> listhomemodels) {
         this.context = context;
         this.listhomemodels = listhomemodels;
-    }
-
-    public void setData(List<HomeModel> data) {
-        this.listhomemodels = data;
         notifyDataSetChanged();
     }
 
+    @NonNull
+    @Override
+    public MainViewPagerTabLayoutViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+
+        View view = LayoutInflater.from(context).inflate(R.layout.tablayout_viewholder,parent,false);
+        return new MainViewPagerTabLayoutViewHolder(view);
+
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull MainViewPagerTabLayoutViewHolder holder, int position) {
+        if( listhomemodels.get(position).getContent() == null)
+        {
+            return;
+        }
+        HomeModel homeModel = listhomemodels.get(position);
+        holder.gifImageView.setText(homeModel.getName());
+        PlayingVideoTVAdapter modelAdapter = new PlayingVideoTVAdapter();
+        modelAdapter.setData(context, homeModel.getContent(),homeModel.getDisplay());
+        holder.recyclerView.setAdapter(modelAdapter);
+
+    }
+
+    @Override
+    public int getItemCount() {
+
+        return listhomemodels.size();
+    }
 
     public  class MainViewPagerTabLayoutViewHolder extends  RecyclerView.ViewHolder{
 
@@ -50,37 +72,5 @@ public class MainViewPagerTabLayoutAdapter extends RecyclerView.Adapter<MainView
             gifImageView = itemView.findViewById(R.id.tv_imageView);
             recyclerView = itemView.findViewById(R.id.inner_recyleview_tablaout);
         }
-    }
-
-
-    @NonNull
-    @Override
-    public MainViewPagerTabLayoutViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-
-        View view = LayoutInflater.from(context).inflate(R.layout.tablayout_viewholder,parent,false);
-
-        return new MainViewPagerTabLayoutViewHolder(view);
-    }
-
-    @Override
-    public void onBindViewHolder(@NonNull MainViewPagerTabLayoutViewHolder holder, int position) {
-        HomeModel homeModel = listhomemodels.get(position);
-        if(listhomemodels == null)
-        {
-//            holder.gifImageView.setText("TAB NULL " + position);
-            return;
-        }
-        holder.gifImageView.setText(homeModel.getName());
-        RvFilmImageAdapter modelAdapter = new RvFilmImageAdapter();
-        modelAdapter.setData(context, homeModel.getContent(),homeModel.getDisplay());
-        holder.recyclerView.setAdapter(modelAdapter);
-
-    }
-
-
-
-    @Override
-    public int getItemCount() {
-        return listhomemodels.size();
     }
 }

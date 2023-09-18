@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.PagerAdapter;
 
@@ -32,37 +33,59 @@ public class CustomViewPagerAdapter extends PagerAdapter {
     private Context context;
     private List<FilmModel> modelList;
 
+    private  List<HomeModel> listcontentfirst;
+
     private HomePresenter homePresenter = new HomePresenter();
 
 
 
-    public CustomViewPagerAdapter(Context context, List<FilmModel> modelList) {
+    public CustomViewPagerAdapter(Context context, List<FilmModel> modelList, List<HomeModel> listcontentfirst) {
         this.context = context;
         this.modelList = modelList;
+        this.listcontentfirst = listcontentfirst;
+        notifyDataSetChanged();
     }
 
     @NonNull
     @Override
     public Object instantiateItem(@NonNull ViewGroup container, int position) {
-        View view = LayoutInflater.from(context).inflate(R.layout.main_layour_for_viewpager,container,false);
-        RecyclerView recyclerView = view.findViewById(R.id.main_recyclevire_tab);
-        List<HomeModel> homeModelList = homePresenter.getlistHomeTablayout(context,modelList.get(position));
-        MainViewPagerTabLayoutAdapter mainViewPagerTabLayoutAdapter =  new MainViewPagerTabLayoutAdapter(context,homeModelList);
-        mainViewPagerTabLayoutAdapter.setData(homeModelList);
-        recyclerView.setAdapter(mainViewPagerTabLayoutAdapter);
-        container.addView(view);
-        return view;
+        if (position == 0)
+        {
+            View view =  LayoutInflater.from(container.getContext()).inflate(R.layout.main_layour_for_viewpager,container,false);
+            RecyclerView recyclerView = view.findViewById(R.id.main_recyclevire_tab);
+            MainViewPagerTabLayoutAdapter mainViewPagerTabLayoutAdapter =  new MainViewPagerTabLayoutAdapter(container.getContext(),listcontentfirst);
+            recyclerView.setAdapter(mainViewPagerTabLayoutAdapter);
+            container.addView(view);
+            return  view;
+        }
+        else
+        {
+            List<HomeModel> homeModelList = homePresenter.getlistHomeTablayout(container.getContext(),modelList.get(position-1));
+            View view =  LayoutInflater.from(container.getContext()).inflate(R.layout.main_layour_for_viewpager,container,false);
+            RecyclerView recyclerView = view.findViewById(R.id.main_recyclevire_tab);
+            MainViewPagerTabLayoutAdapter mainViewPagerTabLayoutAdapter =  new MainViewPagerTabLayoutAdapter(container.getContext(),homeModelList);
+            recyclerView.setAdapter(mainViewPagerTabLayoutAdapter);
+            container.addView(view);
+            return  view;
+        }
+    }
+    @Override
+    public int getCount() {
+        return modelList.size() + 1;
     }
 
     @Override
-    public int getCount() {
-        return modelList.size();
+    public int getItemPosition(@NonNull Object object) {
+        return POSITION_NONE + 1;
     }
 
     @Override
     public boolean isViewFromObject(@NonNull View view, @NonNull Object object) {
-        return false;
+        return view.equals(object);
     }
 
-
+    @Override
+    public void destroyItem(ViewGroup container, int position, Object object) {
+        container.removeView((ConstraintLayout)object);
+    }
 }
