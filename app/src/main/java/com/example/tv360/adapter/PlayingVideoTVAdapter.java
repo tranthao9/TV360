@@ -59,7 +59,6 @@ public class PlayingVideoTVAdapter extends  RecyclerView.Adapter<PlayingVideoTVA
                 intent.putExtra("type",category.getType());
                 detailFilmListener.detailFilmTVListener(intent);
             }
-
         });
     }
 

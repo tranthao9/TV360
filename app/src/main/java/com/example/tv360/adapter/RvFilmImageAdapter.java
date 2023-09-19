@@ -12,6 +12,7 @@ import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
 
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -55,9 +56,10 @@ public class RvFilmImageAdapter extends  RecyclerView.Adapter<RvFilmImageAdapter
         }
         if(display == 1)
         {
-            LinearLayout.LayoutParams l = new LinearLayout.LayoutParams(320,400);
+            LinearLayout.LayoutParams l = new LinearLayout.LayoutParams(290,400);
             holder.imgCategory.setLayoutParams(l);
         }
+        holder.imgCategory.setClipToOutline(true);
         Glide.with(holder.itemView.getContext()).load(category.getCoverImage()).into(holder.imgCategory);
         holder.imgCategory.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -81,9 +83,11 @@ public class RvFilmImageAdapter extends  RecyclerView.Adapter<RvFilmImageAdapter
 
     public class RvFilmImageViewHolder extends RecyclerView.ViewHolder {
         private ImageView imgCategory;
+
         public RvFilmImageViewHolder(@NonNull View itemView) {
             super(itemView);
             imgCategory = itemView.findViewById(R.id.listviewfilm);
+
         }
     }
 

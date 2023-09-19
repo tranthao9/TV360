@@ -2,11 +2,13 @@ package com.example.tv360.ui.home;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -45,6 +47,8 @@ public class HomeFragment extends Fragment {
     private  static  final  String KEY_ACCESSTOKEN ="accessToken";
     private  static  final  String KEY_REFRESHTOKEN = "refreshToken";
 
+    private ProgressBar progressBar;
+
 
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -56,9 +60,50 @@ public class HomeFragment extends Fragment {
         View root = binding.getRoot();
 
         binding.viewhome.setLayoutManager(new LinearLayoutManager(requireContext()));
-        GetData();
+
+        progressBar = binding.progressBarTv;
+        new DownloadDataTask().execute();
+
+
 
         return root;
+    }
+
+    private  class DownloadDataTask extends AsyncTask<Void, Integer, Void>
+    {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressBar.setVisibility(View.VISIBLE);
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            GetData();
+            for (int i = 0 ; i<100; i+=10)
+            {
+                try {
+                    Thread.sleep(500);
+                }catch (InterruptedException ex)
+                {
+                    ex.printStackTrace();
+                }
+                publishProgress(i);
+            }
+            return null;
+        }
+
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+            super.onProgressUpdate(values);
+            progressBar.setProgress(values[0]);
+        }
+
+        @Override
+        protected void onPostExecute(Void unused) {
+            super.onPostExecute(unused);
+            progressBar.setVisibility(View.GONE);
+        }
     }
 
     private void GetData(){

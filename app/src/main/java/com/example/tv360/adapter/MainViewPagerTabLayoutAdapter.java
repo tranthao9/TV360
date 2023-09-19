@@ -43,11 +43,15 @@ public class MainViewPagerTabLayoutAdapter extends RecyclerView.Adapter<MainView
 
     @Override
     public void onBindViewHolder(@NonNull MainViewPagerTabLayoutViewHolder holder, int position) {
-        if( listhomemodels.get(position).getContent() == null)
+        HomeModel homeModel = listhomemodels.get(position);
+        if( homeModel == null)
         {
             return;
         }
-        HomeModel homeModel = listhomemodels.get(position);
+       if (homeModel.getContent() == null)
+       {
+           return;
+       }
         holder.gifImageView.setText(homeModel.getName());
         PlayingVideoTVAdapter modelAdapter = new PlayingVideoTVAdapter();
         modelAdapter.setData(context, homeModel.getContent(),homeModel.getDisplay());

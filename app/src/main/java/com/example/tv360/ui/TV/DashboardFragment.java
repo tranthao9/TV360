@@ -9,6 +9,7 @@ import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
@@ -27,35 +28,26 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.viewpager.widget.ViewPager;
 
-import com.example.tv360.PlayingVideoAvtivity;
 import com.example.tv360.R;
 import com.example.tv360.TrackSelectionDialog;
 import com.example.tv360.adapter.CustomViewPagerAdapter;
-import com.example.tv360.adapter.RvAdapter;
-import com.example.tv360.adapter.RvTVAdapter;
 import com.example.tv360.databinding.FragmentTvBinding;
 import com.example.tv360.model.DataObject;
 import com.example.tv360.model.DataObjectUrlVideo;
 import com.example.tv360.model.FilmModel;
 import com.example.tv360.model.HomeModel;
-import com.example.tv360.presenter.HomePresenter;
 import com.example.tv360.retrofit.ApiService;
 import com.example.tv360.retrofit.HomeService;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.MediaItem;
 import com.google.android.exoplayer2.PlaybackParameters;
 import com.google.android.exoplayer2.Player;
-import com.google.android.exoplayer2.source.TrackGroupArray;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
-import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
 import com.google.android.exoplayer2.trackselection.TrackSelectionParameters;
 import com.google.android.exoplayer2.ui.StyledPlayerView;
 import com.google.android.material.tabs.TabLayout;
-import com.google.android.material.tabs.TabLayoutMediator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -100,43 +92,97 @@ public class DashboardFragment extends Fragment {
 
     StyledPlayerView styledPlayerViewTV;
 
-    TabLayout tabLayout;
     List<FilmModel> listData;
 
     List<HomeModel> listcontentFirst = new ArrayList<>();
+
+    String userID ,profileID,accessToken,m_andoid ;
+    SharedPreferences sharedPref;
+
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
 
         binding = FragmentTvBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
-
-        GetData();
-
+        progressBarTV = binding.progressBarTv2;
+         sharedPref = getContext().getSharedPreferences(SHARED_PREF_NAME,MODE_PRIVATE);
+         userID = sharedPref.getString(KEY_USERID,"");
+         profileID = sharedPref.getString(KEY_PROFILEID,"");
+         accessToken = sharedPref.getString(KEY_ACCESSTOKEN,"");
+         m_andoid = Settings.Secure.getString(getContext().getContentResolver(), Settings.Secure.ANDROID_ID);
+        new DownloadDataTaskTV().execute();
         return root;
     }
+
+    public  void  updateData(String id, String type)
+    {
+        userID = sharedPref.getString(KEY_USERID,"");
+        profileID = sharedPref.getString(KEY_PROFILEID,"");
+        accessToken = sharedPref.getString(KEY_ACCESSTOKEN,"");
+        m_andoid = Settings.Secure.getString(getContext().getContentResolver(), Settings.Secure.ANDROID_ID);
+        Log.d("id : "+id,"type "+type);
+        PlayVideoInsteadof(id,type);
+    }
+
+    private  class DownloadDataTaskTV extends AsyncTask<Void, Integer, Void>
+    {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressBarTV.setVisibility(View.VISIBLE);
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            GetData();
+            for (int i = 0 ; i<100; i+=10)
+            {
+                try {
+                    Thread.sleep(500);
+                }catch (InterruptedException ex)
+                {
+                    ex.printStackTrace();
+                }
+                publishProgress(i);
+            }
+            return null;
+        }
+
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+            super.onProgressUpdate(values);
+            progressBarTV.setProgress(values[0]);
+        }
+
+        @Override
+        protected void onPostExecute(Void unused) {
+            super.onPostExecute(unused);
+            progressBarTV.setVisibility(View.GONE);
+        }
+    }
+
 
     private void GetData() {
         apiInterface = ApiService.getClient().create(HomeService.class);
         Call<DataObject> data = apiInterface.getTVBox();
-
         data.enqueue(new Callback<DataObject>() {
             @Override
             public void onResponse(Call<DataObject> call, Response<DataObject> response) {
-
                 DataObject dataObject = response.body();
-
-                tabLayout = binding.tabLayoutMain;
                 Bundle bundle  = getArguments();
-                if(bundle != null)
-                {
-                    String id = bundle.getString("id");
-                    String type = bundle.getString("type");
-                    PlayVideo( id, type);
-                }
-                else {
-                    PlayVideo(dataObject.getData().get(0).getContentPlaying().getDetail().getId(),dataObject.getData().get(0).getContentPlaying().getDetail().getType());
-                }
+//                if(bundle != null)
+//                {
+//                    playerTV.stop();
+//                    String id = bundle.getString("id");
+//                    String type = bundle.getString("type");
+//                    PlayVideo( id, type);
+//                }
+//                else {
+//                    PlayVideo(dataObject.getData().get(0).getContentPlaying().getDetail().getId(),dataObject.getData().get(0).getContentPlaying().getDetail().getType());
+//                }
+
+                PlayVideo(dataObject.getData().get(0).getContentPlaying().getDetail().getId(),dataObject.getData().get(0).getContentPlaying().getDetail().getType());
                 listData = dataObject.getData().get(1).getContent();
                 for (int i =2 ; i < dataObject.getData().size() ; i++)
                 {
@@ -158,29 +204,26 @@ public class DashboardFragment extends Fragment {
                     params.setMargins(20,0,30,20);
                     view.requestLayout();
                 }
-
-                binding.tabLayoutMain.getTabAt(0).view.setBackgroundResource(R.drawable.select_layouttab);
                 binding.viewlayoutPager.setAdapter(new CustomViewPagerAdapter(getContext(),listData,listcontentFirst));
                 binding.viewlayoutPager.setCurrentItem(0);
                 binding.tabLayoutMain.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-                   @Override
-                   public void onTabSelected(TabLayout.Tab tab) {
-                       int i = tab.getPosition();
-                       Log.d("Position " + i, "ok");
-                       binding.viewlayoutPager.setCurrentItem(tab.getPosition());
-                       binding.tabLayoutMain.selectTab(binding.tabLayoutMain.getTabAt(tab.getPosition()));
-                   }
+                    @Override
+                    public void onTabSelected(TabLayout.Tab tab) {
+                        binding.viewlayoutPager.setCurrentItem(tab.getPosition());
 
-                   @Override
-                   public void onTabUnselected(TabLayout.Tab tab) {
-                        binding.tabLayoutMain.getTabAt(tab.getPosition()).view.setBackgroundResource(R.drawable.unselect_tablayout);
-                   }
 
-                   @Override
-                   public void onTabReselected(TabLayout.Tab tab) {
+                    }
 
-                   }
-               });
+                    @Override
+                    public void onTabUnselected(TabLayout.Tab tab) {
+
+                    }
+
+                    @Override
+                    public void onTabReselected(TabLayout.Tab tab) {
+
+                    }
+                });
                 binding.viewlayoutPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
                     @Override
                     public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -197,24 +240,39 @@ public class DashboardFragment extends Fragment {
 
                     }
                 });
-
             }
 
             @Override
             public void onFailure(Call<DataObject> call, Throwable throwable) {
+                call.cancel();
+            }
+        });
+    }
 
+    private  void PlayVideoInsteadof(String id, String type)
+    {
+        SharedPreferences sharedPref = getContext().getSharedPreferences(SHARED_PREF_NAME,MODE_PRIVATE);
+        userID = sharedPref.getString(KEY_USERID,"");
+        profileID = sharedPref.getString(KEY_PROFILEID,"");
+        accessToken = sharedPref.getString(KEY_ACCESSTOKEN,"");
+        m_andoid = Settings.Secure.getString(getContext().getContentResolver(), Settings.Secure.ANDROID_ID);
+        apiserver = ApiService.getlink(profileID,userID, m_andoid,"Bearer " + accessToken).create(HomeService.class);
+        Call<DataObjectUrlVideo> data  = apiserver.getlinka(id,type);
+        data.enqueue(new Callback<DataObjectUrlVideo>() {
+            @Override
+            public void onResponse(Call<DataObjectUrlVideo> call, Response<DataObjectUrlVideo> response) {
+                DataObjectUrlVideo urlVideo = response.body();
+                MediaItem mediaItem = MediaItem.fromUri(urlVideo.getData().getUrlStreaming());
+                playerTV.setMediaItem(mediaItem);
+            }
+            @Override
+            public void onFailure(Call<DataObjectUrlVideo> call, Throwable t) {
                 call.cancel();
             }
         });
     }
 
     private void PlayVideo(String id,String type) {
-        SharedPreferences sharedPref = getContext().getSharedPreferences(SHARED_PREF_NAME,MODE_PRIVATE);
-        String userID = sharedPref.getString(KEY_USERID,"");
-        String profileID = sharedPref.getString(KEY_PROFILEID,"");
-        String accessToken = sharedPref.getString(KEY_ACCESSTOKEN,"");
-        String m_andoid = Settings.Secure.getString(getContext().getContentResolver(), Settings.Secure.ANDROID_ID);
-
         apiserver = ApiService.getlink(profileID,userID, m_andoid,"Bearer " + accessToken).create(HomeService.class);
         Call<DataObjectUrlVideo> data  = apiserver.getlinka(id,type);
         data.enqueue(new Callback<DataObjectUrlVideo>() {
@@ -223,7 +281,6 @@ public class DashboardFragment extends Fragment {
                 DataObjectUrlVideo urlVideo = response.body();
                 styledPlayerViewTV = binding.playvideoTv;
                 fullscreen = styledPlayerViewTV.findViewById(R.id.exo_fullscreen_icon);
-//                progressBarTV = binding.progressBarTv;
 
                 ImageView setiing_play = styledPlayerViewTV.findViewById(R.id.exo_settings_icon);
 
@@ -383,20 +440,7 @@ public class DashboardFragment extends Fragment {
                     TrackSelectionDialog trackSelectionDialog = TrackSelectionDialog.createForTrackSelector(trackSelector,
                             /* onDismissListener= */ dismissedDialog -> isShowingTrackSelectionDialog = false);
                     trackSelectionDialog.show(getActivity().getSupportFragmentManager(), /* tag= */ null);
-                    playerTV.addListener(new Player.Listener() {
 
-                        @Override
-                        public void onTracksChanged(TrackGroupArray trackGroups, TrackSelectionArray trackSelections) {
-                            Player.Listener.super.onTracksChanged(trackGroups, trackSelections);
-
-                            Log.d("TAG: " + trackSelections.get(0).getFormat(0).height +"p" , "okg");
-                            if (trackSelections.get(0) != null) {
-                                Log.d("TAG: " + trackSelections.get(0).getFormat(0).height +"p" , "ok1");
-                                text_quality.setText(trackSelections.get(0).getFormat(0).height +"p");
-                            }
-                        }
-
-                    });
                 }
             }
 
@@ -404,7 +448,6 @@ public class DashboardFragment extends Fragment {
         });
         dialog.show();
     }
-
     private  void changeSpeed()
     {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
@@ -462,6 +505,8 @@ public class DashboardFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        styledPlayerViewTV.setPlayer(null);
+        playerTV = null;
         binding = null;
     }
 }
