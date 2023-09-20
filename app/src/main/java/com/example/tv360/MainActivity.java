@@ -27,6 +27,8 @@ import androidx.navigation.ui.NavigationUI;
 
 import com.example.tv360.databinding.ActivityMainBinding;
 
+import java.util.List;
+
 public class MainActivity extends AppCompatActivity implements RvFilmImageAdapter.DetailFilmListener, ListFilmAdapter.LoadMoreHomeListener , PlayingVideoTVAdapter.DetailFilmTVListener {
 
     private ActivityMainBinding binding;
@@ -80,17 +82,10 @@ public class MainActivity extends AppCompatActivity implements RvFilmImageAdapte
     @Override
     public void detailFilmTVListener(Intent intent) {
 
-//        FragmentManager fragmentManager = getSupportFragmentManager();
-//        Fragment exist =(Fragment) fragmentManager.findFragmentById(R.id.nav_host_fragment_activity_main);
-//        exist.getActivity().getSupportFragmentManager().findFragmentById(R.id.navigation_dashboard);
-//        DashboardFragment dashboardFragment = (DashboardFragment) exist.getChildFragmentManager().getFragments();
-        DashboardFragment tvfrgment = new DashboardFragment();
-        tvfrgment.updateData(intent.getStringExtra("id"),intent.getStringExtra("type"));
-//        Bundle bundle = new Bundle();
-//        bundle.putString("id",intent.getStringExtra("id"));
-//        bundle.putString("type",intent.getStringExtra("type"));
-//        tvfrgment.setArguments(bundle);
-//        getSupportFragmentManager().beginTransaction().replace(R.id.nav_host_fragment_activity_main,tvfrgment).commit();
-
+        Fragment exist =(Fragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment_activity_main);
+        FragmentManager fragmentManager = exist.getChildFragmentManager();
+        List<Fragment> list = fragmentManager.getFragments();
+        DashboardFragment dashboardFragment = (DashboardFragment) list.get(0);
+        dashboardFragment.updateData(intent.getStringExtra("id"),intent.getStringExtra("type"));
     }
 }

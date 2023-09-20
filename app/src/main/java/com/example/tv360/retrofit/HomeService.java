@@ -3,6 +3,7 @@ package com.example.tv360.retrofit;
 import com.example.tv360.model.DataObject;
 import com.example.tv360.model.DataObjectLoadMore;
 import com.example.tv360.model.DataObjectUrlVideo;
+import com.example.tv360.model.DataObjectWatchingAgainTV;
 import com.example.tv360.model.HomeModel;
 import com.google.gson.JsonElement;
 
@@ -39,4 +40,9 @@ public interface HomeService {
             @Query("id") String id,
             @Query("limit") int limit,
             @Query("offset") int offset);
+
+    @GET("public/v1/live/get-live-schedule")
+    Call<DataObjectWatchingAgainTV> getLiveSchedule(
+            @Query("id") String id,
+            @Query("datetime") String datetime);
 }

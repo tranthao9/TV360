@@ -56,7 +56,6 @@ public class ApiService {
                     @Override
                     public Response intercept(Chain chain) throws IOException {
                         Request original = chain.request();
-                        String userAgent = System.getProperty("http.agent");
                         Request.Builder builder = original.newBuilder();
                         builder.addHeader("authorization", "bearer kadfkasfksf");
                         builder.addHeader("Content-Type", "application/json");

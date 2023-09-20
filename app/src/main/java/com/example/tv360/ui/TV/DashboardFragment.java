@@ -4,6 +4,7 @@ import static android.content.Context.MODE_PRIVATE;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
@@ -99,6 +100,8 @@ public class DashboardFragment extends Fragment {
     String userID ,profileID,accessToken,m_andoid ;
     SharedPreferences sharedPref;
 
+    public  DashboardFragment(){};
+
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -117,12 +120,11 @@ public class DashboardFragment extends Fragment {
 
     public  void  updateData(String id, String type)
     {
-        userID = sharedPref.getString(KEY_USERID,"");
-        profileID = sharedPref.getString(KEY_PROFILEID,"");
-        accessToken = sharedPref.getString(KEY_ACCESSTOKEN,"");
-        m_andoid = Settings.Secure.getString(getContext().getContentResolver(), Settings.Secure.ANDROID_ID);
-        Log.d("id : "+id,"type "+type);
-        PlayVideoInsteadof(id,type);
+        styledPlayerViewTV.setPlayer(null);
+        playerTV.setPlayWhenReady(false);
+        playerTV.release();
+        playerTV = null;
+        PlayVideo(id,type);
     }
 
     private  class DownloadDataTaskTV extends AsyncTask<Void, Integer, Void>
@@ -162,7 +164,6 @@ public class DashboardFragment extends Fragment {
         }
     }
 
-
     private void GetData() {
         apiInterface = ApiService.getClient().create(HomeService.class);
         Call<DataObject> data = apiInterface.getTVBox();
@@ -170,18 +171,6 @@ public class DashboardFragment extends Fragment {
             @Override
             public void onResponse(Call<DataObject> call, Response<DataObject> response) {
                 DataObject dataObject = response.body();
-                Bundle bundle  = getArguments();
-//                if(bundle != null)
-//                {
-//                    playerTV.stop();
-//                    String id = bundle.getString("id");
-//                    String type = bundle.getString("type");
-//                    PlayVideo( id, type);
-//                }
-//                else {
-//                    PlayVideo(dataObject.getData().get(0).getContentPlaying().getDetail().getId(),dataObject.getData().get(0).getContentPlaying().getDetail().getType());
-//                }
-
                 PlayVideo(dataObject.getData().get(0).getContentPlaying().getDetail().getId(),dataObject.getData().get(0).getContentPlaying().getDetail().getType());
                 listData = dataObject.getData().get(1).getContent();
                 for (int i =2 ; i < dataObject.getData().size() ; i++)
@@ -204,7 +193,7 @@ public class DashboardFragment extends Fragment {
                     params.setMargins(20,0,30,20);
                     view.requestLayout();
                 }
-                binding.viewlayoutPager.setAdapter(new CustomViewPagerAdapter(getContext(),listData,listcontentFirst));
+                binding.viewlayoutPager.setAdapter(new CustomViewPagerAdapter(getContext(),listData,listcontentFirst,dataObject.getData().get(0).getContentPlaying().getDetail().getId()));
                 binding.viewlayoutPager.setCurrentItem(0);
                 binding.tabLayoutMain.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
                     @Override
@@ -244,29 +233,6 @@ public class DashboardFragment extends Fragment {
 
             @Override
             public void onFailure(Call<DataObject> call, Throwable throwable) {
-                call.cancel();
-            }
-        });
-    }
-
-    private  void PlayVideoInsteadof(String id, String type)
-    {
-        SharedPreferences sharedPref = getContext().getSharedPreferences(SHARED_PREF_NAME,MODE_PRIVATE);
-        userID = sharedPref.getString(KEY_USERID,"");
-        profileID = sharedPref.getString(KEY_PROFILEID,"");
-        accessToken = sharedPref.getString(KEY_ACCESSTOKEN,"");
-        m_andoid = Settings.Secure.getString(getContext().getContentResolver(), Settings.Secure.ANDROID_ID);
-        apiserver = ApiService.getlink(profileID,userID, m_andoid,"Bearer " + accessToken).create(HomeService.class);
-        Call<DataObjectUrlVideo> data  = apiserver.getlinka(id,type);
-        data.enqueue(new Callback<DataObjectUrlVideo>() {
-            @Override
-            public void onResponse(Call<DataObjectUrlVideo> call, Response<DataObjectUrlVideo> response) {
-                DataObjectUrlVideo urlVideo = response.body();
-                MediaItem mediaItem = MediaItem.fromUri(urlVideo.getData().getUrlStreaming());
-                playerTV.setMediaItem(mediaItem);
-            }
-            @Override
-            public void onFailure(Call<DataObjectUrlVideo> call, Throwable t) {
                 call.cancel();
             }
         });
@@ -506,6 +472,8 @@ public class DashboardFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         styledPlayerViewTV.setPlayer(null);
+        playerTV.setPlayWhenReady(false);
+        playerTV.release();
         playerTV = null;
         binding = null;
     }
