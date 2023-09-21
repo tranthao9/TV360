@@ -17,12 +17,14 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import com.example.tv360.Interface.HomeInterface;
 import com.example.tv360.adapter.RvAdapter;
 import com.example.tv360.databinding.FragmentHomeBinding;
 import com.example.tv360.model.DataObject;
 import com.example.tv360.model.FilmModel;
 import com.example.tv360.model.HomeModel;
 import com.example.tv360.model.ListFilmModel;
+import com.example.tv360.model.WatchingAgainTV;
 import com.example.tv360.presenter.HomePresenter;
 import com.example.tv360.retrofit.ApiService;
 import com.example.tv360.retrofit.HomeService;

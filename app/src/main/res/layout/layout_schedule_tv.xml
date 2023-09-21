@@ -32,7 +32,8 @@
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
             android:layout_weight="1"
-            android:background="@drawable/previous_24" />
+            android:background="@drawable/previous_24"
+            android:id="@+id/previous_calendar"/>
 
         <TextView
             android:id="@+id/schedule_wathching_gain"
@@ -50,6 +51,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
             android:layout_weight="1"
+            android:id="@+id/next_calendar"
             android:background="@drawable/baseline_navigate_next_24" />
 
     </LinearLayout>

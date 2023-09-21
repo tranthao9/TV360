@@ -4,6 +4,7 @@ import static androidx.core.content.ContextCompat.startActivity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,7 +30,10 @@ public class RvFilmImageAdapter extends  RecyclerView.Adapter<RvFilmImageAdapter
 
     private List<FilmModel> categoryList;
     private  DetailFilmListener detailFilmListener;
+
+
     private  int display;
+
     public void setData(Context context, List<FilmModel> list, int display){
         this.categoryList = list;
         this.display = display;
@@ -64,13 +68,20 @@ public class RvFilmImageAdapter extends  RecyclerView.Adapter<RvFilmImageAdapter
         holder.imgCategory.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 Intent intent = new Intent();
                 intent.putExtra("id",category.getId());
                 intent.putExtra("type",category.getType());
                 detailFilmListener.detailFilmListener(intent);
+
             }
 
+
+
         });
+
+
+
     }
 
     @Override

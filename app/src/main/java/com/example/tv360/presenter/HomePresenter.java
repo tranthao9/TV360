@@ -10,14 +10,11 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 
 import com.example.tv360.Interface.HomeInterface;
-import com.example.tv360.Interface.LoginInterface;
-import com.example.tv360.adapter.MainViewPagerTabLayoutAdapter;
 import com.example.tv360.model.DataObject;
 import com.example.tv360.model.DataObjectWatchingAgainTV;
 import com.example.tv360.model.FilmModel;
 import com.example.tv360.model.HomeModel;
 import com.example.tv360.model.InfoWatchingAgainTV;
-import com.example.tv360.model.WatchingAgainTV;
 import com.example.tv360.retrofit.ApiService;
 import com.example.tv360.retrofit.HomeService;
 
@@ -25,10 +22,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -36,7 +30,6 @@ import retrofit2.Response;
 
 public class HomePresenter {
 
-//    private HomeInterface mhomeinterface;
 
     private HomeService apiserver;
 
@@ -48,6 +41,7 @@ public class HomePresenter {
 
     private  static  final  String KEY_ACCESSTOKEN ="accessToken";
     public HomePresenter() {
+
 
     }
 
@@ -142,30 +136,5 @@ public class HomePresenter {
         return list;
     }
 
-    public List<InfoWatchingAgainTV> getwatchingagain(String id)
-    {
-        final  List<InfoWatchingAgainTV> l = new ArrayList<>();
-        DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-        String date = df.format(Calendar.getInstance().getTime());
-        apiserver = ApiService.getClient().create(HomeService.class);
-        Log.d("Datetime "+date,"time");
-        Call<DataObjectWatchingAgainTV> data  = apiserver.getLiveSchedule(id, date);
-        data.enqueue(new Callback<DataObjectWatchingAgainTV>() {
-            @Override
-            public void onResponse(Call<DataObjectWatchingAgainTV> call, Response<DataObjectWatchingAgainTV> response) {
-                DataObjectWatchingAgainTV data = response.body();
-                WatchingAgainTV watchingAgainTV1 = data.getData();
-                for (InfoWatchingAgainTV i : watchingAgainTV1.getInfo())
-                {
-                    Log.d("InfoM ","info "+l);
-                    l.add(i);
-                }
-            }
-            @Override
-            public void onFailure(Call<DataObjectWatchingAgainTV> call, Throwable t) {
-                call.cancel();
-            }
-        });
-        return l;
-    }
+
 }

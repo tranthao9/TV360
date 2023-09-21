@@ -30,12 +30,6 @@ public class ApiService {
             .setDateFormat("yyyy-MM-dd HH:mm:ss")
             .create();
 
-//    ApiService apiService = new Retrofit.Builder()
-//            .baseUrl("https://tv360.vn/")
-//            .addConverterFactory(GsonConverterFactory.create(gson))
-//            .build()
-//            .create(ApiService.class);
-
 
     private static Retrofit retrofit = null;
 
@@ -123,4 +117,3 @@ public class ApiService {
     }
 }
 
-//baseUrl("https://api.tv360.vn/")
