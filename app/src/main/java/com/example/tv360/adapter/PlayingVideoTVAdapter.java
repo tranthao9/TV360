@@ -2,6 +2,7 @@ package com.example.tv360.adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,9 +22,11 @@ public class PlayingVideoTVAdapter extends  RecyclerView.Adapter<PlayingVideoTVA
     private List<FilmModel> categoryList;
     private PlayingVideoTVAdapter.DetailFilmTVListener detailFilmListener;
     private  int display;
-    public void setData(Context context, List<FilmModel> list, int display){
+    String id;
+    public void setData(Context context, List<FilmModel> list, int display, String id){
         this.categoryList = list;
         this.display = display;
+        this.id = id;
         try {
             this.detailFilmListener = ((PlayingVideoTVAdapter.DetailFilmTVListener)context) ;
         }catch (ClassCastException ex)
@@ -51,9 +54,24 @@ public class PlayingVideoTVAdapter extends  RecyclerView.Adapter<PlayingVideoTVA
             holder.imgCategory.setLayoutParams(l);
         }
         Glide.with(holder.itemView.getContext()).load(category.getCoverImage()).into(holder.imgCategory);
+
+        if(id == category.getId())
+        {
+            Drawable highlight = holder.itemView.getContext().getResources().getDrawable( R.drawable.highlight);
+            holder.imgCategory.setBackground(highlight);
+        }
+        else
+        {
+            Drawable border = holder.itemView.getContext().getResources().getDrawable( R.drawable.border);
+            holder.imgCategory.setBackground(border);
+        }
         holder.imgCategory.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Drawable highlight = holder.itemView.getContext().getResources().getDrawable( R.drawable.highlight);
+                holder.imgCategory.setBackground(highlight);
+                id = category.getId();
+                notifyDataSetChanged();
                 Intent intent = new Intent();
                 intent.putExtra("id",category.getId());
                 intent.putExtra("type",category.getType());

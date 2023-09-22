@@ -1,9 +1,11 @@
 package com.example.tv360.adapter;
 
+import static android.content.Context.MODE_PRIVATE;
 import static androidx.core.content.ContextCompat.startActivity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,8 +33,13 @@ public class RvFilmImageAdapter extends  RecyclerView.Adapter<RvFilmImageAdapter
     private List<FilmModel> categoryList;
     private  DetailFilmListener detailFilmListener;
 
-
+    private String id = "";
     private  int display;
+    SharedPreferences sharedPreferences_tv;
+
+    private static  final  String SHARED_TV_PLAYING = "playingtv";
+
+    private  static  final  String KEY_TV = "id";
 
     public void setData(Context context, List<FilmModel> list, int display){
         this.categoryList = list;
@@ -65,23 +72,17 @@ public class RvFilmImageAdapter extends  RecyclerView.Adapter<RvFilmImageAdapter
         }
         holder.imgCategory.setClipToOutline(true);
         Glide.with(holder.itemView.getContext()).load(category.getCoverImage()).into(holder.imgCategory);
+
+
         holder.imgCategory.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 Intent intent = new Intent();
                 intent.putExtra("id",category.getId());
                 intent.putExtra("type",category.getType());
                 detailFilmListener.detailFilmListener(intent);
-
             }
-
-
-
         });
-
-
-
     }
 
     @Override

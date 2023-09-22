@@ -52,6 +52,7 @@ import com.google.android.material.tabs.TabLayout;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -97,8 +98,13 @@ public class DashboardFragment extends Fragment {
 
     List<HomeModel> listcontentFirst = new ArrayList<>();
 
-    String userID ,profileID,accessToken,m_andoid ;
+    String userID ,profileID,accessToken,m_andoid,id ;
     SharedPreferences sharedPref;
+
+    SharedPreferences sharedPreferences_tv;
+    private static  final  String SHARED_TV_PLAYING = "playingtv";
+
+    private  static  final  String KEY_TV = "id";
 
     public  DashboardFragment(){};
 
@@ -118,13 +124,13 @@ public class DashboardFragment extends Fragment {
         return root;
     }
 
-    public  void  updateData(String id, String type)
+    public  void  updateData(String id)
     {
-        styledPlayerViewTV.setPlayer(null);
-        playerTV.setPlayWhenReady(false);
-        playerTV.release();
-        playerTV = null;
-        PlayVideo(id,type);
+//        styledPlayerViewTV.setPlayer(null);
+//        playerTV.setPlayWhenReady(false);
+//        playerTV.release();
+//        playerTV = null;
+        new DownloadDataTaskTV().execute();
     }
 
     private  class DownloadDataTaskTV extends AsyncTask<Void, Integer, Void>
@@ -137,7 +143,11 @@ public class DashboardFragment extends Fragment {
 
         @Override
         protected Void doInBackground(Void... voids) {
-            GetData();
+            sharedPreferences_tv = getContext().getSharedPreferences(SHARED_TV_PLAYING,MODE_PRIVATE);
+            id = sharedPreferences_tv.getString(KEY_TV,"");
+
+            Log.d("id toi update do" , "value = "+id);
+            GetData(id);
             for (int i = 0 ; i<100; i+=10)
             {
                 try {
@@ -164,14 +174,23 @@ public class DashboardFragment extends Fragment {
         }
     }
 
-    private void GetData() {
+    private void GetData(String id) {
         apiInterface = ApiService.getClient().create(HomeService.class);
         Call<DataObject> data = apiInterface.getTVBox();
         data.enqueue(new Callback<DataObject>() {
             @Override
             public void onResponse(Call<DataObject> call, Response<DataObject> response) {
                 DataObject dataObject = response.body();
-                PlayVideo(dataObject.getData().get(0).getContentPlaying().getDetail().getId(),dataObject.getData().get(0).getContentPlaying().getDetail().getType());
+                if(Objects.equals(id, ""))
+                {
+                    PlayVideo(dataObject.getData().get(0).getContentPlaying().getDetail().getId(),dataObject.getData().get(0).getContentPlaying().getDetail().getType());
+                    Log.d("ZO DO  hihi" , "as");
+                }
+                else
+                {
+                    PlayVideo(id,"LIVE");
+                    Log.d("co id  hihi " , "as " + id);
+                }
                 listData = dataObject.getData().get(1).getContent();
                 for (int i =2 ; i < dataObject.getData().size() ; i++)
                 {
@@ -193,7 +212,14 @@ public class DashboardFragment extends Fragment {
                     params.setMargins(20,0,30,20);
                     view.requestLayout();
                 }
-                binding.viewlayoutPager.setAdapter(new CustomViewPagerAdapter(getContext(),listData,listcontentFirst,dataObject.getData().get(0).getContentPlaying().getDetail().getId()));
+                if(Objects.equals(id, ""))
+                {
+                    binding.viewlayoutPager.setAdapter(new CustomViewPagerAdapter(getContext(),listData,listcontentFirst,dataObject.getData().get(0).getContentPlaying().getDetail().getId()));
+                }
+                else
+                {
+                    binding.viewlayoutPager.setAdapter(new CustomViewPagerAdapter(getContext(),listData,listcontentFirst,id));
+                }
                 binding.viewlayoutPager.setCurrentItem(0);
                 binding.tabLayoutMain.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
                     @Override
@@ -475,6 +501,6 @@ public class DashboardFragment extends Fragment {
         playerTV.setPlayWhenReady(false);
         playerTV.release();
         playerTV = null;
-        binding = null;
+//        binding = null;
     }
 }

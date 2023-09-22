@@ -58,6 +58,8 @@ public class CustomViewPagerAdapter extends PagerAdapter implements HomeInterfac
         this.listcontentfirst = listcontentfirst;
         this.idchanel = idchanel;
         homePresenter = new HomePresenter();
+        infoPreseter = new InfoPreseter(this);
+        infoPreseter.getwatchingagain(idchanel);
         notifyDataSetChanged();
     }
 
@@ -68,30 +70,23 @@ public class CustomViewPagerAdapter extends PagerAdapter implements HomeInterfac
         {
             View view =  LayoutInflater.from(container.getContext()).inflate(R.layout.main_layour_for_viewpager,container,false);
             RecyclerView recyclerView = view.findViewById(R.id.main_recyclevire_tab);
-            MainViewPagerTabLayoutAdapter mainViewPagerTabLayoutAdapter =  new MainViewPagerTabLayoutAdapter(container.getContext(),listcontentfirst);
+            MainViewPagerTabLayoutAdapter mainViewPagerTabLayoutAdapter =  new MainViewPagerTabLayoutAdapter(container.getContext(),listcontentfirst,idchanel);
             recyclerView.setAdapter(mainViewPagerTabLayoutAdapter);
             container.addView(view);
             return  view;
         } else if (modelList.get(position-1).getType().equals("SCHEDULE")) {
-            infoPreseter = new InfoPreseter(this);
-            infoPreseter.getwatchingagain(idchanel);
-            Log.d("watchingAgainTV chanel ","ok" + watchingAgainTV);
-            Log.d("Id chanel "+idchanel,"ok");
+
             View view =  LayoutInflater.from(container.getContext()).inflate(R.layout.layout_schedule_tv,container,false);
             RecyclerView recyclerView1 = view.findViewById(R.id.recyclerViewChanel);
             LinearLayoutManager linearLayoutManager = new LinearLayoutManager(container.getContext(),RecyclerView.HORIZONTAL,false);
             recyclerView1.setLayoutManager(linearLayoutManager);
             recyclerView1.setFocusable(false);//ko focus con tro
             CustomViewPagerScheduleAdapter customViewPagerScheduleAdapter = new CustomViewPagerScheduleAdapter();
-
-            customViewPagerScheduleAdapter.setData(container.getContext(),homePresenter.getflim(listcontentfirst));
+            customViewPagerScheduleAdapter.setData(container.getContext(),homePresenter.getflim(listcontentfirst),idchanel);
             recyclerView1.setAdapter(customViewPagerScheduleAdapter);
             TextView textView = view.findViewById(R.id.schedule_wathching_gain);
             ImageButton previous = view.findViewById(R.id.previous_calendar);
             ImageButton next = view.findViewById(R.id.next_calendar);
-
-            Log.d("watchingAgainTV chanel ","ok" + watchingAgainTV);
-            Log.d("Id chanel "+idchanel,"ok");
             if(watchingAgainTV != null)
             {
                 for (int i = 0; i<watchingAgainTV.getInfo().size();i++)
@@ -101,6 +96,15 @@ public class CustomViewPagerAdapter extends PagerAdapter implements HomeInterfac
                         positionTV = i;
                         textView.setText(watchingAgainTV.getInfo().get(i).getName());
                     }
+                }
+                if(watchingAgainTV.getSchedules() != null)
+                {
+                    RecyclerView recyclerView2 = view.findViewById(R.id.recyclerDetailViewChanel);
+                    LinearLayoutManager linearLayoutManager1 = new LinearLayoutManager(container.getContext(),RecyclerView.VERTICAL,false);
+                    recyclerView2.setLayoutManager(linearLayoutManager1);
+                    recyclerView2.setFocusable(false);
+                    RvScheduleAdapter rvScheduleAdapter = new RvScheduleAdapter(container.getContext(),watchingAgainTV.getSchedules());
+                    recyclerView2.setAdapter(rvScheduleAdapter);
                 }
             }
             else
@@ -131,6 +135,7 @@ public class CustomViewPagerAdapter extends PagerAdapter implements HomeInterfac
                     }
                 }
             });
+
             container.addView(view);
             return  view;
         } else
@@ -138,7 +143,7 @@ public class CustomViewPagerAdapter extends PagerAdapter implements HomeInterfac
             List<HomeModel> homeModelList = homePresenter.getlistHomeTablayout(container.getContext(),modelList.get(position-1));
             View view =  LayoutInflater.from(container.getContext()).inflate(R.layout.main_layour_for_viewpager,container,false);
             RecyclerView recyclerView = view.findViewById(R.id.main_recyclevire_tab);
-            MainViewPagerTabLayoutAdapter mainViewPagerTabLayoutAdapter =  new MainViewPagerTabLayoutAdapter(container.getContext(),homeModelList);
+            MainViewPagerTabLayoutAdapter mainViewPagerTabLayoutAdapter =  new MainViewPagerTabLayoutAdapter(container.getContext(),homeModelList,idchanel);
             recyclerView.setAdapter(mainViewPagerTabLayoutAdapter);
             container.addView(view);
             return  view;

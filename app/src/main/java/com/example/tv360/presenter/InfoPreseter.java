@@ -41,6 +41,7 @@ public class InfoPreseter {
             @Override
             public void onResponse(Call<DataObjectWatchingAgainTV> call, Response<DataObjectWatchingAgainTV> response) {
                 DataObjectWatchingAgainTV data = response.body();
+                Log.d("data after get ", "got data : "+data.getData());
                 mhomeinterface.getwatchingagain(data.getData());
             }
             @Override

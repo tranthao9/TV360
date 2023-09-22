@@ -6,11 +6,12 @@ public class WatchingAgainTV {
 
     List<InfoWatchingAgainTV> info;
 
+    List<ScheduleModel> schedules;
 
 
-    public WatchingAgainTV(List<InfoWatchingAgainTV> info) {
+    public WatchingAgainTV(List<InfoWatchingAgainTV> info, List<ScheduleModel> schedules) {
         this.info = info;
-
+        this.schedules = schedules;
     }
 
     public List<InfoWatchingAgainTV> getInfo() {
@@ -21,5 +22,11 @@ public class WatchingAgainTV {
         this.info = info;
     }
 
+    public List<ScheduleModel> getSchedules() {
+        return schedules;
+    }
 
+    public void setSchedules(List<ScheduleModel> schedules) {
+        this.schedules = schedules;
+    }
 }

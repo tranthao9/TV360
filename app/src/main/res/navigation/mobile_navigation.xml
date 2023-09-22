@@ -9,13 +9,17 @@
         android:id="@+id/navigation_home"
         android:name="com.example.tv360.ui.home.HomeFragment"
         android:label="@string/title_home"
-        tools:layout="@layout/fragment_home" />
+        tools:layout="@layout/fragment_home"
+        android:launchMode = "singleTop"
+        />
 
     <fragment
         android:id="@+id/navigation_dashboard"
         android:name="com.example.tv360.ui.TV.DashboardFragment"
         android:label="@string/title_dashboard"
-        tools:layout="@layout/fragment_tv" />
+        android:launchMode = "singleTop"
+        tools:layout="@layout/fragment_tv"
+        />
 
     <fragment
         android:id="@+id/navigation_notifications"

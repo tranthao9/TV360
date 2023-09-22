@@ -26,7 +26,9 @@ import com.example.tv360.model.FilmModel;
 
 import java.security.PrivateKey;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 public class CustomViewPagerScheduleAdapter extends RecyclerView.Adapter<CustomViewPagerScheduleAdapter.CustomViewPagerScheduleViewHolder>  {
     private List<FilmModel> categoryList;
@@ -34,18 +36,21 @@ public class CustomViewPagerScheduleAdapter extends RecyclerView.Adapter<CustomV
     private DetailScheduleListener detailScheduleListener;
     private  Context context;
 
-    private  static  final  String SHARED_SELECT_NAME = "selectTV";
-    private  static  final  String KEY_ID_TV = "idTV";
-    private int array=-1;
-    private SparseBooleanArray arraya = new SparseBooleanArray();
-    private SparseBooleanArray arrayrefresh = new SparseBooleanArray();
+    private String id = "";
+    private PlayingVideoTVAdapter.DetailFilmTVListener detailFilmListener;
 
     private List<View.OnClickListener>  clickListeners = new ArrayList<>();
 
-    public void setData(Context context, List<FilmModel> list){
+    public void setData(Context context, List<FilmModel> list , String id){
         this.categoryList = list;
         this.context = context;
-        this.array=-1;
+        id = id;
+        try {
+            this.detailFilmListener = ((PlayingVideoTVAdapter.DetailFilmTVListener)context) ;
+        }catch (ClassCastException ex)
+        {
+            throw new ClassCastException(ex.getMessage());
+        }
         notifyDataSetChanged();
     }
     @NonNull
@@ -66,20 +71,42 @@ public class CustomViewPagerScheduleAdapter extends RecyclerView.Adapter<CustomV
         holder.imgCategory.setLayoutParams(l);
         holder.imgCategory.setClipToOutline(true);
         Glide.with(holder.itemView.getContext()).load(category.getCoverImage()).into(holder.imgCategory);
-        if(arrayrefresh.get(position))
+        Log.d("position"+position,"no onclick");
+        Log.d("id"+id,"no onclick");
+        Log.d("id"+category.getId(),"no onclick");
+        if(id == category.getId())
+        {
+            Drawable highlight = holder.itemView.getContext().getResources().getDrawable( R.drawable.highlight);
+            holder.imgCategory.setBackground(highlight);
+        }
+        else
         {
             Drawable border = holder.itemView.getContext().getResources().getDrawable( R.drawable.border);
             holder.imgCategory.setBackground(border);
-            Log.d("position no "+position,"no onclick");
-            Log.d("position no "+arrayrefresh.clone(),"no onclick");
         }
-        if(arraya.get(position)){
-            Drawable highlight = holder.itemView.getContext().getResources().getDrawable( R.drawable.highlight);
-            holder.imgCategory.setBackground(highlight);
-            Log.d("position no "+arraya.clone(),"no1 onclick");
-            arraya.clear();
-            Log.d("position no "+arraya.clone(),"afterclear");
-        }
+//        if(!arraya.get(position))
+//        {
+//
+//        }
+//        if(arraya.get(position) && !Objects.equals(id, category.getId())){
+//
+//            Log.d("position no "+arraya.clone(),"no1 onclick");
+//            arraya.put(position,false);
+//            Log.d("position no "+arraya.clone(),"afterclear" + arraya.clone());
+//        }
+        holder.imgCategory.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Drawable highlight = holder.itemView.getContext().getResources().getDrawable( R.drawable.highlight);
+                holder.imgCategory.setBackground(highlight);
+                id = category.getId();
+                notifyDataSetChanged();
+                Intent intent = new Intent();
+                intent.putExtra("id",category.getId());
+                intent.putExtra("type",category.getType());
+                detailFilmListener.detailFilmTVListener(intent);
+            }
+        });
 
     }
 
@@ -97,15 +124,6 @@ public class CustomViewPagerScheduleAdapter extends RecyclerView.Adapter<CustomV
         public CustomViewPagerScheduleViewHolder(@NonNull View itemView) {
             super(itemView);
             imgCategory = itemView.findViewById(R.id.listviewfilm);
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    arraya.clear();
-                    arrayrefresh.put(getAdapterPosition(),true);
-                    arraya.put(getAdapterPosition(),true);
-                    notifyDataSetChanged();
-                }
-            }) ;
         }
 
     }

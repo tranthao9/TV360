@@ -45,6 +45,7 @@ public class LoginActivity extends AppCompatActivity implements LoginInterface {
     Button login_btn;
     SharedPreferences sharedPreferences;
 
+
     UserApiService apiInterface;
 
     private LoginPresenter mloginPresenter;
@@ -67,6 +68,7 @@ public class LoginActivity extends AppCompatActivity implements LoginInterface {
 
         sharedPreferences = getSharedPreferences(SHARED_PREF_NAME,MODE_PRIVATE);
 
+
         mloginPresenter = new LoginPresenter(this);
 
         login_btn.setOnClickListener(new View.OnClickListener() {
@@ -80,11 +82,8 @@ public class LoginActivity extends AppCompatActivity implements LoginInterface {
     public void ClickLogin() {
         String m_andoid = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
         DeviceInfo deviceInfo = new DeviceInfo(m_andoid,m_andoid, "WEB_ANDROID", "ANDROID","1.0", "Galaxy Note 10");
-        String Username = username.getText().toString();
-        String Password =   password.getText().toString();
-//        UserModel userModel = new UserModel(Username,Password,deviceInfo);
         apiInterface = ApiService.getClient().create(UserApiService.class);
-        Call<DataObjectLogin> data = apiInterface.login(new LoginModel("0385891395","888888","PASS",null,deviceInfo));
+            Call<DataObjectLogin> data = apiInterface.login(new LoginModel("0385891395","888888","PASS",null,deviceInfo));
         data.enqueue(new Callback<DataObjectLogin>() {
             @Override
             public void onResponse(Call<DataObjectLogin> call, Response<DataObjectLogin> response) {

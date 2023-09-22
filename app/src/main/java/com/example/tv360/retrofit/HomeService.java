@@ -26,7 +26,7 @@ public interface HomeService {
 
     @GET("public/v1/composite/get-link")
     Call<DataObjectUrlVideo> getlinka(
-                              @Query("id") String id,
+                                  @Query("id") String id,
                               @Query("type") String type);
 
     @GET("public/v1/vod/get-list-item-collection")

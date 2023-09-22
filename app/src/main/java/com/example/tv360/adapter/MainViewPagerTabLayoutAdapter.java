@@ -26,9 +26,12 @@ public class MainViewPagerTabLayoutAdapter extends RecyclerView.Adapter<MainView
     private Context context;
     private List<HomeModel> listhomemodels;
 
-    public MainViewPagerTabLayoutAdapter(Context context, List<HomeModel> listhomemodels) {
+    String id;
+
+    public MainViewPagerTabLayoutAdapter(Context context, List<HomeModel> listhomemodels,String id) {
         this.context = context;
         this.listhomemodels = listhomemodels;
+        this.id = id;
         notifyDataSetChanged();
     }
 
@@ -54,7 +57,7 @@ public class MainViewPagerTabLayoutAdapter extends RecyclerView.Adapter<MainView
        }
         holder.gifImageView.setText(homeModel.getName());
         PlayingVideoTVAdapter modelAdapter = new PlayingVideoTVAdapter();
-        modelAdapter.setData(context, homeModel.getContent(),homeModel.getDisplay());
+        modelAdapter.setData(context, homeModel.getContent(),homeModel.getDisplay(),id);
         holder.recyclerView.setAdapter(modelAdapter);
 
     }

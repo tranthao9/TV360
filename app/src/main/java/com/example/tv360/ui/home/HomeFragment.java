@@ -13,6 +13,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -50,24 +51,17 @@ public class HomeFragment extends Fragment {
     private  static  final  String KEY_REFRESHTOKEN = "refreshToken";
 
     private ProgressBar progressBar;
-
+    private boolean isselected  = false;
 
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        HomeViewModel homeViewModel =
-                new ViewModelProvider(this).get(HomeViewModel.class);
 
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
-
         binding.viewhome.setLayoutManager(new LinearLayoutManager(requireContext()));
-
         progressBar = binding.progressBarTv;
         new DownloadDataTask().execute();
-
-
-
         return root;
     }
 
@@ -138,5 +132,11 @@ public class HomeFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString("item", listitem.toString());
     }
 }
