@@ -28,27 +28,29 @@ import com.example.tv360.presenter.HomePresenter;
 import com.example.tv360.presenter.InfoPreseter;
 import com.google.android.material.tabs.TabLayout;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 public class CustomViewPagerAdapter extends PagerAdapter implements HomeInterface {
     private Context context;
-    private List<FilmModel> modelList;
+    private List<FilmModel> modelList, Listfimchanel;
 
     private  List<HomeModel> listcontentfirst;
 
-    private HomePresenter homePresenter;
 
     private InfoPreseter infoPreseter;
 
-    TabLayout tabLayout;
-
-    ViewPager viewPager;
     int positionTV;
 
     String idchanel;
 
     WatchingAgainTV watchingAgainTV;
+
+    Map<FilmModel,List<HomeModel>> modelListMap = new HashMap<>();
+
 
 
 
@@ -57,9 +59,13 @@ public class CustomViewPagerAdapter extends PagerAdapter implements HomeInterfac
         this.modelList = modelList;
         this.listcontentfirst = listcontentfirst;
         this.idchanel = idchanel;
-        homePresenter = new HomePresenter();
         infoPreseter = new InfoPreseter(this);
         infoPreseter.getwatchingagain(idchanel);
+        infoPreseter.getflim(listcontentfirst);
+       for (int i = 0 ; i<modelList.size(); i++)
+       {
+           infoPreseter.getlistHomeTablayout(this.context,modelList.get(i));
+       }
         notifyDataSetChanged();
     }
 
@@ -74,7 +80,7 @@ public class CustomViewPagerAdapter extends PagerAdapter implements HomeInterfac
             recyclerView.setAdapter(mainViewPagerTabLayoutAdapter);
             container.addView(view);
             return  view;
-        } else if (modelList.get(position-1).getType().equals("SCHEDULE")) {
+        } else if (modelList.get(position).getType().equals("SCHEDULE")) {
 
             View view =  LayoutInflater.from(container.getContext()).inflate(R.layout.layout_schedule_tv,container,false);
             RecyclerView recyclerView1 = view.findViewById(R.id.recyclerViewChanel);
@@ -82,7 +88,7 @@ public class CustomViewPagerAdapter extends PagerAdapter implements HomeInterfac
             recyclerView1.setLayoutManager(linearLayoutManager);
             recyclerView1.setFocusable(false);//ko focus con tro
             CustomViewPagerScheduleAdapter customViewPagerScheduleAdapter = new CustomViewPagerScheduleAdapter();
-            customViewPagerScheduleAdapter.setData(container.getContext(),homePresenter.getflim(listcontentfirst),idchanel);
+            customViewPagerScheduleAdapter.setData(container.getContext(),Listfimchanel,idchanel);
             recyclerView1.setAdapter(customViewPagerScheduleAdapter);
             TextView textView = view.findViewById(R.id.schedule_wathching_gain);
             ImageButton previous = view.findViewById(R.id.previous_calendar);
@@ -114,8 +120,6 @@ public class CustomViewPagerAdapter extends PagerAdapter implements HomeInterfac
             next.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Log.d("Id next "+watchingAgainTV.getInfo().size(),"ok");
-                    Log.d("position next " + positionTV,"ok");
                     if(positionTV < watchingAgainTV.getInfo().size()-1)
                     {
                         textView.setText(watchingAgainTV.getInfo().get(positionTV + 1).getName());
@@ -126,8 +130,6 @@ public class CustomViewPagerAdapter extends PagerAdapter implements HomeInterfac
             previous.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Log.d("Id previous "+watchingAgainTV.getInfo().size(),"ok");
-                    Log.d("position previous " + positionTV,"ok");
                     if(positionTV > 0)
                     {
                         textView.setText(watchingAgainTV.getInfo().get(positionTV - 1).getName());
@@ -140,27 +142,49 @@ public class CustomViewPagerAdapter extends PagerAdapter implements HomeInterfac
             return  view;
         } else
         {
-            List<HomeModel> homeModelList = homePresenter.getlistHomeTablayout(container.getContext(),modelList.get(position-1));
-            View view =  LayoutInflater.from(container.getContext()).inflate(R.layout.main_layour_for_viewpager,container,false);
-            RecyclerView recyclerView = view.findViewById(R.id.main_recyclevire_tab);
-            MainViewPagerTabLayoutAdapter mainViewPagerTabLayoutAdapter =  new MainViewPagerTabLayoutAdapter(container.getContext(),homeModelList,idchanel);
-            recyclerView.setAdapter(mainViewPagerTabLayoutAdapter);
-            container.addView(view);
-            return  view;
+
+            if(modelListMap != null)
+            {
+                List<HomeModel> homeModels = new ArrayList<>();
+                homeModels = modelListMap.get(modelList.get(position));
+                if(homeModels != null)
+                {
+                    View view =  LayoutInflater.from(container.getContext()).inflate(R.layout.main_layour_for_viewpager,container,false);
+                    RecyclerView recyclerView = view.findViewById(R.id.main_recyclevire_tab);
+                    MainViewPagerTabLayoutAdapter mainViewPagerTabLayoutAdapter =  new MainViewPagerTabLayoutAdapter(container.getContext(),homeModels,idchanel);
+                    recyclerView.setAdapter(mainViewPagerTabLayoutAdapter);
+                    container.addView(view);
+                    return  view;
+                }
+                else
+                {
+                    View view =  LayoutInflater.from(container.getContext()).inflate(R.layout.nondata,container,false);
+                    container.addView(view);
+                    return  view;
+                }
+            }
+            else
+            {
+                View view =  LayoutInflater.from(container.getContext()).inflate(R.layout.nondata,container,false);
+                container.addView(view);
+                return  view;
+            }
+
         }
     }
     @Override
     public int getCount() {
-        return modelList.size() + 1;
+        return modelList.size();
     }
 
     @Override
     public int getItemPosition(@NonNull Object object) {
-        return POSITION_NONE + 1;
+        return POSITION_NONE;
     }
 
     @Override
     public boolean isViewFromObject(@NonNull View view, @NonNull Object object) {
+
         return view.equals(object);
     }
 
@@ -172,5 +196,16 @@ public class CustomViewPagerAdapter extends PagerAdapter implements HomeInterfac
     @Override
     public void getwatchingagain(WatchingAgainTV watchingAgainTV) {
         this.watchingAgainTV = watchingAgainTV;
+    }
+
+    @Override
+    public void getlistHomeTablayout(FilmModel filmModel,List<HomeModel> list) {
+        this.modelListMap.put(filmModel,list);
+    }
+
+    @Override
+    public void getflim(List<FilmModel> listfilm) {
+        this.Listfimchanel = listfilm;
+        notifyDataSetChanged();
     }
 }

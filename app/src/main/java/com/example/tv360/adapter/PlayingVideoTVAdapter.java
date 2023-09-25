@@ -2,6 +2,7 @@ package com.example.tv360.adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,11 +22,10 @@ import java.util.List;
 public class PlayingVideoTVAdapter extends  RecyclerView.Adapter<PlayingVideoTVAdapter.PlayingVideoTVHolder>{
     private List<FilmModel> categoryList;
     private PlayingVideoTVAdapter.DetailFilmTVListener detailFilmListener;
-    private  int display;
+
     String id;
-    public void setData(Context context, List<FilmModel> list, int display, String id){
+    public void setData(Context context, List<FilmModel> list, String id){
         this.categoryList = list;
-        this.display = display;
         this.id = id;
         try {
             this.detailFilmListener = ((PlayingVideoTVAdapter.DetailFilmTVListener)context) ;
@@ -48,13 +48,9 @@ public class PlayingVideoTVAdapter extends  RecyclerView.Adapter<PlayingVideoTVA
         if (category == null){
             return;
         }
-        if(display == 1)
-        {
-            LinearLayout.LayoutParams l = new LinearLayout.LayoutParams(320,400);
-            holder.imgCategory.setLayoutParams(l);
-        }
+        LinearLayout.LayoutParams l = new LinearLayout.LayoutParams(240,160);
+        holder.imgCategory.setLayoutParams(l);
         Glide.with(holder.itemView.getContext()).load(category.getCoverImage()).into(holder.imgCategory);
-
         if(id == category.getId())
         {
             Drawable highlight = holder.itemView.getContext().getResources().getDrawable( R.drawable.highlight);
@@ -68,6 +64,7 @@ public class PlayingVideoTVAdapter extends  RecyclerView.Adapter<PlayingVideoTVA
         holder.imgCategory.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 Drawable highlight = holder.itemView.getContext().getResources().getDrawable( R.drawable.highlight);
                 holder.imgCategory.setBackground(highlight);
                 id = category.getId();

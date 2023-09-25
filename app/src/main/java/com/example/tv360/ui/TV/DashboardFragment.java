@@ -4,7 +4,6 @@ import static android.content.Context.MODE_PRIVATE;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
@@ -12,6 +11,7 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.Gravity;
@@ -66,7 +66,6 @@ public class DashboardFragment extends Fragment {
 
     HomeService apiInterface;
 
-    List<HomeModel> listitem = new ArrayList<HomeModel>();
     private  static  final  String SHARED_PREF_NAME = "mypref";
 
     private  static  final  String KEY_USERID = "userId";
@@ -108,6 +107,8 @@ public class DashboardFragment extends Fragment {
 
     public  DashboardFragment(){};
 
+    Boolean isScroll = false;
+
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -120,16 +121,60 @@ public class DashboardFragment extends Fragment {
          profileID = sharedPref.getString(KEY_PROFILEID,"");
          accessToken = sharedPref.getString(KEY_ACCESSTOKEN,"");
          m_andoid = Settings.Secure.getString(getContext().getContentResolver(), Settings.Secure.ANDROID_ID);
+        binding.tabLayoutMain.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                binding.tabLayoutMain.selectTab(binding.tabLayoutMain.getTabAt(tab.getPosition()));
+                if(isScroll)
+                {
+                    binding.viewlayoutPager.setCurrentItem(tab.getPosition(),true);
+                    isScroll = false;
+                    return;
+                }
+                else
+                {
+                    binding.viewlayoutPager.setCurrentItem(tab.getPosition(),false);
+                    isScroll = false;
+                    return;
+                }
+
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
+        });
+        binding.viewlayoutPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+                isScroll = true;
+                binding.tabLayoutMain.getTabAt(position).select();
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                isScroll = false;
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
         new DownloadDataTaskTV().execute();
+
         return root;
     }
 
     public  void  updateData(String id)
     {
-//        styledPlayerViewTV.setPlayer(null);
-//        playerTV.setPlayWhenReady(false);
-//        playerTV.release();
-//        playerTV = null;
+        playerTV.stop();
         new DownloadDataTaskTV().execute();
     }
 
@@ -184,12 +229,10 @@ public class DashboardFragment extends Fragment {
                 if(Objects.equals(id, ""))
                 {
                     PlayVideo(dataObject.getData().get(0).getContentPlaying().getDetail().getId(),dataObject.getData().get(0).getContentPlaying().getDetail().getType());
-                    Log.d("ZO DO  hihi" , "as");
                 }
                 else
                 {
                     PlayVideo(id,"LIVE");
-                    Log.d("co id  hihi " , "as " + id);
                 }
                 listData = dataObject.getData().get(1).getContent();
                 for (int i =2 ; i < dataObject.getData().size() ; i++)
@@ -200,7 +243,7 @@ public class DashboardFragment extends Fragment {
                     }
                 }
                 binding.tabLayoutMain.addTab(binding.tabLayoutMain.newTab().setText("Tất cả"));
-                for (int i =0 ; i<listData.size();i++)
+                for (int i =1 ; i<listData.size();i++)
                 {
                     binding.tabLayoutMain.addTab(binding.tabLayoutMain.newTab().setText(listData.get(i).getName()));
                 }
@@ -221,42 +264,8 @@ public class DashboardFragment extends Fragment {
                     binding.viewlayoutPager.setAdapter(new CustomViewPagerAdapter(getContext(),listData,listcontentFirst,id));
                 }
                 binding.viewlayoutPager.setCurrentItem(0);
-                binding.tabLayoutMain.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-                    @Override
-                    public void onTabSelected(TabLayout.Tab tab) {
-                        binding.viewlayoutPager.setCurrentItem(tab.getPosition());
 
-
-                    }
-
-                    @Override
-                    public void onTabUnselected(TabLayout.Tab tab) {
-
-                    }
-
-                    @Override
-                    public void onTabReselected(TabLayout.Tab tab) {
-
-                    }
-                });
-                binding.viewlayoutPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-                    @Override
-                    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-                        binding.tabLayoutMain.selectTab(binding.tabLayoutMain.getTabAt(position));
-                    }
-
-                    @Override
-                    public void onPageSelected(int position) {
-
-                    }
-
-                    @Override
-                    public void onPageScrollStateChanged(int state) {
-
-                    }
-                });
             }
-
             @Override
             public void onFailure(Call<DataObject> call, Throwable throwable) {
                 call.cancel();
@@ -271,116 +280,124 @@ public class DashboardFragment extends Fragment {
             @Override
             public void onResponse(Call<DataObjectUrlVideo> call, Response<DataObjectUrlVideo> response) {
                 DataObjectUrlVideo urlVideo = response.body();
-                styledPlayerViewTV = binding.playvideoTv;
-                fullscreen = styledPlayerViewTV.findViewById(R.id.exo_fullscreen_icon);
+                if (urlVideo.getData().getUrlStreaming() == null || urlVideo.getData().getUrlStreaming() == "")
+                {
+                    SharedPreferences.Editor editor = sharedPreferences_tv.edit();
+                    editor.putString(KEY_TV, "");
+                    editor.apply();
+                }
+                else
+                {
+                    styledPlayerViewTV = binding.playvideoTv;
+                    fullscreen = styledPlayerViewTV.findViewById(R.id.exo_fullscreen_icon);
 
-                ImageView setiing_play = styledPlayerViewTV.findViewById(R.id.exo_settings_icon);
+                    ImageView setiing_play = styledPlayerViewTV.findViewById(R.id.exo_settings_icon);
 
-                ImageView play = styledPlayerViewTV.findViewById(R.id.pause_button);
-                setiing_play.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        openSettingPlayVideo(Gravity.BOTTOM);
-                    }
-                });
-                play.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if(ispause == false)
-                        {
-                            ispause = true;
-                            play.setBackgroundResource(R.drawable.baseline_play_arrow_24);
-                            playerTV.setPlayWhenReady(false);
-                            playerTV.pause();
+                    ImageView play = styledPlayerViewTV.findViewById(R.id.pause_button);
+                    setiing_play.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            openSettingPlayVideo(Gravity.BOTTOM);
                         }
-                        else
-                        {
-                            ispause = false;
-                            play.setBackgroundResource(R.drawable.baseline_pause_24);
-                            playerTV.setPlayWhenReady(true);
-                            playerTV.play();
+                    });
+                    play.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if(ispause == false)
+                            {
+                                ispause = true;
+                                play.setBackgroundResource(R.drawable.baseline_play_arrow_24);
+                                playerTV.setPlayWhenReady(false);
+                                playerTV.pause();
+                            }
+                            else
+                            {
+                                ispause = false;
+                                play.setBackgroundResource(R.drawable.baseline_pause_24);
+                                playerTV.setPlayWhenReady(true);
+                                playerTV.play();
 
 
-                        }
-
-                    }
-                });
-
-                fullscreen.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if(isfullscreen){
-
-                            getActivity().getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
-
-                            if(((AppCompatActivity)getActivity()).getSupportActionBar() != null){
-                                ((AppCompatActivity)getActivity()).getSupportActionBar().show();
                             }
 
-                            getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-
-                            ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams) styledPlayerViewTV.getLayoutParams();
-                            params.width = params.MATCH_PARENT;
-                            params.height = (int) ( 200 * getActivity().getApplicationContext().getResources().getDisplayMetrics().density);
-                            styledPlayerViewTV.setLayoutParams(params);
-                            isfullscreen = false;
-                        }else {
-
-                            getActivity().getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN
-                                    |View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-                                    |View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
-
-                            if(((AppCompatActivity)getActivity()).getSupportActionBar() != null){
-                                ((AppCompatActivity)getActivity()).getSupportActionBar().hide();
-                            }
-
-                            getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-
-                            ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams) styledPlayerViewTV.getLayoutParams();
-                            params.width = params.MATCH_PARENT;
-                            params.height = params.MATCH_PARENT;
-                            styledPlayerViewTV.setLayoutParams(params);
-                            isfullscreen = true;
                         }
-                    }
-                });
+                    });
 
-                trackSelector = new DefaultTrackSelector(getContext());
+                    fullscreen.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if(isfullscreen){
+
+                                getActivity().getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
+
+                                if(((AppCompatActivity)getActivity()).getSupportActionBar() != null){
+                                    ((AppCompatActivity)getActivity()).getSupportActionBar().show();
+                                }
+
+                                getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+
+                                ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams) styledPlayerViewTV.getLayoutParams();
+                                params.width = params.MATCH_PARENT;
+                                params.height = (int) ( 200 * getActivity().getApplicationContext().getResources().getDisplayMetrics().density);
+                                styledPlayerViewTV.setLayoutParams(params);
+                                isfullscreen = false;
+                            }else {
+
+                                getActivity().getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN
+                                        |View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                                        |View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
+
+                                if(((AppCompatActivity)getActivity()).getSupportActionBar() != null){
+                                    ((AppCompatActivity)getActivity()).getSupportActionBar().hide();
+                                }
+
+                                getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+
+                                ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams) styledPlayerViewTV.getLayoutParams();
+                                params.width = params.MATCH_PARENT;
+                                params.height = params.MATCH_PARENT;
+                                styledPlayerViewTV.setLayoutParams(params);
+                                isfullscreen = true;
+                            }
+                        }
+                    });
+
+                    trackSelector = new DefaultTrackSelector(getContext());
+
+                    TrackSelectionParameters newParameters = trackSelector.getParameters()
+                            .buildUpon().build();
 
 
-                TrackSelectionParameters newParameters = trackSelector.getParameters()
-                        .buildUpon().build();
-
-
-                trackSelector.setParameters((DefaultTrackSelector.Parameters) newParameters);
-                playerTV = new ExoPlayer.Builder(getContext()).setTrackSelector(trackSelector).build();
-                styledPlayerViewTV.setPlayer(playerTV);
-                MediaItem mediaItem = MediaItem.fromUri(urlVideo.getData().getUrlStreaming());
-                playerTV.setMediaItem(mediaItem);
-                playerTV.prepare();
-                playerTV.setPlayWhenReady(true);
-                playerTV.play();
-                playerTV.addListener(new Player.Listener() {
-                    @Override
-                    public void onPlaybackStateChanged(int playbackState) {
-                        Player.Listener.super.onPlaybackStateChanged(playbackState);
-                        if(playbackState == Player.STATE_READY){
+                    trackSelector.setParameters((DefaultTrackSelector.Parameters) newParameters);
+                    playerTV = new ExoPlayer.Builder(getContext()).setTrackSelector(trackSelector).build();
+                    styledPlayerViewTV.setPlayer(playerTV);
+                    MediaItem mediaItem = MediaItem.fromUri(urlVideo.getData().getUrlStreaming());
+                    playerTV.setMediaItem(mediaItem);
+                    playerTV.prepare();
+                    playerTV.setPlayWhenReady(true);
+                    playerTV.play();
+                    playerTV.addListener(new Player.Listener() {
+                        @Override
+                        public void onPlaybackStateChanged(int playbackState) {
+                            Player.Listener.super.onPlaybackStateChanged(playbackState);
+                            if(playbackState == Player.STATE_READY){
 //                            progressBarTV.setVisibility(View.GONE);
-                            playerTV.setPlayWhenReady(true);
-                        }else if(playbackState == Player.STATE_BUFFERING){
+                                playerTV.setPlayWhenReady(true);
+                            }else if(playbackState == Player.STATE_BUFFERING){
 //                            progressBarTV.setVisibility(View.VISIBLE);
-                            styledPlayerViewTV.setKeepScreenOn(true);
-                        }else {
+                                styledPlayerViewTV.setKeepScreenOn(true);
+                            }else {
 //                            progressBarTV.setVisibility(View.GONE);
-                            playerTV.setPlayWhenReady(true);
+                                playerTV.setPlayWhenReady(true);
+                            }
                         }
-                    }
+                    });
+                }
 
-
-                });
             }
             @Override
             public void onFailure(Call<DataObjectUrlVideo> call, Throwable t) {
+                Log.d("No loi roi","Dung tim nua");
                 call.cancel();
             }
         });
@@ -501,6 +518,6 @@ public class DashboardFragment extends Fragment {
         playerTV.setPlayWhenReady(false);
         playerTV.release();
         playerTV = null;
-//        binding = null;
+        binding = null;
     }
 }

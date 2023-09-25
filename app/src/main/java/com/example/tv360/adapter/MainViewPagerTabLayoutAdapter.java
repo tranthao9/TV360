@@ -51,13 +51,13 @@ public class MainViewPagerTabLayoutAdapter extends RecyclerView.Adapter<MainView
         {
             return;
         }
-       if (homeModel.getContent() == null)
+       if (homeModel.getContent() == null || homeModel.getContent().size() == 0 )
        {
            return;
        }
         holder.gifImageView.setText(homeModel.getName());
         PlayingVideoTVAdapter modelAdapter = new PlayingVideoTVAdapter();
-        modelAdapter.setData(context, homeModel.getContent(),homeModel.getDisplay(),id);
+        modelAdapter.setData(context, homeModel.getContent(),id);
         holder.recyclerView.setAdapter(modelAdapter);
 
     }

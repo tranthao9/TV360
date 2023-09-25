@@ -194,7 +194,6 @@ public class PlayingVideoAvtivity extends AppCompatActivity{
                 player = new ExoPlayer.Builder(PlayingVideoAvtivity.this).setTrackSelector(trackSelector).build();
                 styledPlayerView.setPlayer(player);
 
-//               MediaItem mediaItem = MediaItem.fromUri(urlVideo.getData().getUrlStreaming());
                 MediaItem mediaItem = MediaItem.fromUri(urlVideo.getData().getUrlStreaming());
                 player.setMediaItem(mediaItem);
                 player.prepare();

@@ -32,19 +32,17 @@ import java.util.Objects;
 
 public class CustomViewPagerScheduleAdapter extends RecyclerView.Adapter<CustomViewPagerScheduleAdapter.CustomViewPagerScheduleViewHolder>  {
     private List<FilmModel> categoryList;
-
-    private DetailScheduleListener detailScheduleListener;
     private  Context context;
 
     private String id = "";
+
+
     private PlayingVideoTVAdapter.DetailFilmTVListener detailFilmListener;
 
-    private List<View.OnClickListener>  clickListeners = new ArrayList<>();
-
     public void setData(Context context, List<FilmModel> list , String id){
+        this.id = id;
         this.categoryList = list;
         this.context = context;
-        id = id;
         try {
             this.detailFilmListener = ((PlayingVideoTVAdapter.DetailFilmTVListener)context) ;
         }catch (ClassCastException ex)
@@ -71,9 +69,6 @@ public class CustomViewPagerScheduleAdapter extends RecyclerView.Adapter<CustomV
         holder.imgCategory.setLayoutParams(l);
         holder.imgCategory.setClipToOutline(true);
         Glide.with(holder.itemView.getContext()).load(category.getCoverImage()).into(holder.imgCategory);
-        Log.d("position"+position,"no onclick");
-        Log.d("id"+id,"no onclick");
-        Log.d("id"+category.getId(),"no onclick");
         if(id == category.getId())
         {
             Drawable highlight = holder.itemView.getContext().getResources().getDrawable( R.drawable.highlight);
@@ -84,16 +79,6 @@ public class CustomViewPagerScheduleAdapter extends RecyclerView.Adapter<CustomV
             Drawable border = holder.itemView.getContext().getResources().getDrawable( R.drawable.border);
             holder.imgCategory.setBackground(border);
         }
-//        if(!arraya.get(position))
-//        {
-//
-//        }
-//        if(arraya.get(position) && !Objects.equals(id, category.getId())){
-//
-//            Log.d("position no "+arraya.clone(),"no1 onclick");
-//            arraya.put(position,false);
-//            Log.d("position no "+arraya.clone(),"afterclear" + arraya.clone());
-//        }
         holder.imgCategory.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

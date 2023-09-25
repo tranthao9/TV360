@@ -1,9 +1,19 @@
 package com.example.tv360.presenter;
 
+import static android.content.Context.MODE_PRIVATE;
+
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.provider.Settings;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+
 import com.example.tv360.Interface.HomeInterface;
+import com.example.tv360.model.DataObject;
 import com.example.tv360.model.DataObjectWatchingAgainTV;
+import com.example.tv360.model.FilmModel;
+import com.example.tv360.model.HomeModel;
 import com.example.tv360.model.InfoWatchingAgainTV;
 import com.example.tv360.retrofit.ApiService;
 import com.example.tv360.retrofit.HomeService;
@@ -23,6 +33,15 @@ public class InfoPreseter {
     private HomeInterface mhomeinterface;
 
     private HomeService apiserver;
+
+
+    private  static  final  String SHARED_PREF_NAME = "mypref";
+
+    private  static  final  String KEY_USERID = "userId";
+
+    private  static  final  String KEY_PROFILEID = "profileId";
+
+    private  static  final  String KEY_ACCESSTOKEN ="accessToken";
 
     public  InfoPreseter(HomeInterface homeInterface)
     {
@@ -49,5 +68,50 @@ public class InfoPreseter {
                 call.cancel();
             }
         });
+    }
+
+    public  void getlistHomeTablayout(Context context, FilmModel filmModel)
+    {
+        SharedPreferences sharedPref = context.getSharedPreferences(SHARED_PREF_NAME,MODE_PRIVATE);
+        String userID = sharedPref.getString(KEY_USERID,"");
+        String profileID = sharedPref.getString(KEY_PROFILEID,"");
+        String accessToken = sharedPref.getString(KEY_ACCESSTOKEN,"");
+        String m_andoid = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
+        apiserver = ApiService.getlink(profileID,userID, m_andoid,"Bearer " + accessToken).create(HomeService.class);
+        Call<DataObject> data  = apiserver.getCategoryLive(filmModel.getId(),6,0);
+        data.enqueue(new Callback<DataObject>() {
+            @Override
+            public void onResponse(Call<DataObject> call, Response<DataObject> response) {
+                DataObject data = response.body();
+                for (HomeModel h : data.getData())
+                {
+                    if(h.getContent() != null && h.getContent().size() > 0)
+                    {
+                        mhomeinterface.getlistHomeTablayout(filmModel,data.getData());
+                    }
+                }
+
+
+            }
+            @Override
+            public void onFailure(Call<DataObject> call, Throwable t) {
+
+            }
+        });
+
+    }
+
+    public  void getflim(@NonNull List<HomeModel> model)
+    {
+        List<FilmModel> list = new ArrayList<>();
+        for (HomeModel h : model)
+        {
+            for (FilmModel f : h.getContent())
+            {
+                list.add(f);
+            }
+
+        }
+        mhomeinterface.getflim(list);
     }
 }

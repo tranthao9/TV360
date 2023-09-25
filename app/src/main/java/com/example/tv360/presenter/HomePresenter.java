@@ -31,15 +31,7 @@ import retrofit2.Response;
 public class HomePresenter {
 
 
-    private HomeService apiserver;
 
-    private  static  final  String SHARED_PREF_NAME = "mypref";
-
-    private  static  final  String KEY_USERID = "userId";
-
-    private  static  final  String KEY_PROFILEID = "profileId";
-
-    private  static  final  String KEY_ACCESSTOKEN ="accessToken";
     public HomePresenter() {
 
 
@@ -94,47 +86,8 @@ public class HomePresenter {
         return  listfilm;
     }
 
-    public  List<HomeModel> getlistHomeTablayout(Context context,FilmModel filmModel)
-    {
-        final List<HomeModel> list = new ArrayList<>();
-        SharedPreferences sharedPref = context.getSharedPreferences(SHARED_PREF_NAME,MODE_PRIVATE);
-        String userID = sharedPref.getString(KEY_USERID,"");
-        String profileID = sharedPref.getString(KEY_PROFILEID,"");
-        String accessToken = sharedPref.getString(KEY_ACCESSTOKEN,"");
-        String m_andoid = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
-        apiserver = ApiService.getlink(profileID,userID, m_andoid,"Bearer " + accessToken).create(HomeService.class);
-        Call<DataObject> data  = apiserver.getCategoryLive(filmModel.getId(),6,0);
-        data.enqueue(new Callback<DataObject>() {
-            @Override
-            public void onResponse(Call<DataObject> call, Response<DataObject> response) {
-                DataObject data = response.body();
-                for (HomeModel l : data.getData())
-                {
-                    list.add(l);
-                }
 
-            }
-            @Override
-            public void onFailure(Call<DataObject> call, Throwable t) {
 
-            }
-        });
-        return  list;
-    }
-
-    public  List<FilmModel> getflim(@NonNull List<HomeModel> model)
-    {
-        List<FilmModel> list = new ArrayList<>();
-        for (HomeModel h : model)
-        {
-            for (FilmModel f : h.getContent())
-            {
-                list.add(f);
-            }
-
-        }
-        return list;
-    }
 
 
 }
