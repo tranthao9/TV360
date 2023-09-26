@@ -12,8 +12,8 @@ import android.widget.ProgressBar;
 
 import androidx.annotation.NonNull;
 
-//import androidx.fragment.app.Fragment;
-import android.support.v4.app.Fragment;
+import androidx.fragment.app.Fragment;
+
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -57,7 +57,7 @@ public class HomeFragment extends Fragment {
             viewfragmenthome = inflater.inflate(R.layout.fragment_home,container,false);
             progressBar = viewfragmenthome.findViewById(R.id.progressBar_tv);
             viewhome = viewfragmenthome.findViewById(R.id.viewhome);
-            viewhome.setLayoutManager(new LinearLayoutManager(getActivity()));
+            viewhome.setLayoutManager(new LinearLayoutManager(getContext()));
             isselected = false;
             return viewfragmenthome;
         }
@@ -117,7 +117,7 @@ public class HomeFragment extends Fragment {
 
                 listitem = homePresenter.getdata(dataObject.getData());
 
-                rvAdapter=new RvAdapter(getActivity(), listitem);
+                rvAdapter=new RvAdapter(getContext(), listitem);
                 viewhome.setAdapter(rvAdapter);
             }
             @Override
