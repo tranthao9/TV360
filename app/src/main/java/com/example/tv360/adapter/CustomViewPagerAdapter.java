@@ -28,7 +28,10 @@ import com.example.tv360.presenter.HomePresenter;
 import com.example.tv360.presenter.InfoPreseter;
 import com.google.android.material.tabs.TabLayout;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,8 +47,8 @@ public class CustomViewPagerAdapter extends PagerAdapter implements HomeInterfac
     private InfoPreseter infoPreseter;
 
     int positionTV;
-
-    String idchanel;
+    DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+    String idchanel, date;
 
     WatchingAgainTV watchingAgainTV;
 
@@ -59,13 +62,20 @@ public class CustomViewPagerAdapter extends PagerAdapter implements HomeInterfac
         this.modelList = modelList;
         this.listcontentfirst = listcontentfirst;
         this.idchanel = idchanel;
+        date = df.format(Calendar.getInstance().getTime());
         infoPreseter = new InfoPreseter(this);
-        infoPreseter.getwatchingagain(idchanel);
+        infoPreseter.getwatchingagain(idchanel,date);
         infoPreseter.getflim(listcontentfirst);
-       for (int i = 0 ; i<modelList.size(); i++)
+       for (int i = 1 ; i<modelList.size(); i++)
        {
            infoPreseter.getlistHomeTablayout(this.context,modelList.get(i));
        }
+        notifyDataSetChanged();
+    }
+
+    public  void  SetData(String idchanel)
+    {
+        this.idchanel = idchanel;
         notifyDataSetChanged();
     }
 
@@ -124,6 +134,15 @@ public class CustomViewPagerAdapter extends PagerAdapter implements HomeInterfac
                     {
                         textView.setText(watchingAgainTV.getInfo().get(positionTV + 1).getName());
                         positionTV +=1;
+                        infoPreseter.getwatchingagain(idchanel,watchingAgainTV.getInfo().get(positionTV).getValue());
+                        Log.d("next schedules","do la "+watchingAgainTV.getSchedules() + " Info " + watchingAgainTV.getInfo());
+                        RecyclerView recyclerView2 = view.findViewById(R.id.recyclerDetailViewChanel);
+                        LinearLayoutManager linearLayoutManager1 = new LinearLayoutManager(container.getContext(),RecyclerView.VERTICAL,false);
+                        recyclerView2.setLayoutManager(linearLayoutManager1);
+                        recyclerView2.setFocusable(false);
+                        RvScheduleAdapter rvScheduleAdapter = new RvScheduleAdapter(container.getContext(),watchingAgainTV.getSchedules());
+                        recyclerView2.setAdapter(rvScheduleAdapter);
+
                     }
                 }
             });
@@ -134,6 +153,14 @@ public class CustomViewPagerAdapter extends PagerAdapter implements HomeInterfac
                     {
                         textView.setText(watchingAgainTV.getInfo().get(positionTV - 1).getName());
                         positionTV -= 1;
+                        infoPreseter.getwatchingagain(idchanel,watchingAgainTV.getInfo().get(positionTV).getValue());
+                        Log.d("previous schedules","do la "+watchingAgainTV.getSchedules() + " Info " + watchingAgainTV.getInfo());
+                        RecyclerView recyclerView2 = view.findViewById(R.id.recyclerDetailViewChanel);
+                        LinearLayoutManager linearLayoutManager1 = new LinearLayoutManager(container.getContext(),RecyclerView.VERTICAL,false);
+                        recyclerView2.setLayoutManager(linearLayoutManager1);
+                        recyclerView2.setFocusable(false);
+                        RvScheduleAdapter rvScheduleAdapter = new RvScheduleAdapter(container.getContext(),watchingAgainTV.getSchedules());
+                        recyclerView2.setAdapter(rvScheduleAdapter);
                     }
                 }
             });

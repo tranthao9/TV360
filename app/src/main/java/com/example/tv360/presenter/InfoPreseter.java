@@ -48,11 +48,9 @@ public class InfoPreseter {
         this.mhomeinterface = homeInterface;
     }
 
-    public void getwatchingagain(String id)
+    public void getwatchingagain(String id, String date)
     {
-        final List<InfoWatchingAgainTV> l = new ArrayList<>();
-        DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-        String date = df.format(Calendar.getInstance().getTime());
+
         apiserver = ApiService.getClient().create(HomeService.class);
         Log.d("Datetime "+date,"time");
         Call<DataObjectWatchingAgainTV> data  = apiserver.getLiveSchedule(id, date);
@@ -88,17 +86,14 @@ public class InfoPreseter {
                     if(h.getContent() != null && h.getContent().size() > 0)
                     {
                         mhomeinterface.getlistHomeTablayout(filmModel,data.getData());
+                        break;
                     }
                 }
-
-
             }
             @Override
             public void onFailure(Call<DataObject> call, Throwable t) {
-
             }
         });
-
     }
 
     public  void getflim(@NonNull List<HomeModel> model)

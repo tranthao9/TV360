@@ -24,6 +24,8 @@ public class profileActivity extends AppCompatActivity {
 
     private ExpandlabelProfileAdapter expandlabelProfileAdapter;
 
+    private int lastExpandPosition = -1;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,35 +42,31 @@ public class profileActivity extends AppCompatActivity {
         expandableListView.setOnGroupClickListener(new ExpandableListView.OnGroupClickListener() {
             @Override
             public boolean onGroupClick(ExpandableListView parent, View v, int groupPosition, long id) {
-                if(expandableListView.isGroupExpanded(groupPosition))
-                {
-                    expandableListView.collapseGroup(groupPosition);
-                }
-                else
-                {
-                    expandableListView.expandGroup(groupPosition);
-                }
-                return  true;
+
+                return  false;
             }
         });
-//
-//        expandableListView.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
-//            @Override
-//            public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
-//                return false;
-//            }
-//        });
-//
-//        expandableListView.setOnGroupExpandListener(new ExpandableListView.OnGroupExpandListener() {
-//            @Override
-//            public void onGroupExpand(int groupPosition) {
-//
-//            }
-//        });
-//
-//        expandableListView.setOnGroupCollapseListener((groupPosition -> {
-//
-//        }));
+
+        expandableListView.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
+            @Override
+            public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
+                return false;
+            }
+        });
+
+        expandableListView.setOnGroupExpandListener(new ExpandableListView.OnGroupExpandListener() {
+            @Override
+            public void onGroupExpand(int groupPosition) {
+                if (lastExpandPosition != -1 && groupPosition != lastExpandPosition) {
+                    expandableListView.collapseGroup(lastExpandPosition);
+                }
+                lastExpandPosition = groupPosition;
+            }
+        });
+
+        expandableListView.setOnGroupCollapseListener((groupPosition -> {
+
+        }));
 
     }
 

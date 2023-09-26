@@ -17,10 +17,13 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.tv360.Interface.HomeInterface;
+import com.example.tv360.R;
 import com.example.tv360.adapter.RvAdapter;
 import com.example.tv360.databinding.FragmentHomeBinding;
+import com.example.tv360.databinding.FragmentNotificationsBinding;
 import com.example.tv360.model.DataObject;
 import com.example.tv360.model.FilmModel;
 import com.example.tv360.model.HomeModel;
@@ -40,29 +43,35 @@ import retrofit2.Response;
 
 public class HomeFragment extends Fragment {
 
-    private FragmentHomeBinding binding;
-
     RvAdapter rvAdapter;
     List<HomeModel> listitem = new ArrayList<HomeModel>();
     HomeService apiInterface;
-    private  static  final  String SHARED_PREF_NAME = "mypref";
-
-    private  static  final  String KEY_ACCESSTOKEN ="accessToken";
-    private  static  final  String KEY_REFRESHTOKEN = "refreshToken";
 
     private ProgressBar progressBar;
-    private boolean isselected  = false;
+    private boolean isselected  = true;
+
+    RecyclerView viewhome;
+
+    private  View viewfragmenthome;
+
+    HomePresenter homePresenter = new HomePresenter();
 
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-
-        binding = FragmentHomeBinding.inflate(inflater, container, false);
-        View root = binding.getRoot();
-        binding.viewhome.setLayoutManager(new LinearLayoutManager(requireContext()));
-        progressBar = binding.progressBarTv;
-        new DownloadDataTask().execute();
-        return root;
+        if (isselected)
+        {
+            viewfragmenthome = inflater.inflate(R.layout.fragment_home,container,false);
+            progressBar = viewfragmenthome.findViewById(R.id.progressBar_tv);
+            viewhome = viewfragmenthome.findViewById(R.id.viewhome);
+            viewhome.setLayoutManager(new LinearLayoutManager(getContext()));
+            isselected = false;
+            return viewfragmenthome;
+        }
+        else
+        {
+            return viewfragmenthome;
+        }
     }
 
     private  class DownloadDataTask extends AsyncTask<Void, Integer, Void>
@@ -103,7 +112,7 @@ public class HomeFragment extends Fragment {
     }
 
     private void GetData(){
-         HomePresenter homePresenter= new HomePresenter();
+
         apiInterface = ApiService.getClient().create(HomeService.class);
         Call<DataObject> data = apiInterface.getHomeBox();
 
@@ -113,12 +122,11 @@ public class HomeFragment extends Fragment {
 
                 DataObject dataObject = response.body();
 
-                listitem = new HomePresenter().getdata(dataObject.getData());
+                listitem = homePresenter.getdata(dataObject.getData());
 
                 rvAdapter=new RvAdapter(getContext(), listitem);
-                binding.viewhome.setAdapter(rvAdapter);
+                viewhome.setAdapter(rvAdapter);
             }
-
             @Override
             public void onFailure(Call<DataObject> call, Throwable throwable) {
                 call.cancel();
@@ -129,14 +137,16 @@ public class HomeFragment extends Fragment {
     }
 
     @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        binding = null;
+    public void onPause() {
+        super.onPause();
     }
 
     @Override
-    public void onSaveInstanceState(@NonNull Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putString("item", listitem.toString());
+    public void onResume() {
+        super.onResume();
+        if(listitem.size() == 0)
+        {
+            new DownloadDataTask().execute();
+        }
     }
 }

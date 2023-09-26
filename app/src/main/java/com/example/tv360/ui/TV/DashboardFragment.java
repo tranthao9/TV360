@@ -12,6 +12,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.Gravity;
@@ -31,6 +32,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
 
+import com.example.tv360.Interface.TVFragmentInterface;
 import com.example.tv360.R;
 import com.example.tv360.TrackSelectionDialog;
 import com.example.tv360.adapter.CustomViewPagerAdapter;
@@ -39,8 +41,10 @@ import com.example.tv360.model.DataObject;
 import com.example.tv360.model.DataObjectUrlVideo;
 import com.example.tv360.model.FilmModel;
 import com.example.tv360.model.HomeModel;
+import com.example.tv360.presenter.TVFragmentPresenter;
 import com.example.tv360.retrofit.ApiService;
 import com.example.tv360.retrofit.HomeService;
+import com.github.pedrovgs.DraggablePanel;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.MediaItem;
 import com.google.android.exoplayer2.PlaybackParameters;
@@ -58,13 +62,9 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class DashboardFragment extends Fragment {
+public class DashboardFragment extends Fragment implements TVFragmentInterface {
 
     ExoPlayer playerTV;
-    private FragmentTvBinding binding;
-
-
-    HomeService apiInterface;
 
     private  static  final  String SHARED_PREF_NAME = "mypref";
 
@@ -87,13 +87,11 @@ public class DashboardFragment extends Fragment {
 
     Boolean ispause = false;
 
-    TextView text_speed;
-
-    TextView text_quality;
+    TextView text_speed , text_quality;
 
     StyledPlayerView styledPlayerViewTV;
 
-    List<FilmModel> listData;
+    List<FilmModel> listData = new ArrayList<>();
 
     List<HomeModel> listcontentFirst = new ArrayList<>();
 
@@ -105,76 +103,64 @@ public class DashboardFragment extends Fragment {
 
     private  static  final  String KEY_TV = "id";
 
-    public  DashboardFragment(){};
+   private Boolean isScroll = false;
 
-    Boolean isScroll = false;
+   private Boolean isselectedTV = true;
+
+   private View root;
+
+   private TabLayout tabLayout ;
+   private ViewPager viewPager;
+
+   private DraggablePanel draggablePanel;
+
+     private   List<HomeModel> datalistTV = new ArrayList<>();
+
+     private TVFragmentPresenter tvFragmentPresenter = new TVFragmentPresenter(this);
+
+     private  CustomViewPagerAdapter customViewPagerAdapter;
 
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
 
-        binding = FragmentTvBinding.inflate(inflater, container, false);
-        View root = binding.getRoot();
-        progressBarTV = binding.progressBarTv2;
-         sharedPref = getContext().getSharedPreferences(SHARED_PREF_NAME,MODE_PRIVATE);
-         userID = sharedPref.getString(KEY_USERID,"");
-         profileID = sharedPref.getString(KEY_PROFILEID,"");
-         accessToken = sharedPref.getString(KEY_ACCESSTOKEN,"");
-         m_andoid = Settings.Secure.getString(getContext().getContentResolver(), Settings.Secure.ANDROID_ID);
-        binding.tabLayoutMain.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-            @Override
-            public void onTabSelected(TabLayout.Tab tab) {
-                binding.tabLayoutMain.selectTab(binding.tabLayoutMain.getTabAt(tab.getPosition()));
-                if(isScroll)
-                {
-                    binding.viewlayoutPager.setCurrentItem(tab.getPosition(),true);
-                    isScroll = false;
-                    return;
-                }
-                else
-                {
-                    binding.viewlayoutPager.setCurrentItem(tab.getPosition(),false);
-                    isScroll = false;
-                    return;
-                }
+        if(isselectedTV)
+        {
+            root = inflater.inflate(R.layout.fragment_tv, container, false);
+            progressBarTV = root.findViewById(R.id.progressBar_tv2);
+            draggablePanel =(DraggablePanel) root.findViewById(R.id.draggable_panel);
 
-            }
-
-            @Override
-            public void onTabUnselected(TabLayout.Tab tab) {
-
-            }
-
-            @Override
-            public void onTabReselected(TabLayout.Tab tab) {
-
-            }
-        });
-        binding.viewlayoutPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-                isScroll = true;
-                binding.tabLayoutMain.getTabAt(position).select();
-            }
-
-            @Override
-            public void onPageSelected(int position) {
-                isScroll = false;
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int state) {
-
-            }
-        });
-        new DownloadDataTaskTV().execute();
-
+            draggablePanel.setFragmentManager(getChildFragmentManager());
+            draggablePanel.setTopFragment(placeFragment);
+            draggablePanel.setBottomFragment(mapFragment);
+            draggablePanel.initializeView();
+            tabLayout  = (TabLayout) root.findViewById(R.id.tabLayout_main);
+            viewPager =(ViewPager) root.findViewById(R.id.viewlayout_pager);
+            sharedPref = getContext().getSharedPreferences(SHARED_PREF_NAME,MODE_PRIVATE);
+            userID = sharedPref.getString(KEY_USERID,"");
+            profileID = sharedPref.getString(KEY_PROFILEID,"");
+            accessToken = sharedPref.getString(KEY_ACCESSTOKEN,"");
+            m_andoid = Settings.Secure.getString(getContext().getContentResolver(), Settings.Secure.ANDROID_ID);
+            sharedPreferences_tv = getContext().getSharedPreferences(SHARED_TV_PLAYING,MODE_PRIVATE);
+            id = sharedPreferences_tv.getString(KEY_TV,"");
+            isselectedTV = false;
+            return  root;
+        }
         return root;
     }
 
     public  void  updateData(String id)
     {
+
         playerTV.stop();
+        PlayVideo(id,"LIVE");
+        customViewPagerAdapter.SetData(id);
+        viewPager.setAdapter(customViewPagerAdapter);
+
+    }
+    @Override
+    public void getListHomeLive(List<HomeModel> list) {
+        this.datalistTV = list;
         new DownloadDataTaskTV().execute();
     }
 
@@ -188,10 +174,6 @@ public class DashboardFragment extends Fragment {
 
         @Override
         protected Void doInBackground(Void... voids) {
-            sharedPreferences_tv = getContext().getSharedPreferences(SHARED_TV_PLAYING,MODE_PRIVATE);
-            id = sharedPreferences_tv.getString(KEY_TV,"");
-
-            Log.d("id toi update do" , "value = "+id);
             GetData(id);
             for (int i = 0 ; i<100; i+=10)
             {
@@ -220,55 +202,97 @@ public class DashboardFragment extends Fragment {
     }
 
     private void GetData(String id) {
-        apiInterface = ApiService.getClient().create(HomeService.class);
-        Call<DataObject> data = apiInterface.getTVBox();
-        data.enqueue(new Callback<DataObject>() {
+        if(Objects.equals(id, ""))
+        {
+            PlayVideo(datalistTV.get(0).getContentPlaying().getDetail().getId(),datalistTV.get(0).getContentPlaying().getDetail().getType());
+        }
+        else
+        {
+            PlayVideo(id,"LIVE");
+        }
+        Log.d("data do" , "dd " + datalistTV);
+        listData = datalistTV.get(1).getContent();
+        Log.d("day la 1 : " , " do la " + datalistTV);
+        for (int i =2 ; i < datalistTV.size() ; i++)
+        {
+            if (datalistTV.get(i).getContent() != null)
+            {
+                listcontentFirst.add(datalistTV.get(i));
+            }
+        }
+        new Handler(Looper.getMainLooper()).post(new Runnable(){
             @Override
-            public void onResponse(Call<DataObject> call, Response<DataObject> response) {
-                DataObject dataObject = response.body();
-                if(Objects.equals(id, ""))
-                {
-                    PlayVideo(dataObject.getData().get(0).getContentPlaying().getDetail().getId(),dataObject.getData().get(0).getContentPlaying().getDetail().getType());
-                }
-                else
-                {
-                    PlayVideo(id,"LIVE");
-                }
-                listData = dataObject.getData().get(1).getContent();
-                for (int i =2 ; i < dataObject.getData().size() ; i++)
-                {
-                    if (dataObject.getData().get(i).getContent() != null)
-                    {
-                        listcontentFirst.add(dataObject.getData().get(i));
-                    }
-                }
-                binding.tabLayoutMain.addTab(binding.tabLayoutMain.newTab().setText("Tất cả"));
+            public void run() {
+                tabLayout.addTab(tabLayout.newTab().setText("Tất cả"));
                 for (int i =1 ; i<listData.size();i++)
                 {
-                    binding.tabLayoutMain.addTab(binding.tabLayoutMain.newTab().setText(listData.get(i).getName()));
+                    tabLayout.addTab(tabLayout.newTab().setText(listData.get(i).getName()));
                 }
-
-                for (int i = 0;i<binding.tabLayoutMain.getTabCount();i++)
+                for (int i = 0;i<tabLayout.getTabCount();i++)
                 {
-                    View view  = ((ViewGroup) binding.tabLayoutMain.getChildAt(0)).getChildAt(i);
+                    View view  = ((ViewGroup) tabLayout.getChildAt(0)).getChildAt(i);
                     ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
                     params.setMargins(20,0,30,20);
                     view.requestLayout();
                 }
                 if(Objects.equals(id, ""))
                 {
-                    binding.viewlayoutPager.setAdapter(new CustomViewPagerAdapter(getContext(),listData,listcontentFirst,dataObject.getData().get(0).getContentPlaying().getDetail().getId()));
+                    customViewPagerAdapter = new CustomViewPagerAdapter(getContext(),listData,listcontentFirst,datalistTV.get(0).getContentPlaying().getDetail().getId());
+                    viewPager.setAdapter(customViewPagerAdapter);
                 }
                 else
                 {
-                    binding.viewlayoutPager.setAdapter(new CustomViewPagerAdapter(getContext(),listData,listcontentFirst,id));
+                    customViewPagerAdapter = new CustomViewPagerAdapter(getContext(),listData,listcontentFirst,id);
+                    viewPager.setAdapter(customViewPagerAdapter);
                 }
-                binding.viewlayoutPager.setCurrentItem(0);
+                viewPager.setCurrentItem(0);
+            }
+        });
+
+
+
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                tabLayout.selectTab(tabLayout.getTabAt(tab.getPosition()));
+                if(isScroll)
+                {
+                    viewPager.setCurrentItem(tab.getPosition(),true);
+                    isScroll = false;
+                    return;
+                }
+                else
+                {
+                    viewPager.setCurrentItem(tab.getPosition(),false);
+                    isScroll = false;
+                    return;
+                }
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
 
             }
+
             @Override
-            public void onFailure(Call<DataObject> call, Throwable throwable) {
-                call.cancel();
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
+        });
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+                isScroll = true;
+                tabLayout.getTabAt(position).select();
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                isScroll = false;
+            }
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
             }
         });
     }
@@ -288,7 +312,7 @@ public class DashboardFragment extends Fragment {
                 }
                 else
                 {
-                    styledPlayerViewTV = binding.playvideoTv;
+                    styledPlayerViewTV = root.findViewById(R.id.playvideo_tv);
                     fullscreen = styledPlayerViewTV.findViewById(R.id.exo_fullscreen_icon);
 
                     ImageView setiing_play = styledPlayerViewTV.findViewById(R.id.exo_settings_icon);
@@ -397,7 +421,6 @@ public class DashboardFragment extends Fragment {
             }
             @Override
             public void onFailure(Call<DataObjectUrlVideo> call, Throwable t) {
-                Log.d("No loi roi","Dung tim nua");
                 call.cancel();
             }
         });
@@ -511,13 +534,26 @@ public class DashboardFragment extends Fragment {
         });
         builder.show();
     }
+
     @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        styledPlayerViewTV.setPlayer(null);
-        playerTV.setPlayWhenReady(false);
-        playerTV.release();
-        playerTV = null;
-        binding = null;
+    public void onPause() {
+        super.onPause();
+        if(playerTV != null)
+        {
+            playerTV.stop();
+        }
+    }
+    @Override
+    public void onResume() {
+        super.onResume();
+        if(datalistTV.size() == 0)
+        {
+            tvFragmentPresenter.getListHomeLive();
+            Log.d("Du lieu ghi lai la ", " do la "+datalistTV);
+        }
+        else
+        {
+            Log.d("Du lieu ghi lai la có", " do la "+datalistTV);
+        }
     }
 }

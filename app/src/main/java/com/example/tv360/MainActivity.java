@@ -130,7 +130,8 @@ public class MainActivity extends AppCompatActivity implements RvFilmImageAdapte
         FragmentManager fragmentManager = exist.getChildFragmentManager();
         List<Fragment> list = fragmentManager.getFragments();
         DashboardFragment dashboardFragment = (DashboardFragment) list.get(0);
-        dashboardFragment.updateData(intent.getStringExtra("id"));
-    }
 
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+      dashboardFragment.updateData(intent.getStringExtra("id"));
+    }
 }
