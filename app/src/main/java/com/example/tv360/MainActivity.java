@@ -1,29 +1,28 @@
 package com.example.tv360;
 
-import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
-import android.view.MenuItem;
+import android.support.v4.app.FragmentManager;
+
 import android.view.Window;
 import android.view.WindowManager;
 
 import com.example.tv360.adapter.ListFilmAdapter;
 import com.example.tv360.adapter.PlayingVideoTVAdapter;
 import com.example.tv360.adapter.RvFilmImageAdapter;
-import com.example.tv360.adapter.RvTVAdapter;
+
 import com.example.tv360.ui.TV.DashboardFragment;
-import com.example.tv360.ui.home.HomeFragment;
+
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-import androidx.annotation.NonNull;
+
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
+//import androidx.fragment.app.Fragment;
+//import androidx.fragment.app.FragmentManager;
+//import androidx.fragment.app.FragmentTransaction;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -33,7 +32,7 @@ import androidx.navigation.ui.NavigationUI;
 import com.example.tv360.databinding.ActivityMainBinding;
 
 import java.util.List;
-import java.util.logging.Logger;
+import android.support.v4.app.Fragment;
 
 public class MainActivity extends AppCompatActivity implements RvFilmImageAdapter.DetailFilmListener, ListFilmAdapter.LoadMoreHomeListener , PlayingVideoTVAdapter.DetailFilmTVListener {
 
@@ -126,7 +125,7 @@ public class MainActivity extends AppCompatActivity implements RvFilmImageAdapte
         SharedPreferences.Editor editor = sharedPreferences_tv.edit();
         editor.putString(KEY_TV, intent.getStringExtra("id"));
         editor.apply();
-        Fragment exist =(Fragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment_activity_main);
+        Fragment exist = (Fragment) this.getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment_activity_main);
         FragmentManager fragmentManager = exist.getChildFragmentManager();
         List<Fragment> list = fragmentManager.getFragments();
         DashboardFragment dashboardFragment = (DashboardFragment) list.get(0);

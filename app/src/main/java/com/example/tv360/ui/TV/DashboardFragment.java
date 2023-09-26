@@ -29,7 +29,9 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.fragment.app.Fragment;
+//import androidx.fragment.app.Fragment;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import androidx.viewpager.widget.ViewPager;
 
 import com.example.tv360.Interface.TVFragmentInterface;
@@ -128,20 +130,19 @@ public class DashboardFragment extends Fragment implements TVFragmentInterface {
         {
             root = inflater.inflate(R.layout.fragment_tv, container, false);
             progressBarTV = root.findViewById(R.id.progressBar_tv2);
-            draggablePanel =(DraggablePanel) root.findViewById(R.id.draggable_panel);
-
-            draggablePanel.setFragmentManager(getChildFragmentManager());
-            draggablePanel.setTopFragment(placeFragment);
-            draggablePanel.setBottomFragment(mapFragment);
+            draggablePanel = (DraggablePanel) root.findViewById(R.id.draggable_panel);
+            draggablePanel.setFragmentManager(getActivity().getSupportFragmentManager());
+            draggablePanel.setTopFragment(new TVFirstFragment());
+            draggablePanel.setBottomFragment(new TVSecondFragment());
             draggablePanel.initializeView();
             tabLayout  = (TabLayout) root.findViewById(R.id.tabLayout_main);
             viewPager =(ViewPager) root.findViewById(R.id.viewlayout_pager);
-            sharedPref = getContext().getSharedPreferences(SHARED_PREF_NAME,MODE_PRIVATE);
+            sharedPref = getActivity().getSharedPreferences(SHARED_PREF_NAME,MODE_PRIVATE);
             userID = sharedPref.getString(KEY_USERID,"");
             profileID = sharedPref.getString(KEY_PROFILEID,"");
             accessToken = sharedPref.getString(KEY_ACCESSTOKEN,"");
-            m_andoid = Settings.Secure.getString(getContext().getContentResolver(), Settings.Secure.ANDROID_ID);
-            sharedPreferences_tv = getContext().getSharedPreferences(SHARED_TV_PLAYING,MODE_PRIVATE);
+            m_andoid = Settings.Secure.getString(getActivity().getContentResolver(), Settings.Secure.ANDROID_ID);
+            sharedPreferences_tv = getActivity().getSharedPreferences(SHARED_TV_PLAYING,MODE_PRIVATE);
             id = sharedPreferences_tv.getString(KEY_TV,"");
             isselectedTV = false;
             return  root;

@@ -2,7 +2,8 @@ package com.example.tv360.ui.TV;
 
 import android.os.Bundle;
 
-import androidx.fragment.app.Fragment;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 
 import android.view.LayoutInflater;
 import android.view.View;

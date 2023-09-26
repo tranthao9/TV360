@@ -4,31 +4,24 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
+
+//import androidx.fragment.app.Fragment;
+import android.support.v4.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.tv360.Interface.HomeInterface;
+
 import com.example.tv360.R;
 import com.example.tv360.adapter.RvAdapter;
-import com.example.tv360.databinding.FragmentHomeBinding;
-import com.example.tv360.databinding.FragmentNotificationsBinding;
 import com.example.tv360.model.DataObject;
-import com.example.tv360.model.FilmModel;
 import com.example.tv360.model.HomeModel;
-import com.example.tv360.model.ListFilmModel;
-import com.example.tv360.model.WatchingAgainTV;
 import com.example.tv360.presenter.HomePresenter;
 import com.example.tv360.retrofit.ApiService;
 import com.example.tv360.retrofit.HomeService;
@@ -64,7 +57,7 @@ public class HomeFragment extends Fragment {
             viewfragmenthome = inflater.inflate(R.layout.fragment_home,container,false);
             progressBar = viewfragmenthome.findViewById(R.id.progressBar_tv);
             viewhome = viewfragmenthome.findViewById(R.id.viewhome);
-            viewhome.setLayoutManager(new LinearLayoutManager(getContext()));
+            viewhome.setLayoutManager(new LinearLayoutManager(getActivity()));
             isselected = false;
             return viewfragmenthome;
         }
@@ -124,7 +117,7 @@ public class HomeFragment extends Fragment {
 
                 listitem = homePresenter.getdata(dataObject.getData());
 
-                rvAdapter=new RvAdapter(getContext(), listitem);
+                rvAdapter=new RvAdapter(getActivity(), listitem);
                 viewhome.setAdapter(rvAdapter);
             }
             @Override
