@@ -54,10 +54,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <com.github.pedrovgs.DraggablePanel
-            android:id="@+id/draggable_panel"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
 
     <!--    <androidx.recyclerview.widget.RecyclerView-->
     <!--        android:id="@+id/viewtv"-->

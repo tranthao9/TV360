@@ -8,8 +8,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 //import androidx.fragment.app.Fragment;
-import android.support.v4.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
+import androidx.fragment.app.Fragment;
 
 import com.example.tv360.databinding.FragmentNotificationsBinding;
 

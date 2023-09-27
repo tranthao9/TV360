@@ -133,11 +133,11 @@ public class DashboardFragment extends Fragment implements TVFragmentInterface {
             root = inflater.inflate(R.layout.fragment_tv, container, false);
             progressBarTV = root.findViewById(R.id.progressBar_tv2);
             draggablePanel =(DraggablePanel) root.findViewById(R.id.draggable_panel);
-            FragmentManager fragmentManager = getChildFragmentManager();
-            draggablePanel.setFragmentManager(fragmentManager);
-            draggablePanel.setTopFragment(placeFragment);
-            draggablePanel.setBottomFragment(mapFragment);
-            draggablePanel.initializeView();
+//            FragmentManager fragmentManager = getChildFragmentManager();
+//            draggablePanel.setFragmentManager(fragmentManager);
+//            draggablePanel.setTopFragment(placeFragment);
+//            draggablePanel.setBottomFragment(mapFragment);
+//            draggablePanel.initializeView();
             tabLayout  = (TabLayout) root.findViewById(R.id.tabLayout_main);
             viewPager =(ViewPager) root.findViewById(R.id.viewlayout_pager);
             sharedPref = getContext().getSharedPreferences(SHARED_PREF_NAME,MODE_PRIVATE);

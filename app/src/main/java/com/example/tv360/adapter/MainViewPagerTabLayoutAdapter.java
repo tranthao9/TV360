@@ -19,8 +19,6 @@ import com.example.tv360.presenter.HomePresenter;
 
 import java.util.List;
 
-import pl.droidsonroids.gif.GifImageView;
-
 public class MainViewPagerTabLayoutAdapter extends RecyclerView.Adapter<MainViewPagerTabLayoutAdapter.MainViewPagerTabLayoutViewHolder> {
 
     private Context context;
