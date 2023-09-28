@@ -1,4 +1,4 @@
-package com.example.tv360;
+package com.example.tv360.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ExpandableListView;
 
+import com.example.tv360.R;
 import com.example.tv360.adapter.ExpandlabelProfileAdapter;
 import com.example.tv360.model.GroupObjectProfile;
 import com.example.tv360.model.ItemObjectProfile;

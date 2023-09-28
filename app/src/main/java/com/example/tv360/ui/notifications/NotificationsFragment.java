@@ -10,28 +10,32 @@ import androidx.annotation.NonNull;
 //import androidx.fragment.app.Fragment;
 import androidx.fragment.app.Fragment;
 
-import com.example.tv360.databinding.FragmentNotificationsBinding;
+import com.example.tv360.R;
+
+//import com.example.tv360.databinding.FragmentNotificationsBinding;
 
 public class NotificationsFragment extends Fragment {
 
-    private FragmentNotificationsBinding binding;
+//    private FragmentNotificationsBinding binding;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
 //        NotificationsViewModel notificationsViewModel =
 //                new ViewModelProvider(getActivity()).get(NotificationsViewModel.class);
 
-        binding = FragmentNotificationsBinding.inflate(inflater, container, false);
-        View root = binding.getRoot();
-
-        final TextView textView = binding.textNotifications;
+//        binding = FragmentNotificationsBinding.inflate(inflater, container, false);
+//        View root = binding.getRoot();
+//
+//        final TextView textView = binding.textNotifications;
 //        notificationsViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
-        return root;
+//        return root;
+        View view = inflater.inflate(R.layout.fragment_notifications,container,false);
+        return view;
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        binding = null;
+//        binding = null;
     }
 }

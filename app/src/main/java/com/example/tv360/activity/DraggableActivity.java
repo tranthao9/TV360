@@ -1,17 +1,21 @@
-package com.example.tv360;
+package com.example.tv360.activity;
 
 import android.os.Bundle;
 import android.os.Handler;
 
-import android.support.v4.app.FragmentActivity;
 import android.view.View;
 import android.widget.Button;
 
 
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.tv360.R;
 import com.example.tv360.ui.TV.TVFirstFragment;
 import com.example.tv360.ui.TV.TVSecondFragment;
 import com.github.pedrovgs.DraggablePanel;
-public class DraggableActivity extends FragmentActivity {
+
+
+public class DraggableActivity extends AppCompatActivity {
 
     Button button;
     DraggablePanel draggablePanel;
@@ -26,6 +30,7 @@ public class DraggableActivity extends FragmentActivity {
         draggablePanel.setFragmentManager(getSupportFragmentManager());
         draggablePanel.setTopFragment(new TVFirstFragment());
         draggablePanel.setBottomFragment(new TVSecondFragment());
+        draggablePanel.setTopViewHeight(500);
         draggablePanel.initializeView();
 
         Handler handler = new Handler();

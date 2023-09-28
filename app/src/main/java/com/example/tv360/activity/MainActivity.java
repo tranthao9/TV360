@@ -1,26 +1,20 @@
-package com.example.tv360;
+package com.example.tv360.activity;
 
-import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
-import android.view.MenuItem;
 import android.view.Window;
 import android.view.WindowManager;
 
+import com.example.tv360.R;
 import com.example.tv360.adapter.ListFilmAdapter;
 import com.example.tv360.adapter.PlayingVideoTVAdapter;
 import com.example.tv360.adapter.RvFilmImageAdapter;
-import com.example.tv360.adapter.RvTVAdapter;
 import com.example.tv360.ui.TV.DashboardFragment;
-import com.example.tv360.ui.home.HomeFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -30,14 +24,12 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
-import com.example.tv360.databinding.ActivityMainBinding;
 
 import java.util.List;
-import java.util.logging.Logger;
 
 public class MainActivity extends AppCompatActivity implements RvFilmImageAdapter.DetailFilmListener, ListFilmAdapter.LoadMoreHomeListener , PlayingVideoTVAdapter.DetailFilmTVListener {
 
-    private ActivityMainBinding binding;
+
 
     SharedPreferences sharedPreferences_tv;
 
@@ -53,8 +45,8 @@ public class MainActivity extends AppCompatActivity implements RvFilmImageAdapte
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,WindowManager.LayoutParams.FLAG_FULLSCREEN);
         getSupportActionBar().hide();
-        binding = ActivityMainBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
+//        binding = ActivityMainBinding.inflate(getLayoutInflater());
+//        setContentView(binding.getRoot());
         sharedPreferences_tv = getSharedPreferences(SHARED_TV_PLAYING,MODE_PRIVATE);
         BottomNavigationView navView = findViewById(R.id.nav_view);
         AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
@@ -62,7 +54,7 @@ public class MainActivity extends AppCompatActivity implements RvFilmImageAdapte
                 .build();
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_main);
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
-        NavigationUI.setupWithNavController(binding.navView, navController);
+//        NavigationUI.setupWithNavController(binding.navView, navController);
 //        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 //        HomeFragment fragment = new HomeFragment();
 //        transaction.replace(R.id.nav_host_fragment_activity_main,fragment);

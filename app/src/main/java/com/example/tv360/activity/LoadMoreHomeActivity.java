@@ -1,4 +1,4 @@
-package com.example.tv360;
+package com.example.tv360.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -14,12 +13,11 @@ import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.TextView;
 
+import com.example.tv360.R;
 import com.example.tv360.adapter.LoadMoreAdapter;
 import com.example.tv360.model.DataObjectLoadMore;
-import com.example.tv360.model.DataObjectUrlVideo;
 import com.example.tv360.retrofit.ApiService;
 import com.example.tv360.retrofit.HomeService;
-import com.google.gson.JsonElement;
 
 import retrofit2.Call;
 import retrofit2.Callback;

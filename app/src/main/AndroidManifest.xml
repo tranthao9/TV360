@@ -18,23 +18,23 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
-            android:name=".DraggableActivity"
+            android:name=".activity.DraggableActivity"
             android:exported="false" />
         <activity
-            android:name=".profileActivity"
+            android:name=".activity.profileActivity"
             android:exported="false" />
         <activity
-            android:name=".LoadMoreHomeActivity"
+            android:name=".activity.LoadMoreHomeActivity"
             android:exported="false" />
         <activity
-            android:name=".PlayingVideoAvtivity"
+            android:name=".activity.PlayingVideoAvtivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:exported="false" />
         <activity
-            android:name=".MainActivity"
+            android:name=".activity.MainActivity"
             android:exported="false" />
         <activity
-            android:name=".LoginActivity"
+            android:name=".activity.LoginActivity"
             android:exported="true"
             android:label="@string/app_name">
             <intent-filter>

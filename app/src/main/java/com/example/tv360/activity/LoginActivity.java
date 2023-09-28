@@ -1,4 +1,4 @@
-package com.example.tv360;
+package com.example.tv360.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -8,36 +8,23 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.provider.Settings;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.tv360.Interface.LoginInterface;
-import com.example.tv360.MainActivity;
 import com.example.tv360.R;
-import com.example.tv360.model.DataObject;
 import com.example.tv360.model.DataObjectLogin;
 import com.example.tv360.model.DeviceInfo;
 import com.example.tv360.model.LoginModel;
-import com.example.tv360.model.UserModel;
 import com.example.tv360.presenter.LoginPresenter;
 import com.example.tv360.retrofit.ApiService;
-import com.example.tv360.retrofit.HomeService;
 import com.example.tv360.retrofit.UserApiService;
-import com.google.gson.JsonElement;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
 
 
 public class LoginActivity extends AppCompatActivity implements LoginInterface {

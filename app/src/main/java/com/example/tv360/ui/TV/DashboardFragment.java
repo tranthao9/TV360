@@ -30,22 +30,20 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
-import androidx.fragment.app.FragmentManager;
 import androidx.viewpager.widget.ViewPager;
 
 import com.example.tv360.Interface.TVFragmentInterface;
 import com.example.tv360.R;
 import com.example.tv360.TrackSelectionDialog;
 import com.example.tv360.adapter.CustomViewPagerAdapter;
-import com.example.tv360.databinding.FragmentTvBinding;
-import com.example.tv360.model.DataObject;
+
 import com.example.tv360.model.DataObjectUrlVideo;
 import com.example.tv360.model.FilmModel;
 import com.example.tv360.model.HomeModel;
 import com.example.tv360.presenter.TVFragmentPresenter;
 import com.example.tv360.retrofit.ApiService;
 import com.example.tv360.retrofit.HomeService;
+
 import com.github.pedrovgs.DraggablePanel;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.MediaItem;
