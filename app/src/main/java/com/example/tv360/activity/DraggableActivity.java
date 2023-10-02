@@ -37,6 +37,8 @@ public class DraggableActivity extends AppCompatActivity {
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
+
+                getSupportFragmentManager().popBackStack();
                 draggablePanel.closeToLeft();
             }
         },100);

@@ -18,6 +18,7 @@ package com.github.pedrovgs;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.widget.FrameLayout;
 
 import androidx.fragment.app.Fragment;
@@ -249,6 +250,7 @@ public class DraggablePanel extends FrameLayout {
    * corner of the screen.
    */
   public void minimize() {
+    Log.d("Khi nho ne", "ok");
     draggableView.minimize();
   }
 

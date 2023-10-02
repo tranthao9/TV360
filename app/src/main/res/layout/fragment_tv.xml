@@ -5,44 +5,9 @@
     android:id="@+id/fragment_container_tv"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/black"
     tools:context=".ui.TV.DashboardFragment"
+    android:background="@color/black"
     android:tag="fragment_tv">
-
-
-        <com.google.android.exoplayer2.ui.StyledPlayerView
-            android:id="@+id/playvideo_tv"
-            android:layout_width="0dp"
-            android:layout_height="220dp"
-            app:controller_layout_id="@layout/custom_player_control"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:resize_mode="fixed_width"
-            app:show_buffering="when_playing" />
-
-        <com.google.android.material.tabs.TabLayout
-            android:id="@+id/tabLayout_main"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@color/black"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/playvideo_tv"
-            app:tabMode="scrollable"
-            app:tabSelectedTextColor="@color/white"
-            app:tabTextAppearance="@style/tabstyle"
-            app:tabTextColor="@color/grey40" />
-
-
-        <androidx.viewpager.widget.ViewPager
-            android:id="@+id/viewlayout_pager"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tabLayout_main" />
 
         <ProgressBar
             android:id="@+id/progressBar_tv2"

@@ -19,6 +19,7 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.RelativeLayout;
@@ -764,6 +765,7 @@ public class DraggableView extends RelativeLayout {
   private void notifyMinimizeToListener() {
     if (listener != null) {
       listener.onMinimized();
+
     }
   }
 
