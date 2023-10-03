@@ -37,8 +37,6 @@ public class TVSecondFragment extends Fragment {
 
     private  CustomViewPagerAdapter customViewPagerAdapter;
 
-    private Boolean isScroll = false;
-
     private SharedTVViewModel sharedTVViewModel;
 
     List<FilmModel> listData = new ArrayList<>();
@@ -69,6 +67,11 @@ public class TVSecondFragment extends Fragment {
         });
 
         return view;
+    }
+
+    public  void  updateId(String id)
+    {
+        customViewPagerAdapter.SetData(id);
     }
 
     private void setData(List<HomeModel> datalistTV)
@@ -115,19 +118,7 @@ public class TVSecondFragment extends Fragment {
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
-                tabLayout.selectTab(tabLayout.getTabAt(tab.getPosition()));
-                if(isScroll)
-                {
-                    viewPager.setCurrentItem(tab.getPosition(),true);
-                    isScroll = false;
-                    return;
-                }
-                else
-                {
-                    viewPager.setCurrentItem(tab.getPosition(),false);
-                    isScroll = false;
-                    return;
-                }
+                viewPager.setCurrentItem(tab.getPosition(),false);
             }
 
             @Override
@@ -143,13 +134,12 @@ public class TVSecondFragment extends Fragment {
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-                isScroll = true;
                 tabLayout.getTabAt(position).select();
+
             }
 
             @Override
             public void onPageSelected(int position) {
-                isScroll = false;
             }
             @Override
             public void onPageScrollStateChanged(int state) {

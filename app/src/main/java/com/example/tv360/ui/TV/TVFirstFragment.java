@@ -47,6 +47,7 @@ import com.google.android.exoplayer2.ui.StyledPlayerView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -88,6 +89,7 @@ public class TVFirstFragment extends Fragment {
     TextView text_speed , text_quality;
 
     private SharedTVViewModel sharedtvviewmodel ;
+    ImageView play;
 
     String id,type;
     @Override
@@ -113,8 +115,16 @@ public class TVFirstFragment extends Fragment {
                 PlayVideo(id,type);
             }
         });
-        view.bringToFront();
         return view;
+    }
+
+    public void updateData(String id,String type)
+    {
+        if(playerTV != null)
+        {
+            playerTV.stop();
+        }
+        PlayVideo(id,type);
     }
 
     private void PlayVideo(String id,String type) {
@@ -124,7 +134,8 @@ public class TVFirstFragment extends Fragment {
             @Override
             public void onResponse(Call<DataObjectUrlVideo> call, Response<DataObjectUrlVideo> response) {
                 DataObjectUrlVideo urlVideo = response.body();
-                if (urlVideo.getData().getUrlStreaming() == null || urlVideo.getData().getUrlStreaming() == "")
+                assert urlVideo != null;
+                if (urlVideo.getData().getUrlStreaming() == null || Objects.equals(urlVideo.getData().getUrlStreaming(), ""))
                 {
                     SharedPreferences.Editor editor = sharedPreferences_tv.edit();
                     editor.putString(KEY_TV, "");
@@ -137,7 +148,7 @@ public class TVFirstFragment extends Fragment {
 
                     ImageView setiing_play = styledPlayerViewTV.findViewById(R.id.exo_settings_icon);
 
-                    ImageView play = styledPlayerViewTV.findViewById(R.id.pause_button);
+                     play = styledPlayerViewTV.findViewById(R.id.pause_button);
                     setiing_play.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
@@ -360,6 +371,27 @@ public class TVFirstFragment extends Fragment {
         if(playerTV != null)
         {
             playerTV.stop();
+        }
+    }
+
+
+
+    public void onPauseExo() {
+        if(playerTV != null)
+        {
+            ispause = true;
+            play.setBackgroundResource(R.drawable.baseline_play_arrow_24);
+            playerTV.setPlayWhenReady(false);
+            playerTV.pause();
+        }
+    }
+    public void onPlayExo() {
+        if(playerTV != null)
+        {
+            ispause = false;
+            play.setBackgroundResource(R.drawable.baseline_pause_24);
+            playerTV.setPlayWhenReady(true);
+            playerTV.play();
         }
     }
 

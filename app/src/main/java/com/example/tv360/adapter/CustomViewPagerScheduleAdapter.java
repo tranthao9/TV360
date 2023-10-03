@@ -36,11 +36,25 @@ public class CustomViewPagerScheduleAdapter extends RecyclerView.Adapter<CustomV
 
     private String id = "";
 
+    SharedPreferences sharedPreferences_tv;
+
+    private static  final  String SHARED_TV_PLAYING = "playingtv";
+
+    private  static  final  String KEY_TV = "id";
+
 
     private PlayingVideoTVAdapter.DetailFilmTVListener detailFilmListener;
 
-    public void setData(Context context, List<FilmModel> list , String id){
-        this.id = id;
+    public  void  SetDataID(String idchanel)
+    {
+        this.id = idchanel;
+        notifyDataSetChanged();
+    }
+
+
+    public void setData(Context context, List<FilmModel> list){
+        sharedPreferences_tv = context.getSharedPreferences(SHARED_TV_PLAYING,MODE_PRIVATE);
+        this.id = sharedPreferences_tv.getString(KEY_TV,"");
         this.categoryList = list;
         this.context = context;
         try {
@@ -69,7 +83,7 @@ public class CustomViewPagerScheduleAdapter extends RecyclerView.Adapter<CustomV
         holder.imgCategory.setLayoutParams(l);
         holder.imgCategory.setClipToOutline(true);
         Glide.with(holder.itemView.getContext()).load(category.getCoverImage()).into(holder.imgCategory);
-        if(id == category.getId())
+        if(Objects.equals(id, category.getId()))
         {
             Drawable highlight = holder.itemView.getContext().getResources().getDrawable( R.drawable.highlight);
             holder.imgCategory.setBackground(highlight);
@@ -90,6 +104,8 @@ public class CustomViewPagerScheduleAdapter extends RecyclerView.Adapter<CustomV
                 intent.putExtra("id",category.getId());
                 intent.putExtra("type",category.getType());
                 detailFilmListener.detailFilmTVListener(intent);
+                PlayingVideoTVAdapter playingVideoTVAdapter = new PlayingVideoTVAdapter();
+
             }
         });
 

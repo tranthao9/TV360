@@ -33,6 +33,12 @@ public class MainViewPagerTabLayoutAdapter extends RecyclerView.Adapter<MainView
         notifyDataSetChanged();
     }
 
+    public void  setData(String id)
+    {
+        this.id = id;
+        notifyDataSetChanged();
+    }
+
     @NonNull
     @Override
     public MainViewPagerTabLayoutViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -55,7 +61,7 @@ public class MainViewPagerTabLayoutAdapter extends RecyclerView.Adapter<MainView
        }
         holder.gifImageView.setText(homeModel.getName());
         PlayingVideoTVAdapter modelAdapter = new PlayingVideoTVAdapter();
-        modelAdapter.setData(context, homeModel.getContent(),id);
+        modelAdapter.setData(context, homeModel.getContent());
         holder.recyclerView.setAdapter(modelAdapter);
 
     }

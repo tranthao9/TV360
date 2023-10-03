@@ -1,5 +1,7 @@
 package com.example.tv360.adapter;
 
+import static android.content.Context.MODE_PRIVATE;
+
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -18,15 +20,23 @@ import com.example.tv360.R;
 import com.example.tv360.model.FilmModel;
 
 import java.util.List;
+import java.util.Objects;
 
 public class PlayingVideoTVAdapter extends  RecyclerView.Adapter<PlayingVideoTVAdapter.PlayingVideoTVHolder>{
     private List<FilmModel> categoryList;
     private PlayingVideoTVAdapter.DetailFilmTVListener detailFilmListener;
 
+    SharedPreferences sharedPreferences_tv;
+
+    private static  final  String SHARED_TV_PLAYING = "playingtv";
+
+    private  static  final  String KEY_TV = "id";
+
     String id;
-    public void setData(Context context, List<FilmModel> list, String id){
+    public void setData(Context context, List<FilmModel> list){
         this.categoryList = list;
-        this.id = id;
+        sharedPreferences_tv = context.getSharedPreferences(SHARED_TV_PLAYING,MODE_PRIVATE);
+        this.id = sharedPreferences_tv.getString(KEY_TV,"");
         try {
             this.detailFilmListener = ((PlayingVideoTVAdapter.DetailFilmTVListener)context) ;
         }catch (ClassCastException ex)
@@ -51,7 +61,7 @@ public class PlayingVideoTVAdapter extends  RecyclerView.Adapter<PlayingVideoTVA
         LinearLayout.LayoutParams l = new LinearLayout.LayoutParams(240,160);
         holder.imgCategory.setLayoutParams(l);
         Glide.with(holder.itemView.getContext()).load(category.getCoverImage()).into(holder.imgCategory);
-        if(id == category.getId())
+        if(Objects.equals(id, category.getId()))
         {
             Drawable highlight = holder.itemView.getContext().getResources().getDrawable( R.drawable.highlight);
             holder.imgCategory.setBackground(highlight);
@@ -73,6 +83,7 @@ public class PlayingVideoTVAdapter extends  RecyclerView.Adapter<PlayingVideoTVA
                 intent.putExtra("id",category.getId());
                 intent.putExtra("type",category.getType());
                 detailFilmListener.detailFilmTVListener(intent);
+
             }
         });
     }

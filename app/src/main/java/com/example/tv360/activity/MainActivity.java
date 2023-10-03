@@ -67,9 +67,14 @@ public class MainActivity extends AppCompatActivity implements RvFilmImageAdapte
     HomeFragment fragmenthome;
     DashboardFragment dashboardFragment;
     NotificationsFragment notificationsFragment;
+
+    TVFirstFragment tvFirstFragment;
+    TVSecondFragment tvSecondFragment;
     boolean isdasfragment = false;
     boolean isnotityfragment = false;
     boolean isminimized = false;
+
+    boolean iscloseddraggable = false;
 
     ExoPlayer playerTV;
 
@@ -82,15 +87,6 @@ public class MainActivity extends AppCompatActivity implements RvFilmImageAdapte
         setContentView(R.layout.activity_main);
         sharedPreferences_tv = getSharedPreferences(SHARED_TV_PLAYING,MODE_PRIVATE);
         navView = findViewById(R.id.nav_view);
-//        AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
-//                R.id.navigation_home, R.id.navigation_dashboard, R.id.navigation_notifications)
-//                .build();
-//        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_main);
-//        NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
-//        NavigationUI.setupWithNavController(navView, navController);
-//        Fragment exist =(Fragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment_activity_main);
-//        isopened = false;
-//        fragmentnav = 0;
         FragmentTransaction transaction  = getSupportFragmentManager().beginTransaction();
         fragmenthome = new HomeFragment();
         transaction.replace(R.id.nav_host_fragment_activity_main,fragmenthome);
@@ -98,10 +94,12 @@ public class MainActivity extends AppCompatActivity implements RvFilmImageAdapte
         transaction.commit();
         fragmentbefore = R.id.navigation_home;
         fragmentnav = navView.getId();
+        tvFirstFragment = new TVFirstFragment();
+        tvSecondFragment = new TVSecondFragment();
         draggablePanel = (DraggablePanel) findViewById(R.id.draggable_panel);
         draggablePanel.setFragmentManager(getSupportFragmentManager());
-        draggablePanel.setTopFragment(new TVFirstFragment());
-        draggablePanel.setBottomFragment(new TVSecondFragment());
+        draggablePanel.setTopFragment(tvFirstFragment);
+        draggablePanel.setBottomFragment(tvSecondFragment);
         draggablePanel.setTopViewHeight(600);
         draggablePanel.setDraggableListener(new DraggableListener() {
 
@@ -112,6 +110,7 @@ public class MainActivity extends AppCompatActivity implements RvFilmImageAdapte
                     navView.setSelectedItemId(R.id.navigation_dashboard);
                     navView.setSelected(true);
                 }
+                tvFirstFragment.onPlayExo();
             }
 
             @Override
@@ -124,25 +123,17 @@ public class MainActivity extends AppCompatActivity implements RvFilmImageAdapte
             }
             @Override
             public void onClosedToLeft() {
-//                View view  = findViewById(R.id.playveofirsttv);
-//                if(view != null)
-//                {
-//                    ViewGroup viewGroup = (ViewGroup) view.getParent();
-//                    if(viewGroup != null)
-//                    {
-//                        viewGroup.removeView(view);
-//                    }
-//                }
+                isopened = false;
+                iscloseddraggable = true;
+                tvFirstFragment.onPauseExo();
+
             }
 
             @Override
             public void onClosedToRight() {
-//                View view  = findViewById(R.id.playveofirsttv);
-//                if(view != null)
-//                {
-//                    PlayerView playerView  = (PlayerView) view.findViewById(R.id.playvideo_tv);
-//                    ExoPlayer exoPlayer = ExoPlayerUtils
-//                }
+                isopened = false;
+                iscloseddraggable = true;
+                tvFirstFragment.onPauseExo();
             }
 
         });
@@ -152,7 +143,6 @@ public class MainActivity extends AppCompatActivity implements RvFilmImageAdapte
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 FragmentTransaction transaction  = getSupportFragmentManager().beginTransaction();
-                List<Fragment> list = getSupportFragmentManager().getFragments();
                 if(item.getItemId() == R.id.navigation_home)
                 {
                     if(fragmentnav == R.id.navigation_dashboard)
@@ -230,7 +220,10 @@ public class MainActivity extends AppCompatActivity implements RvFilmImageAdapte
                     transaction.commit();
                     if(!isopened)
                     {
-                        draggablePanel.initializeView();
+                        if (!iscloseddraggable)
+                        {
+                            draggablePanel.initializeView();
+                        }
                         isopened = true;
                     }
                     isminimized = true;
@@ -250,7 +243,6 @@ public class MainActivity extends AppCompatActivity implements RvFilmImageAdapte
         startActivity(intent1);
     }
 
-
     @Override
     public void LoadMoreHomeListener(Intent intent) {
         Runnable runnable = new Runnable() {
@@ -263,8 +255,6 @@ public class MainActivity extends AppCompatActivity implements RvFilmImageAdapte
         };
         Handler handler = new Handler(Looper.getMainLooper());
         handler.postDelayed(runnable,1000);
-
-
     }
 
     @Override
@@ -272,15 +262,7 @@ public class MainActivity extends AppCompatActivity implements RvFilmImageAdapte
         SharedPreferences.Editor editor = sharedPreferences_tv.edit();
         editor.putString(KEY_TV, intent.getStringExtra("id"));
         editor.apply();
-        Fragment exist =(Fragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment_activity_main);
-        FragmentManager fragmentManager = exist.getChildFragmentManager();
-        List<Fragment> list = fragmentManager.getFragments();
-        DashboardFragment dashboardFragment = (DashboardFragment) list.get(0);
-
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-      dashboardFragment.updateData(intent.getStringExtra("id"));
+        tvFirstFragment.updateData(intent.getStringExtra("id"),intent.getStringExtra("type"));
+        tvSecondFragment.updateId(intent.getStringExtra("id"));
     }
-
-
-
 }

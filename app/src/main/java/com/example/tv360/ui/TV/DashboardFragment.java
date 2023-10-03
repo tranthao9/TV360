@@ -49,13 +49,10 @@ public class DashboardFragment extends Fragment implements TVFragmentInterface {
 
    private View root;
 
-    DraggablePanel draggablePanel;
-
      private   List<HomeModel> datalistTV;
 
      private TVFragmentPresenter tvFragmentPresenter = new TVFragmentPresenter(this);
     private SharedTVViewModel sharedtvviewmodel ;
-
 
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -77,11 +74,7 @@ public class DashboardFragment extends Fragment implements TVFragmentInterface {
 
     public  void  updateData(String id)
     {
-
-//        playerTV.stop();
-//        PlayVideo(id,"LIVE");
-//        customViewPagerAdapter.SetData(id);
-//        viewPager.setAdapter(customViewPagerAdapter);
+        sharedtvviewmodel.setSharedData(id,"LIVE",datalistTV);
 
     }
     @Override
@@ -137,9 +130,7 @@ public class DashboardFragment extends Fragment implements TVFragmentInterface {
         }
         else
         {
-
             sharedtvviewmodel.setSharedData(id,"LIVE",datalistTV);
-
         }
 
 

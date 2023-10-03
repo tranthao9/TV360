@@ -54,14 +54,15 @@ public class CustomViewPagerAdapter extends PagerAdapter implements HomeInterfac
 
     Map<FilmModel,List<HomeModel>> modelListMap = new HashMap<>();
 
-
-
+    CustomViewPagerScheduleAdapter customViewPagerScheduleAdapter;
+    MainViewPagerTabLayoutAdapter mainViewPagerTabLayoutAdapter;
 
     public CustomViewPagerAdapter(Context context, List<FilmModel> modelList, List<HomeModel> listcontentfirst, String idchanel) {
         this.context = context;
         this.modelList = modelList;
         this.listcontentfirst = listcontentfirst;
         this.idchanel = idchanel;
+        this.customViewPagerScheduleAdapter = new CustomViewPagerScheduleAdapter();
         date = df.format(Calendar.getInstance().getTime());
         infoPreseter = new InfoPreseter(this);
         infoPreseter.getwatchingagain(idchanel,date);
@@ -75,8 +76,8 @@ public class CustomViewPagerAdapter extends PagerAdapter implements HomeInterfac
 
     public  void  SetData(String idchanel)
     {
-        this.idchanel = idchanel;
-        notifyDataSetChanged();
+        this.customViewPagerScheduleAdapter.SetDataID(idchanel);
+        this.mainViewPagerTabLayoutAdapter.setData(idchanel);
     }
 
     @NonNull
@@ -86,7 +87,7 @@ public class CustomViewPagerAdapter extends PagerAdapter implements HomeInterfac
         {
             View view =  LayoutInflater.from(container.getContext()).inflate(R.layout.main_layour_for_viewpager,container,false);
             RecyclerView recyclerView = view.findViewById(R.id.main_recyclevire_tab);
-            MainViewPagerTabLayoutAdapter mainViewPagerTabLayoutAdapter =  new MainViewPagerTabLayoutAdapter(container.getContext(),listcontentfirst,idchanel);
+            mainViewPagerTabLayoutAdapter =  new MainViewPagerTabLayoutAdapter(container.getContext(),listcontentfirst,idchanel);
             recyclerView.setAdapter(mainViewPagerTabLayoutAdapter);
             container.addView(view);
             return  view;
@@ -96,9 +97,8 @@ public class CustomViewPagerAdapter extends PagerAdapter implements HomeInterfac
             RecyclerView recyclerView1 = view.findViewById(R.id.recyclerViewChanel);
             LinearLayoutManager linearLayoutManager = new LinearLayoutManager(container.getContext(),RecyclerView.HORIZONTAL,false);
             recyclerView1.setLayoutManager(linearLayoutManager);
-            recyclerView1.setFocusable(false);//ko focus con tro
-            CustomViewPagerScheduleAdapter customViewPagerScheduleAdapter = new CustomViewPagerScheduleAdapter();
-            customViewPagerScheduleAdapter.setData(container.getContext(),Listfimchanel,idchanel);
+            recyclerView1.setFocusable(true);//ko focus con tro
+            customViewPagerScheduleAdapter.setData(container.getContext(),Listfimchanel);
             recyclerView1.setAdapter(customViewPagerScheduleAdapter);
             TextView textView = view.findViewById(R.id.schedule_wathching_gain);
             ImageButton previous = view.findViewById(R.id.previous_calendar);
