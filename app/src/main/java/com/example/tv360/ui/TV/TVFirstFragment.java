@@ -211,7 +211,6 @@ public class TVFirstFragment extends Fragment {
                     TrackSelectionParameters newParameters = trackSelector.getParameters()
                             .buildUpon().build();
 
-
                     trackSelector.setParameters((DefaultTrackSelector.Parameters) newParameters);
                     playerTV = new ExoPlayer.Builder(getContext()).setTrackSelector(trackSelector).build();
                     styledPlayerViewTV.setPlayer(playerTV);
@@ -363,4 +362,6 @@ public class TVFirstFragment extends Fragment {
             playerTV.stop();
         }
     }
+
+
 }

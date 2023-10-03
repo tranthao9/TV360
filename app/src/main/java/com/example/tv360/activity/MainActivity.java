@@ -7,7 +7,9 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -24,6 +26,8 @@ import com.example.tv360.ui.home.HomeFragment;
 import com.example.tv360.ui.notifications.NotificationsFragment;
 import com.github.pedrovgs.DraggableListener;
 import com.github.pedrovgs.DraggablePanel;
+import com.google.android.exoplayer2.ExoPlayer;
+import com.google.android.exoplayer2.ui.PlayerView;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import androidx.annotation.NonNull;
@@ -57,8 +61,17 @@ public class MainActivity extends AppCompatActivity implements RvFilmImageAdapte
     private  BottomNavigationView navView;
 
     int fragmentnav = 0 ;
+    int fragmentbefore  = 0;
 
     boolean isopened = false;
+    HomeFragment fragmenthome;
+    DashboardFragment dashboardFragment;
+    NotificationsFragment notificationsFragment;
+    boolean isdasfragment = false;
+    boolean isnotityfragment = false;
+    boolean isminimized = false;
+
+    ExoPlayer playerTV;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,11 +91,12 @@ public class MainActivity extends AppCompatActivity implements RvFilmImageAdapte
 //        Fragment exist =(Fragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment_activity_main);
 //        isopened = false;
 //        fragmentnav = 0;
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        DashboardFragment fragment = new DashboardFragment();
-        transaction.replace(R.id.nav_host_fragment_activity_main,fragment);
+        FragmentTransaction transaction  = getSupportFragmentManager().beginTransaction();
+        fragmenthome = new HomeFragment();
+        transaction.replace(R.id.nav_host_fragment_activity_main,fragmenthome);
         transaction.addToBackStack(null);
         transaction.commit();
+        fragmentbefore = R.id.navigation_home;
         fragmentnav = navView.getId();
         draggablePanel = (DraggablePanel) findViewById(R.id.draggable_panel);
         draggablePanel.setFragmentManager(getSupportFragmentManager());
@@ -90,63 +104,140 @@ public class MainActivity extends AppCompatActivity implements RvFilmImageAdapte
         draggablePanel.setBottomFragment(new TVSecondFragment());
         draggablePanel.setTopViewHeight(600);
         draggablePanel.setDraggableListener(new DraggableListener() {
+
             @Override
             public void onMaximized() {
-
+                if(!isminimized)
+                {
+                    navView.setSelectedItemId(R.id.navigation_dashboard);
+                    navView.setSelected(true);
+                }
             }
 
             @Override
             public void onMinimized() {
-                getSupportFragmentManager().popBackStack();
-
+                if(isminimized)
+                {
+                    navView.setSelectedItemId(fragmentbefore);
+                    navView.setSelected(true);
+                }
             }
-
             @Override
             public void onClosedToLeft() {
+//                View view  = findViewById(R.id.playveofirsttv);
+//                if(view != null)
+//                {
+//                    ViewGroup viewGroup = (ViewGroup) view.getParent();
+//                    if(viewGroup != null)
+//                    {
+//                        viewGroup.removeView(view);
+//                    }
+//                }
             }
 
             @Override
             public void onClosedToRight() {
+//                View view  = findViewById(R.id.playveofirsttv);
+//                if(view != null)
+//                {
+//                    PlayerView playerView  = (PlayerView) view.findViewById(R.id.playvideo_tv);
+//                    ExoPlayer exoPlayer = ExoPlayerUtils
+//                }
             }
+
         });
-        draggablePanel.initializeView();
+
 
         navView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+                FragmentTransaction transaction  = getSupportFragmentManager().beginTransaction();
+                List<Fragment> list = getSupportFragmentManager().getFragments();
                 if(item.getItemId() == R.id.navigation_home)
                 {
+                    if(fragmentnav == R.id.navigation_dashboard)
+                    {
+                        transaction.replace(dashboardFragment.getId(),fragmenthome);
+                    }
+                    else if(fragmentnav == R.id.navigation_notifications)
+                    {
+                        transaction.replace(notificationsFragment.getId(),fragmenthome);
+                    }
+                    else
+                    {
+                        transaction.replace(fragmenthome.getId(),fragmenthome);
+                    }
+                    transaction.addToBackStack(null);
+                    transaction.commit();
                     fragmentnav = R.id.navigation_home;
                     if(isopened)
                     {
+                        isminimized = false;
                         draggablePanel.minimize();
                     }
+                    fragmentbefore = R.id.navigation_home;
                 }
-                if(item.getItemId() == R.id.navigation_notifications)
+                else if(item.getItemId() == R.id.navigation_notifications)
                 {
-
+                    if(!isnotityfragment)
+                    {
+                        notificationsFragment = new NotificationsFragment();
+                        isnotityfragment = true;
+                    }
+                    if(fragmentnav == R.id.navigation_dashboard)
+                    {
+                        transaction.replace(dashboardFragment.getId(),notificationsFragment);
+                    }
+                    else if(fragmentnav == R.id.navigation_notifications)
+                    {
+                        transaction.replace(notificationsFragment.getId(),notificationsFragment);
+                    }
+                    else
+                    {
+                        transaction.replace(fragmenthome.getId(),notificationsFragment);
+                    }
+                    transaction.addToBackStack(null);
+                    transaction.commit();
                     fragmentnav = R.id.navigation_notifications;
                     if(isopened)
                     {
+                        isminimized = false;
                         draggablePanel.minimize();
                     }
+                    fragmentbefore = R.id.navigation_notifications;
 
                 }
-                if(item.getItemId() == R.id.navigation_dashboard) {
+                else {
 
-                    DashboardFragment fragment = new DashboardFragment();
-                    transaction.replace(getSupportFragmentManager().getFragments().get(0).getId(),fragment);
+                    if(!isdasfragment)
+                    {
+                        dashboardFragment = new DashboardFragment();
+                        isdasfragment = true;
+                    }
+                    if(fragmentnav == R.id.navigation_dashboard)
+                    {
+                        transaction.replace(dashboardFragment.getId(),dashboardFragment);
+                    }
+                    else if(fragmentnav == R.id.navigation_notifications)
+                    {
+                        transaction.replace(notificationsFragment.getId(),dashboardFragment);
+                    }
+                    else
+                    {
+                        transaction.replace(fragmenthome.getId(),dashboardFragment);
+                    }
                     transaction.addToBackStack(null);
                     transaction.commit();
-                    if(fragmentnav != 0)
+                    if(!isopened)
                     {
-                        draggablePanel.maximize();
+                        draggablePanel.initializeView();
                         isopened = true;
                     }
+                    isminimized = true;
+                    draggablePanel.maximize();
                     fragmentnav = R.id.navigation_dashboard;
                 }
-                return  false;
+                return  true;
             }
         });
     }

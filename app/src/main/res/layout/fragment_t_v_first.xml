@@ -5,6 +5,7 @@
     android:layout_height="match_parent"
     android:elevation="120dp"
     android:translationZ="120dp"
+    android:id="@+id/playveofirsttv"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
    <com.google.android.exoplayer2.ui.StyledPlayerView
