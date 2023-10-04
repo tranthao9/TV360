@@ -45,4 +45,8 @@
 <!--            app:fontStyle="italic"-->
 <!--            app:fontWeight="700" />-->
 <!--    </style>-->
+
+    <style name="NoBottomBorderEditText">
+        <item name="background">@null</item>
+    </style>
 </resources>

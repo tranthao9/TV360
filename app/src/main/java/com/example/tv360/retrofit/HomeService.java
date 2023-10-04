@@ -45,4 +45,11 @@ public interface HomeService {
     Call<DataObjectWatchingAgainTV> getLiveSchedule(
             @Query("id") String id,
             @Query("datetime") String datetime);
+
+    @GET("public/v1/search/search")
+    Call<JsonElement> search(
+            @Query("keyword") String keyword,
+            @Query("offset") int offset,
+            @Query("type") String type,
+            @Query("searchType") String searchType);
 }

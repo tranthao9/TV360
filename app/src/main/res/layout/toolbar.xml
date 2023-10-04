@@ -35,14 +35,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/baseline_search_24"
-            android:id="@+id/search"
+            android:id="@+id/searchHeader"
             android:layout_marginLeft="15dp"
             android:layout_marginTop="23dp"/>
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/baseline_person_24"
-            android:id="@+id/profile"
+            android:src="@drawable/baseline_account_circle_24"
+            android:id="@+id/profileHeader"
             android:layout_marginLeft="15dp"
             android:layout_marginTop="23dp"/>
     </LinearLayout>

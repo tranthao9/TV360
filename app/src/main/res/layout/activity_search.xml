@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="20dp"
+    android:background="@color/black"
+    tools:context=".activity.SearchActivity">
+
+    <LinearLayout
+        android:id="@+id/linearLayout4"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:padding="4dp"
+        android:weightSum="14"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageButton
+            android:id="@+id/previous_search"
+            android:layout_width="0dp"
+            android:layout_height="28dp"
+            android:layout_weight="1"
+            android:padding="8dp"
+            android:background="@drawable/previous_24" />
+
+        <EditText
+            android:id="@+id/searchView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="11"
+            android:background="@drawable/edit_text_custom"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:editable="true"
+            android:hint="Nhập tìm kiếm của bạn ở đây"
+            android:maxLines="1"
+            android:paddingLeft="8dp"
+            android:textColor="@color/white"
+            android:textColorHint="@color/grey60"
+            android:textCursorDrawable="@drawable/caret_red"
+            android:inputType="text"
+            android:textSize="16dp" />
+
+<!--            <androidx.appcompat.widget.SearchView-->
+<!--                android:id="@+id/searchView"-->
+<!--                android:layout_width="0dp"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_weight="12"-->
+<!--                app:iconifiedByDefault="false"-->
+<!--                app:queryTextSize = "16dp"-->
+<!--                app:closeIcon="@drawable/baseline_highlight_off_24"-->
+<!--                android:background="@drawable/search_view_bg"-->
+<!--                />-->
+
+        <ImageButton
+            android:id="@+id/removeButton"
+            android:layout_width="0dp"
+            android:layout_height="20dp"
+            android:layout_marginLeft="4dp"
+            android:layout_weight="1"
+            android:background="@drawable/none" />
+        <ImageButton
+            android:id="@+id/recordButton"
+            android:layout_width="0dp"
+            android:layout_height="24dp"
+            android:layout_weight="1"
+            android:layout_marginLeft="12dp"
+            android:background="@drawable/baseline_mic_24" />
+
+    </LinearLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout4" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
