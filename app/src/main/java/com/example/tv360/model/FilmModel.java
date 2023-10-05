@@ -17,7 +17,8 @@ public class FilmModel {
 
     private  int display;
 
-    public FilmModel(String id, String name, String description, String slug, String durationStr, String resolution, String coverImage, String animationImage,String type,int display) {
+    private  String playTimes;
+    public FilmModel(String id, String name, String description, String slug, String durationStr,String playTimes, String resolution, String coverImage, String animationImage,String type,int display) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -28,6 +29,7 @@ public class FilmModel {
         this.animationImage = animationImage;
         this.type = type;
         this.display = display;
+        this.playTimes = playTimes;
     }
 
     public String getId() {
@@ -38,6 +40,13 @@ public class FilmModel {
         this.id = id;
     }
 
+    public String getPlayTimes() {
+        return playTimes;
+    }
+
+    public void setPlayTimes(String playTimes) {
+        this.playTimes = playTimes;
+    }
     public String getName() {
         return name;
     }

@@ -78,7 +78,6 @@ public class PlayingVideoAvtivity extends AppCompatActivity{
         this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,WindowManager.LayoutParams.FLAG_FULLSCREEN);
         getSupportActionBar().hide();
         setContentView(R.layout.activity_playing_video_avtivity);
-
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         SharedPreferences sharedPref = getSharedPreferences(SHARED_PREF_NAME,MODE_PRIVATE);
         String userID = sharedPref.getString(KEY_USERID,"");
@@ -181,7 +180,6 @@ public class PlayingVideoAvtivity extends AppCompatActivity{
                 trackSelector.setParameters((DefaultTrackSelector.Parameters) newParameters);
                 player = new ExoPlayer.Builder(PlayingVideoAvtivity.this).setTrackSelector(trackSelector).build();
                 styledPlayerView.setPlayer(player);
-
                 MediaItem mediaItem = MediaItem.fromUri(urlVideo.getData().getUrlStreaming());
                 player.setMediaItem(mediaItem);
                 player.prepare();

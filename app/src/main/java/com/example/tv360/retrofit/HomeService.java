@@ -2,8 +2,10 @@ package com.example.tv360.retrofit;
 
 import com.example.tv360.model.DataObject;
 import com.example.tv360.model.DataObjectLoadMore;
+import com.example.tv360.model.DataObjectSearchContent;
 import com.example.tv360.model.DataObjectUrlVideo;
 import com.example.tv360.model.DataObjectWatchingAgainTV;
+import com.example.tv360.model.DataSearchSuggest;
 import com.example.tv360.model.HomeModel;
 import com.google.gson.JsonElement;
 
@@ -47,9 +49,21 @@ public interface HomeService {
             @Query("datetime") String datetime);
 
     @GET("public/v1/search/search")
-    Call<JsonElement> search(
+    Call<DataSearchSuggest> search(
             @Query("keyword") String keyword,
             @Query("offset") int offset,
             @Query("type") String type,
+            @Query("searchType") String searchType);
+
+    @GET("public/v1/search/search")
+    Call<DataObject> search2(
+            @Query("keyword") String keyword,
+            @Query("offset") int offset,
+            @Query("type") String type,
+            @Query("searchType") String searchType);
+
+    @GET("public/v1/search/search")
+    Call<DataObjectSearchContent> searchcontent(
+            @Query("offset") int offset,
             @Query("searchType") String searchType);
 }

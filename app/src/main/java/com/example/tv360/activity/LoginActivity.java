@@ -70,7 +70,7 @@ public class LoginActivity extends AppCompatActivity implements LoginInterface {
         String m_andoid = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
         DeviceInfo deviceInfo = new DeviceInfo(m_andoid,m_andoid, "WEB_ANDROID", "ANDROID","1.0", "Galaxy Note 10");
         apiInterface = ApiService.getClient().create(UserApiService.class);
-            Call<DataObjectLogin> data = apiInterface.login(new LoginModel("0385891395","888888","PASS",null,deviceInfo));
+            Call<DataObjectLogin> data = apiInterface.login(new LoginModel("0832297222","999999","PASS",null,deviceInfo));
         data.enqueue(new Callback<DataObjectLogin>() {
             @Override
             public void onResponse(Call<DataObjectLogin> call, Response<DataObjectLogin> response) {
