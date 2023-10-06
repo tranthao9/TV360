@@ -62,18 +62,19 @@ public class MainActivity extends AppCompatActivity implements RvFilmImageAdapte
 
     int getFragmentbefore = 0;
 
-    ImageView searchheader;
+    ImageView searchheader, ProfileHeder;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-        this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN,WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
         getSupportActionBar().hide();
         setContentView(R.layout.activity_main);
         sharedPreferences_tv = getSharedPreferences(SHARED_TV_PLAYING,MODE_PRIVATE);
         navView = findViewById(R.id.nav_view);
         searchheader = findViewById(R.id.searchHeader);
+        ProfileHeder = findViewById(R.id.profileHeader);
         FragmentTransaction transaction  = getSupportFragmentManager().beginTransaction();
         fragmenthome = new HomeFragment();
         transaction.replace(R.id.nav_host_fragment_activity_main,fragmenthome);
@@ -82,6 +83,13 @@ public class MainActivity extends AppCompatActivity implements RvFilmImageAdapte
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, SearchActivity.class);
+                startActivity(intent);
+            }
+        });
+        ProfileHeder.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, profileActivity.class);
                 startActivity(intent);
             }
         });

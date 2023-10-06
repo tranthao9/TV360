@@ -28,11 +28,14 @@ import com.example.tv360.R;
 import com.example.tv360.adapter.RvAdapter;
 import com.example.tv360.adapter.RvSearchImageAdapter;
 import com.example.tv360.adapter.SearchAdapter;
+import com.example.tv360.adapter.SearchContentAdapter;
 import com.example.tv360.adapter.SearchSuggestAdapter;
 import com.example.tv360.model.DataObject;
+import com.example.tv360.model.DataObjectSearchContent;
 import com.example.tv360.model.DataSearchSuggest;
 import com.example.tv360.model.FilmModel;
 import com.example.tv360.model.HomeModel;
+import com.example.tv360.model.SearchContentModel;
 import com.example.tv360.retrofit.ApiService;
 import com.example.tv360.retrofit.HomeService;
 import com.google.android.material.datepicker.MaterialDatePicker;
@@ -71,7 +74,7 @@ public class SearchActivity extends AppCompatActivity implements  SearchSuggestA
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-        this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN,WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
         getSupportActionBar().hide();
         setContentView(R.layout.activity_search);
         previous_search = findViewById(R.id.previous_search);
@@ -84,9 +87,26 @@ public class SearchActivity extends AppCompatActivity implements  SearchSuggestA
         String profileID = sharedPref.getString(KEY_PROFILEID,"");
         String accessToken = sharedPref.getString(KEY_ACCESSTOKEN,"");
         String m_andoid = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
-        apiserver = ApiService.getlinknocontenttype(profileID,userID, m_andoid,"Bearer " + accessToken).create(HomeService.class);
         SearchSuggestAdapter searchSuggestAdapter = new SearchSuggestAdapter(this);
         SearchAdapter  rvAdapter = new SearchAdapter(this);
+        SearchContentAdapter searchContentAdapter = new SearchContentAdapter(this);
+        apiserver = ApiService.getlinknocontenttype(profileID,userID, m_andoid,"Bearer " + accessToken).create(HomeService.class);
+        Call<DataObjectSearchContent> data  = apiserver.searchcontent(0,"keyword");
+        data.enqueue(new Callback<DataObjectSearchContent>() {
+            @Override
+            public void onResponse(Call<DataObjectSearchContent> call, Response<DataObjectSearchContent> response) {
+                DataObjectSearchContent dataObject = response.body();
+                List<SearchContentModel> list = dataObject.getData();
+                if(list != null)
+                {
+                    recyclerViewSuggest.setAdapter(searchContentAdapter);
+                    searchContentAdapter.SetData(list);
+                }
+            }
+            @Override
+            public void onFailure(Call<DataObjectSearchContent> call, Throwable t) {
+            }
+        });
         recyclerViewSuggest.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -137,6 +157,23 @@ public class SearchActivity extends AppCompatActivity implements  SearchSuggestA
                 {
                     isremovedisplay = false;
                     removebutton.setBackground(getResources().getDrawable(R.drawable.none));
+                    apiserver = ApiService.getlinknocontenttype(profileID,userID, m_andoid,"Bearer " + accessToken).create(HomeService.class);
+                    Call<DataObjectSearchContent> data  = apiserver.searchcontent(0,"keyword");
+                    data.enqueue(new Callback<DataObjectSearchContent>() {
+                        @Override
+                        public void onResponse(Call<DataObjectSearchContent> call, Response<DataObjectSearchContent> response) {
+                            DataObjectSearchContent dataObject = response.body();
+                            List<SearchContentModel> list = dataObject.getData();
+                            if(list != null)
+                            {
+                                recyclerViewSuggest.setAdapter(searchContentAdapter);
+                                searchContentAdapter.SetData(list);
+                            }
+                        }
+                        @Override
+                        public void onFailure(Call<DataObjectSearchContent> call, Throwable t) {
+                        }
+                    });
                 }
 
             }
