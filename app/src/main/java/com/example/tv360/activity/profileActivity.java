@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.Animation;
@@ -13,6 +14,7 @@ import android.view.animation.RotateAnimation;
 import android.view.animation.TranslateAnimation;
 import android.widget.ExpandableListView;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.tv360.R;
@@ -40,6 +42,11 @@ public class profileActivity extends AppCompatActivity {
 
     TextView text_run;
 
+    LinearLayout linearlayout_services_packet,linearLayout5,linearlayout_profilelist,listprofile_detail,linearlayout_setting,linearlayout_setting_detail;
+
+    ImageButton button_up_services,button_up_listprofile,button_setting_up;
+    boolean isservices = false, islistprofile = false , issetting = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,14 +57,74 @@ public class profileActivity extends AppCompatActivity {
 
         previous = findViewById(R.id.previous_profile);
         text_run = findViewById(R.id.text_run_profile);
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                text_run.requestFocus();
-                text_run.setSelected(true);
+        text_run.setHorizontallyScrolling(true);
+        text_run.setSelected(true);
+        linearlayout_services_packet = findViewById(R.id.linearlayout_services_packet);
+        linearLayout5 = findViewById(R.id.linearLayout5);
+        button_up_services = findViewById(R.id.button_up_services);
+        linearlayout_profilelist = findViewById(R.id.linearlayout_profilelist);
+        listprofile_detail = findViewById(R.id.listprofile_detail);
+        button_up_listprofile = findViewById(R.id.button_up_listprofile);
+        linearlayout_setting = findViewById(R.id.linearlayout_setting);
+        linearlayout_setting_detail = findViewById(R.id.linearlayout_setting_detail);
+        button_setting_up = findViewById(R.id.button_setting_up);
 
+        LinearLayout.LayoutParams layoutParamshide = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,0);
+        LinearLayout.LayoutParams layoutParamshow = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.WRAP_CONTENT);
+
+        linearlayout_services_packet.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(!isservices)
+                {
+                    button_up_services.setBackground(getResources().getDrawable(R.drawable.baseline_arrow_drop_down_24_grey));
+                    linearLayout5.setLayoutParams(layoutParamshide);
+                    isservices = true;
+                }
+                else
+                {
+                    button_up_services.setBackground(getResources().getDrawable(R.drawable.baseline_arrow_drop_up_24));
+                    linearLayout5.setLayoutParams(layoutParamshow);
+                    isservices = false;
+                }
             }
-        },100);
+        });
+
+        linearlayout_profilelist.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(!islistprofile)
+                {
+                    button_up_listprofile.setBackground(getResources().getDrawable(R.drawable.baseline_arrow_drop_down_24_grey));
+                    listprofile_detail.setLayoutParams(layoutParamshide);
+                    islistprofile = true;
+                }
+                else
+                {
+                    button_up_listprofile.setBackground(getResources().getDrawable(R.drawable.baseline_arrow_drop_up_24));
+                    listprofile_detail.setLayoutParams(layoutParamshow);
+                    islistprofile = false;
+                }
+            }
+        });
+
+        linearlayout_setting.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(!issetting)
+                {
+                    linearlayout_setting_detail.setLayoutParams(layoutParamshide);
+                    button_setting_up.setBackground(getResources().getDrawable(R.drawable.baseline_arrow_drop_down_24_grey));
+                    issetting = true;
+                }
+                else
+                {
+                    linearlayout_setting_detail.setLayoutParams(layoutParamshow);
+                    button_setting_up.setBackground(getResources().getDrawable(R.drawable.baseline_arrow_drop_up_24));
+                    issetting = false;
+                }
+            }
+        });
 
 //        final  int textviewWidth = text_run.getWidth();
 //        final  int screenWidth = getResources().getDisplayMetrics().widthPixels;
@@ -94,7 +161,7 @@ public class profileActivity extends AppCompatActivity {
 
 //        expandableListView = findViewById(R.id.expand_profileservices);
 
-        listitem = getListitem();
+//        listitem = getListitem();
 
 //        groupObjectProfileList = new ArrayList<>(listitem.keySet());
 //
@@ -131,25 +198,25 @@ public class profileActivity extends AppCompatActivity {
 
     }
 
-    private  Map<GroupObjectProfile,List<ItemObjectProfile>> getListitem()
-    {
-        Map<GroupObjectProfile,List<ItemObjectProfile>> listMap = new HashMap<>();
-        GroupObjectProfile groupObjectProfile = new GroupObjectProfile(1,"Thông tin góp dịch vụ");
-        GroupObjectProfile groupObjectProfile2 = new GroupObjectProfile(2,"Danh sách cá nhân");
-        GroupObjectProfile groupObjectProfile3 = new GroupObjectProfile(3,"Cài đặt");
-
-        List<ItemObjectProfile> list1 = new ArrayList<>();
-        list1.add(new ItemObjectProfile(1,"Gói cước"));
-        list1.add(new ItemObjectProfile(2,"Nhập mã quà tặng"));
-
-        List<ItemObjectProfile> list2 = new ArrayList<>();
-        list2.add(new ItemObjectProfile(3,"Lịch sử xem"));
-        list2.add(new ItemObjectProfile(4,"Yêu thích"));
-
-        List<ItemObjectProfile> list3 = new ArrayList<>();
-
-        listMap.put(groupObjectProfile,list1);
-        listMap.put(groupObjectProfile2,list2);
-        return  listMap;
-    }
+//    private  Map<GroupObjectProfile,List<ItemObjectProfile>> getListitem()
+//    {
+//        Map<GroupObjectProfile,List<ItemObjectProfile>> listMap = new HashMap<>();
+//        GroupObjectProfile groupObjectProfile = new GroupObjectProfile(1,"Thông tin góp dịch vụ");
+//        GroupObjectProfile groupObjectProfile2 = new GroupObjectProfile(2,"Danh sách cá nhân");
+//        GroupObjectProfile groupObjectProfile3 = new GroupObjectProfile(3,"Cài đặt");
+//
+//        List<ItemObjectProfile> list1 = new ArrayList<>();
+//        list1.add(new ItemObjectProfile(1,"Gói cước"));
+//        list1.add(new ItemObjectProfile(2,"Nhập mã quà tặng"));
+//
+//        List<ItemObjectProfile> list2 = new ArrayList<>();
+//        list2.add(new ItemObjectProfile(3,"Lịch sử xem"));
+//        list2.add(new ItemObjectProfile(4,"Yêu thích"));
+//
+//        List<ItemObjectProfile> list3 = new ArrayList<>();
+//
+//        listMap.put(groupObjectProfile,list1);
+//        listMap.put(groupObjectProfile2,list2);
+//        return  listMap;
+//    }
 }

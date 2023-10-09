@@ -15,7 +15,7 @@
         <LinearLayout
             android:id="@+id/linearLayout"
             android:layout_width="0dp"
-            android:layout_height="203dp"
+            android:layout_height="180dp"
             android:background="@drawable/border_grey_80"
             android:orientation="vertical"
             app:layout_constraintEnd_toEndOf="parent"
@@ -63,7 +63,7 @@
 
                 <ImageButton
                     android:layout_width="0dp"
-                    android:layout_height="40dp"
+                    android:layout_height="38dp"
                     android:layout_weight="1"
                     android:background="@drawable/baseline_person_24" />
 
@@ -131,7 +131,7 @@
 
                 <ImageButton
                     android:layout_width="0dp"
-                    android:layout_height="24dp"
+                    android:layout_height="22dp"
                     android:layout_weight="1"
                     android:background="@drawable/baseline_lock_open_24_changepass"
 
@@ -178,9 +178,9 @@
 
                 <ImageButton
                     android:layout_width="0dp"
-                    android:layout_height="28dp"
+                    android:layout_height="24dp"
                     android:layout_weight="1"
-                    android:background="@drawable/baseline_lock_open_24_changepass" />
+                    android:background="@drawable/baseline_connected_tv_24_grey" />
 
                 <TextView
                     android:layout_width="0dp"
@@ -218,7 +218,7 @@
 
                 <ImageButton
                     android:layout_width="0dp"
-                    android:layout_height="44dp"
+                    android:layout_height="40dp"
                     android:layout_weight="2"
                     android:background="@drawable/baseline_folder_special_24" />
 
@@ -234,6 +234,7 @@
                     android:textStyle="bold" />
 
                 <ImageButton
+                    android:id="@+id/button_up_services"
                     android:layout_width="0dp"
                     android:layout_height="18dp"
                     android:layout_gravity="center"
@@ -323,7 +324,6 @@
                         android:layout_height="match_parent"
                         android:layout_weight="1"
                         android:background="@drawable/next_profile" />
-
                 </LinearLayout>
             </LinearLayout>
         </LinearLayout>
@@ -347,7 +347,7 @@
 
                 <ImageButton
                     android:layout_width="0dp"
-                    android:layout_height="44dp"
+                    android:layout_height="40dp"
                     android:layout_weight="2"
                     android:background="@drawable/baseline_manage_accounts_24_green" />
 
@@ -362,6 +362,7 @@
                     android:textStyle="bold" />
 
                 <ImageButton
+                    android:id="@+id/button_up_listprofile"
                     android:layout_width="0dp"
                     android:layout_height="18dp"
                     android:layout_gravity="center"
@@ -371,6 +372,7 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/listprofile_detail"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
@@ -555,7 +557,7 @@
 
                 <ImageButton
                     android:layout_width="0dp"
-                    android:layout_height="44dp"
+                    android:layout_height="40dp"
                     android:layout_weight="2"
                     android:background="@drawable/baseline_settings_24_red" />
 
@@ -583,6 +585,7 @@
                 </LinearLayout>
 
                 <ImageButton
+                    android:id="@+id/button_setting_up"
                     android:layout_width="0dp"
                     android:layout_height="18dp"
                     android:layout_gravity="center"
@@ -592,6 +595,7 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/linearlayout_setting_detail"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
@@ -653,25 +657,24 @@
                         android:background="@drawable/baseline_stop_circle_24_grey"
 
                         />
-
-                    <TextView
-                        android:id="@+id/text_run_profile"
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_weight="12"
-                        android:gravity="center|left"
-                        android:paddingLeft="12dp"
-                        android:text="Nhắc dừng xem sau: 0 giờ 2 phút"
-                        android:maxLines="1"
-                        android:textColor="@color/white"
-                        android:focusable="true"
-                        android:focusableInTouchMode="true"
-                        android:singleLine="true"
-                        android:scrollHorizontally="true"
-                        android:ellipsize="marquee"
-                        android:clickable="true"
-                        android:marqueeRepeatLimit="marquee_forever"
-                        />
+                        <TextView
+                            android:id="@+id/text_run_profile"
+                            android:layout_width="0dp"
+                            android:layout_weight="12"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:paddingLeft="12dp"
+                            android:text="Nhắc dừng xem sau: 0 giờ 2 phút          "
+                            android:textColor="@color/white"
+                            android:singleLine="true"
+                            android:ellipsize="marquee"
+                            android:marqueeRepeatLimit="marquee_forever"
+                            android:scrollHorizontally="true"
+                            android:paddingRight="15dip"
+                            android:focusable="true"
+                            android:focusableInTouchMode="true"
+                            android:freezesText="true"
+                            />
 
                     <ImageButton
                         android:layout_width="0dp"
@@ -805,7 +808,7 @@
                         android:background="@drawable/baseline_toggle_off_24_grey" />
 
                 </LinearLayout>
-            </LinearLayout>
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
@@ -963,6 +966,7 @@
                     android:background="@drawable/next_profile" />
 
             </LinearLayout>
+            </LinearLayout>
         </LinearLayout>
         <LinearLayout
             android:layout_width="0dp"
@@ -988,7 +992,7 @@
 
                 <ImageButton
                     android:layout_width="0dp"
-                    android:layout_height="36dp"
+                    android:layout_height="32dp"
                     android:layout_weight="1"
                     android:background="@drawable/baseline_output_24_red" />
 

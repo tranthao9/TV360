@@ -7,15 +7,18 @@ import com.example.tv360.model.DataObjectUrlVideo;
 import com.example.tv360.model.DataObjectWatchingAgainTV;
 import com.example.tv360.model.DataSearchSuggest;
 import com.example.tv360.model.HomeModel;
+import com.example.tv360.model.KeywordHistory;
 import com.google.gson.JsonElement;
 
 import java.util.List;
 
 import retrofit2.Call;
+import retrofit2.http.Body;
 import retrofit2.http.Field;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.Headers;
+import retrofit2.http.POST;
 import retrofit2.http.Query;
 
 public interface HomeService {
@@ -66,4 +69,7 @@ public interface HomeService {
     Call<DataObjectSearchContent> searchcontent(
             @Query("offset") int offset,
             @Query("searchType") String searchType);
+
+    @POST("public/v1/search/remove")
+    Call<DataObjectSearchContent> searchRemoveHistory(@Body KeywordHistory searchHistory);
 }

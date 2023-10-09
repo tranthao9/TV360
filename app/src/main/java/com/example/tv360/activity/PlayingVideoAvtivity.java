@@ -85,7 +85,7 @@ public class PlayingVideoAvtivity extends AppCompatActivity{
         String accessToken = sharedPref.getString(KEY_ACCESSTOKEN,"");
         String m_andoid = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
 
-        apiserver = ApiService.getlink(profileID,userID, m_andoid,"Bearer " + accessToken).create(HomeService.class);
+        apiserver = ApiService.getlinknocontenttype(profileID,userID, m_andoid,"Bearer " + accessToken).create(HomeService.class);
         Call<DataObjectUrlVideo> data  = apiserver.getlinka(getIntent().getStringExtra("id"), getIntent().getStringExtra("type"));
         data.enqueue(new Callback<DataObjectUrlVideo>() {
             @Override
@@ -203,8 +203,6 @@ public class PlayingVideoAvtivity extends AppCompatActivity{
 
 
                 });
-
-
             }
 
             @Override
@@ -278,10 +276,7 @@ public class PlayingVideoAvtivity extends AppCompatActivity{
                         @Override
                         public void onTracksChanged(TrackGroupArray trackGroups, TrackSelectionArray trackSelections) {
                             Player.Listener.super.onTracksChanged(trackGroups, trackSelections);
-
-                            Log.d("TAG: " + trackSelections.get(0).getFormat(0).height +"p" , "okg");
                             if (trackSelections.get(0) != null) {
-                                Log.d("TAG: " + trackSelections.get(0).getFormat(0).height +"p" , "ok1");
                                 text_quality.setText(trackSelections.get(0).getFormat(0).height +"p");
                             }
                         }

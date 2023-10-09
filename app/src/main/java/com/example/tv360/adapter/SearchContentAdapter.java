@@ -15,6 +15,7 @@ import com.example.tv360.R;
 import com.example.tv360.model.SearchContentModel;
 
 import java.util.List;
+import java.util.Objects;
 
 public class SearchContentAdapter extends RecyclerView.Adapter<SearchContentAdapter.SearchContentViewHolder> {
     private  Context context;
@@ -49,7 +50,7 @@ public class SearchContentAdapter extends RecyclerView.Adapter<SearchContentAdap
         holder.recyclerView.setLayoutManager(linearLayoutManager);
         holder.recyclerView.setFocusable(false);//ko focus con tro
         holder.textView.setText(searchContent.getName());
-        if (position == 0)
+        if (Objects.equals(searchContent.getType(), "history"))
         {
            SearchContent_1_Adapter searchContent1Adapter = new SearchContent_1_Adapter(context,searchContent.getContent());
            holder.recyclerView.setAdapter(searchContent1Adapter);

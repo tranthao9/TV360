@@ -75,7 +75,7 @@ public class InfoPreseter {
         String profileID = sharedPref.getString(KEY_PROFILEID,"");
         String accessToken = sharedPref.getString(KEY_ACCESSTOKEN,"");
         String m_andoid = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
-        apiserver = ApiService.getlink(profileID,userID, m_andoid,"Bearer " + accessToken).create(HomeService.class);
+        apiserver = ApiService.getlinknocontenttype(profileID,userID, m_andoid,"Bearer " + accessToken).create(HomeService.class);
         Call<DataObject> data  = apiserver.getCategoryLive(filmModel.getId(),6,0);
         data.enqueue(new Callback<DataObject>() {
             @Override
