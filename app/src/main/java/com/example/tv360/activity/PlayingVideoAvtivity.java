@@ -109,7 +109,7 @@ public class PlayingVideoAvtivity extends AppCompatActivity{
                 play.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        if(ispause == false)
+                        if(!ispause)
                         {
                             ispause = true;
                             play.setBackgroundResource(R.drawable.baseline_play_arrow_24);
