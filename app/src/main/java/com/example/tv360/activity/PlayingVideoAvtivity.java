@@ -122,10 +122,7 @@ public class PlayingVideoAvtivity extends AppCompatActivity{
                             play.setBackgroundResource(R.drawable.baseline_pause_24);
                             player.setPlayWhenReady(true);
                             player.play();
-
-
                         }
-
                     }
                 });
 
@@ -139,16 +136,13 @@ public class PlayingVideoAvtivity extends AppCompatActivity{
                             if(getSupportActionBar() != null){
                                 getSupportActionBar().show();
                             }
-
                             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-
                             ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams) styledPlayerView.getLayoutParams();
                             params.width = params.MATCH_PARENT;
                             params.height = (int) ( 200 * getApplicationContext().getResources().getDisplayMetrics().density);
                             styledPlayerView.setLayoutParams(params);
                             isfullscreen = false;
                         }else {
-
                             getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN
                                     |View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
                                     |View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
