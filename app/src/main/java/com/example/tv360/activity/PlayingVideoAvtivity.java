@@ -21,21 +21,31 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.tv360.R;
 import com.example.tv360.TrackSelectionDialog;
+import com.example.tv360.checkvideo.VideoCodecChecker;
 import com.example.tv360.model.DataObjectUrlVideo;
 import com.example.tv360.retrofit.ApiService;
 import com.example.tv360.retrofit.HomeService;
 import com.google.android.exoplayer2.ExoPlayer;
+import com.google.android.exoplayer2.Format;
 import com.google.android.exoplayer2.MediaItem;
 import com.google.android.exoplayer2.PlaybackParameters;
 import com.google.android.exoplayer2.Player;
+import com.google.android.exoplayer2.source.TrackGroup;
 import com.google.android.exoplayer2.source.TrackGroupArray;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
+import com.google.android.exoplayer2.trackselection.MappingTrackSelector;
+import com.google.android.exoplayer2.trackselection.TrackSelection;
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
 import com.google.android.exoplayer2.trackselection.TrackSelectionParameters;
 import com.google.android.exoplayer2.ui.StyledPlayerView;
+import com.google.android.exoplayer2.util.MimeTypes;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -163,22 +173,66 @@ public class PlayingVideoAvtivity extends AppCompatActivity{
                 });
 
                 trackSelector = new DefaultTrackSelector(PlayingVideoAvtivity.this);
-
-
+//                MappingTrackSelector.MappedTrackInfo mappedTrackInfo = trackSelector.getCurrentMappedTrackInfo();
+//                Log.d("mapinfor ", "" + mappedTrackInfo);
+//                if(mappedTrackInfo != null)
+//                {
+//                    DefaultTrackSelector.ParametersBuilder builder = trackSelector.buildUponParameters();
+//                    for (int rendererIndex = 0; rendererIndex < mappedTrackInfo.getRendererCount();rendererIndex ++)
+//                    {
+//                        TrackGroupArray trackGroupArray = mappedTrackInfo.getTrackGroups(rendererIndex);
+//                        if(trackGroupArray.length == 0)
+//                        {
+//                            continue;
+//                        }
+//                        List<Integer> selectedTracks = new ArrayList<>();
+//                        for (int groupindex =0;groupindex<trackGroupArray.length;groupindex++)
+//                        {
+//                           TrackGroup trackGroup = trackGroupArray.get(groupindex);
+//                           for (int trackindex = 0; trackindex<trackGroup.length;trackindex++)
+//                           {
+//                               Format format = trackGroup.getFormat(trackindex);
+//                               if(isSupportQuality(format))
+//                               {
+//                                   selectedTracks.add(trackindex);
+//                                   DefaultTrackSelector.Parameters parameters = builder.setSelectionOverride(
+//                                           rendererIndex,
+//                                           trackGroupArray,
+//                                           new DefaultTrackSelector.SelectionOverride(groupindex)
+//                                   ).build();
+//                                   trackSelector.setParameters(parameters);
+//                               }
+//                           }
+//
+//                        }
+//                    }
+//                }
+//
+//
                 TrackSelectionParameters newParameters = trackSelector.getParameters()
-                        .buildUpon().build();
-//                        .setForceLowestBitrate(true)
-//                        .build();
+                        .buildUpon()
+                        .setForceHighestSupportedBitrate(true)
+                        .build();
 
-
-                trackSelector.setParameters((DefaultTrackSelector.Parameters) newParameters);
+//                TrackSelectionParameters trackSelectionParameters = new TrackSelectionParameters.Builder()
+//                        .setPreferredTextLanguage("en")
+//                                .setPreferredAudioLanguage("en")
+//                                        .build();
+//
+                trackSelector.setParameters((DefaultTrackSelector.Parameters)newParameters);
                 player = new ExoPlayer.Builder(PlayingVideoAvtivity.this).setTrackSelector(trackSelector).build();
+//                player = new ExoPlayer.Builder(PlayingVideoAvtivity.this).setTrackSelector(trackSelector).build();
                 styledPlayerView.setPlayer(player);
-                MediaItem mediaItem = MediaItem.fromUri(urlVideo.getData().getUrlStreaming());
+                MappingTrackSelector.MappedTrackInfo mappedTrackInfo = trackSelector.getCurrentMappedTrackInfo();
+                Log.d("mapinfor ", "" + mappedTrackInfo);
+                MediaItem mediaItem = MediaItem.fromUri("http://cdn-vttvas.s3.cloudstorage.com.vn/video1/dv/output/stream.mpd");
+               // MediaItem mediaItem = MediaItem.fromUri(urlVideo.getData().getUrlStreaming());
                 player.setMediaItem(mediaItem);
                 player.prepare();
                 player.setPlayWhenReady(true);
                 player.play();
+                Log.d("Tag Dolby ", " "+ VideoCodecChecker.issupportdolby());
+
                 player.addListener(new Player.Listener() {
                     @Override
                     public void onPlaybackStateChanged(int playbackState) {
@@ -197,8 +251,27 @@ public class PlayingVideoAvtivity extends AppCompatActivity{
 
 
                 });
+                player.addListener(new Player.Listener() {
+                    @Override
+                    public void onTracksChanged(TrackGroupArray trackGroups, TrackSelectionArray trackSelections) {
+                        Player.Listener.super.onTracksChanged(trackGroups, trackSelections);
+                        if(trackGroups.length > 0)
+                        {
+                            TrackGroup trackGroup = trackGroups.get(0);
+                            for (int i=0;i<trackGroup.length;i++)
+                            {
+                                Format format = trackGroup.getFormat(i);
+                                if(MimeTypes.isVideo(format.sampleMimeType))
+                                {
+                                    String codec = format.codecs;
+                                    Toast.makeText(PlayingVideoAvtivity.this,"codec "+codec,Toast.LENGTH_SHORT).show();
+                                    Log.d("Tag Dolby codec ", " "+ codec);
+                                }
+                            }
+                        }
+                    }
+                });
             }
-
             @Override
             public void onFailure(Call<DataObjectUrlVideo> call, Throwable t) {
                 call.cancel();
@@ -206,6 +279,19 @@ public class PlayingVideoAvtivity extends AppCompatActivity{
         });
     }
 
+    private  boolean isSupportQuality(Format format)
+    {
+        if(format.width > 1920 || format.height > 1080)
+        {
+            return  false;
+        }
+        if(format.pixelWidthHeightRatio < 1.0f || format.pixelWidthHeightRatio > 2.0f)
+        {
+            return  false;
+        }
+
+        return  true;
+    }
 
     @Override
     protected void  onStop()

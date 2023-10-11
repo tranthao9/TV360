@@ -20,7 +20,6 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.res.Resources;
 import android.os.Bundle;
-import android.util.Log;
 import android.util.SparseArray;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -42,6 +41,7 @@ import androidx.viewpager.widget.ViewPager;
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.Format;
 import com.google.android.exoplayer2.Player;
+import com.google.android.exoplayer2.source.TrackGroup;
 import com.google.android.exoplayer2.source.TrackGroupArray;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector.SelectionOverride;
@@ -49,6 +49,7 @@ import com.google.android.exoplayer2.trackselection.MappingTrackSelector.MappedT
 import com.google.android.exoplayer2.ui.TrackNameProvider;
 import com.google.android.exoplayer2.ui.TrackSelectionView;
 import com.google.android.exoplayer2.util.Assertions;
+import com.google.android.exoplayer2.util.Log;
 import com.google.android.material.tabs.TabLayout;
 
 import java.util.ArrayList;
@@ -213,17 +214,16 @@ public final class TrackSelectionDialog extends DialogFragment {
                 int trackType = mappedTrackInfo.getRendererType(/* rendererIndex= */ i);
                 TrackGroupArray trackGroupArray = mappedTrackInfo.getTrackGroups(i);
                 TrackSelectionViewFragment tabFragment = new TrackSelectionViewFragment();
-
-
                 tabFragment.init(
                         mappedTrackInfo,
                         /* rendererIndex= */ i,
                         initialParameters.getRendererDisabled(/* rendererIndex= */ i),
-                        initialParameters.getSelectionOverride(/* rendererIndex= */ i, trackGroupArray),
+                        initialParameters.getSelectionOverride(/* rendererIndex= */ i,trackGroupArray),
                         allowAdaptiveSelections,
                         allowMultipleOverrides);
                 tabFragments.put(i, tabFragment);
                 tabTrackTypes.add(trackType);
+                return;
             }
         }
     }
