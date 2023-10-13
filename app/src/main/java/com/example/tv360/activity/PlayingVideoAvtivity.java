@@ -48,6 +48,8 @@ import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.source.ProgressiveMediaSource;
 import com.google.android.exoplayer2.source.TrackGroup;
 import com.google.android.exoplayer2.source.TrackGroupArray;
+import com.google.android.exoplayer2.source.hls.HlsDataSourceFactory;
+import com.google.android.exoplayer2.source.hls.HlsMediaSource;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.trackselection.MappingTrackSelector;
 import com.google.android.exoplayer2.trackselection.TrackSelection;
@@ -303,13 +305,23 @@ public class PlayingVideoAvtivity extends AppCompatActivity{
 //                    return;
 //                }
 //                decoder.start();
-                player = ExoPlayerFactory.newSimpleInstance(PlayingVideoAvtivity.this
-                       ,trackSelector, new DefaultLoadControl());
+
+
+                player = new SimpleExoPlayer.Builder(PlayingVideoAvtivity.this).setTrackSelector(trackSelector).build();
+//                player = ExoPlayerFactory.newSimpleInstance(PlayingVideoAvtivity.this,trackSelector,new DefaultLoadControl());
+//                player = ExoPlayerFactory.newSimpleInstance(PlayingVideoAvtivity.this
+//                       ,trackSelector, new DefaultLoadControl());
                 styledPlayerView.setPlayer(player);
+                HlsMediaSource hlsMediaSource =
+                        new HlsMediaSource.Factory(new DefaultHttpDataSourceFactory(Util.getUserAgent(PlayingVideoAvtivity.this, "app-name"))).createMediaSource(Uri.parse(urlVideo.getData().getUrlStreaming()));
+                player = ExoPlayerFactory.newSimpleInstance(PlayingVideoAvtivity.this);
                 ProgressiveMediaSource mediaSource = new ProgressiveMediaSource.Factory(
                         new DefaultDataSourceFactory(PlayingVideoAvtivity.this,Util.getUserAgent(PlayingVideoAvtivity.this,""))
                 ).createMediaSource(Uri.parse(urlVideo.getData().getUrlStreaming()));
-                player.prepare(mediaSource);
+//                ProgressiveMediaSource mediaSource = HlsDataSourceFactory(DefaultHttpDataSourceFactory("")).createMediaSource(Uri.parse(urlVideo.getData().getUrlStreaming()));
+
+                player.prepare(hlsMediaSource);
+                player.setPlayWhenReady(true);
 
                 player.addListener(new Player.EventListener() {
                     @Override
