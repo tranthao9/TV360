@@ -68,6 +68,7 @@ public final class TrackSelectionDialog extends DialogFragment {
     private int titleId;
     private DialogInterface.OnClickListener onClickListener;
     private DialogInterface.OnDismissListener onDismissListener;
+    private static boolean  isshow = false;
 
     /**
      * Returns whether a track selection dialog will have content to display if initialized with the
@@ -126,7 +127,6 @@ public final class TrackSelectionDialog extends DialogFragment {
         TrackSelectionDialog trackSelectionDialog = new TrackSelectionDialog();
         DefaultTrackSelector.Parameters parameters = trackSelector.getParameters();
 
-
         trackSelectionDialog.init(
                 /* titleId= */ R.string.select_quality,
                 mappedTrackInfo,
@@ -151,7 +151,6 @@ public final class TrackSelectionDialog extends DialogFragment {
                         }
                     }
                     trackSelector.setParameters(builder);
-
                 },
                 onDismissListener);
         return trackSelectionDialog;
@@ -235,6 +234,7 @@ public final class TrackSelectionDialog extends DialogFragment {
      * @return Whether the renderer is disabled.
      */
     public boolean getIsDisabled(int rendererIndex) {
+        Log.d("Tag disable ", " "+rendererIndex);
         TrackSelectionViewFragment rendererView = tabFragments.get(rendererIndex);
         return rendererView != null && rendererView.isDisabled;
     }
@@ -247,6 +247,7 @@ public final class TrackSelectionDialog extends DialogFragment {
      * @return The list of track selection overrides for this renderer.
      */
     public List<SelectionOverride> getOverrides(int rendererIndex) {
+        Log.d("Tag getOverrides ", " "+rendererIndex);
         TrackSelectionViewFragment rendererView = tabFragments.get(rendererIndex);
         return rendererView == null ? Collections.emptyList() : rendererView.overrides;
     }
@@ -277,9 +278,6 @@ public final class TrackSelectionDialog extends DialogFragment {
         ViewPager viewPager = dialogView.findViewById(R.id.track_selection_dialog_view_pager);
         Button cancelButton = dialogView.findViewById(R.id.track_selection_dialog_cancel_button);
         Button okButton = dialogView.findViewById(R.id.track_selection_dialog_ok_button);
-
-
-
         viewPager.setAdapter(new FragmentAdapter(getChildFragmentManager()));
         tabLayout.setupWithViewPager(viewPager);
 //    tabLayout.setVisibility(tabFragments.size() > 1 ? View.VISIBLE : View.GONE);
@@ -296,10 +294,12 @@ public final class TrackSelectionDialog extends DialogFragment {
 
     private static boolean showTabForRenderer(MappedTrackInfo mappedTrackInfo, int rendererIndex) {
         TrackGroupArray trackGroupArray = mappedTrackInfo.getTrackGroups(rendererIndex);
-        if (trackGroupArray.length == 0) {
+        if (trackGroupArray.length == 0 ) {
             return false;
         }
+
         int trackType = mappedTrackInfo.getRendererType(rendererIndex);
+        Log.d("Tag showTabForRenderer ", " "+trackType + " .... "+rendererIndex + "++++++++"+isSupportedTrackType(trackType));
         return isSupportedTrackType(trackType);
     }
 
@@ -406,13 +406,9 @@ public final class TrackSelectionDialog extends DialogFragment {
             trackSelectionView.setShowDisableOption(false);
             trackSelectionView.setAllowMultipleOverrides(false);
             trackSelectionView.setAllowAdaptiveSelections(false);
-
-
-
             trackSelectionView.setTrackNameProvider(new TrackNameProvider() {
                 @Override
                 public String getTrackName(Format format) {
-
                     return format.height + "p";
                 }
             });
@@ -422,8 +418,8 @@ public final class TrackSelectionDialog extends DialogFragment {
                     rendererIndex,
                     isDisabled,
                     overrides,
-                    /* trackFormatComparator= */ null,
-                    /* listener= */ this);
+                    /* trackFormatComparator= */ null
+                    /* listener= */);
 
 
 

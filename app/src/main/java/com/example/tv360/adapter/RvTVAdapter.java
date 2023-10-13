@@ -14,7 +14,6 @@ import com.example.tv360.R;
 import com.example.tv360.model.FilmModel;
 import com.example.tv360.model.HomeModel;
 import com.example.tv360.presenter.HomePresenter;
-import com.google.android.exoplayer2.ui.StyledPlayerView;
 import com.google.android.material.tabs.TabLayout;
 
 import java.util.List;

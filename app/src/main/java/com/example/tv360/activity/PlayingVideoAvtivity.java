@@ -6,15 +6,21 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.media.MediaCodec;
+import android.media.MediaExtractor;
+import android.media.MediaFormat;
+import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.Surface;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -29,11 +35,17 @@ import com.example.tv360.checkvideo.VideoCodecChecker;
 import com.example.tv360.model.DataObjectUrlVideo;
 import com.example.tv360.retrofit.ApiService;
 import com.example.tv360.retrofit.HomeService;
+import com.google.android.exoplayer2.C;
+import com.google.android.exoplayer2.DefaultLoadControl;
+import com.google.android.exoplayer2.DefaultRenderersFactory;
+import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.ExoPlayer;
+import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.Format;
-import com.google.android.exoplayer2.MediaItem;
 import com.google.android.exoplayer2.PlaybackParameters;
 import com.google.android.exoplayer2.Player;
+import com.google.android.exoplayer2.SimpleExoPlayer;
+import com.google.android.exoplayer2.source.ProgressiveMediaSource;
 import com.google.android.exoplayer2.source.TrackGroup;
 import com.google.android.exoplayer2.source.TrackGroupArray;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
@@ -41,11 +53,17 @@ import com.google.android.exoplayer2.trackselection.MappingTrackSelector;
 import com.google.android.exoplayer2.trackselection.TrackSelection;
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
 import com.google.android.exoplayer2.trackselection.TrackSelectionParameters;
-import com.google.android.exoplayer2.ui.StyledPlayerView;
+import com.google.android.exoplayer2.ui.PlayerView;
+import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
+import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
+import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
 import com.google.android.exoplayer2.util.MimeTypes;
+import com.google.android.exoplayer2.util.Util;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.PrimitiveIterator;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -54,7 +72,7 @@ import retrofit2.Response;
 
 public class PlayingVideoAvtivity extends AppCompatActivity{
 
-    ExoPlayer player;
+    SimpleExoPlayer player;
     private  static  final  String SHARED_PREF_NAME = "mypref";
 
     private  static  final  String KEY_USERID = "userId";
@@ -80,7 +98,9 @@ public class PlayingVideoAvtivity extends AppCompatActivity{
 
     TextView text_quality;
 
-    StyledPlayerView styledPlayerView;
+    PlayerView styledPlayerView;
+
+    private Surface surface;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -95,6 +115,9 @@ public class PlayingVideoAvtivity extends AppCompatActivity{
         String accessToken = sharedPref.getString(KEY_ACCESSTOKEN,"");
         String m_andoid = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
 
+
+
+
         apiserver = ApiService.getlinknocontenttype(profileID,userID, m_andoid,"Bearer " + accessToken).create(HomeService.class);
         Call<DataObjectUrlVideo> data  = apiserver.getlinka(getIntent().getStringExtra("id"), getIntent().getStringExtra("type"));
         data.enqueue(new Callback<DataObjectUrlVideo>() {
@@ -107,9 +130,12 @@ public class PlayingVideoAvtivity extends AppCompatActivity{
 //                info.setText(urlVideo.getData().);
                 progressBar = findViewById(R.id.progressBar);
 
+
                 ImageView setiing_play = styledPlayerView.findViewById(R.id.exo_settings_icon);
 
                 ImageView play = styledPlayerView.findViewById(R.id.pause_button);
+
+
                 setiing_play.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -124,14 +150,12 @@ public class PlayingVideoAvtivity extends AppCompatActivity{
                             ispause = true;
                             play.setBackgroundResource(R.drawable.baseline_play_arrow_24);
                             player.setPlayWhenReady(false);
-                            player.pause();
                         }
                         else
                         {
                             ispause = false;
                             play.setBackgroundResource(R.drawable.baseline_pause_24);
                             player.setPlayWhenReady(true);
-                            player.play();
                         }
                     }
                 });
@@ -220,26 +244,82 @@ public class PlayingVideoAvtivity extends AppCompatActivity{
 //                                        .build();
 //
                 trackSelector.setParameters((DefaultTrackSelector.Parameters)newParameters);
-                player = new ExoPlayer.Builder(PlayingVideoAvtivity.this).setTrackSelector(trackSelector).build();
-//                player = new ExoPlayer.Builder(PlayingVideoAvtivity.this).setTrackSelector(trackSelector).build();
-                styledPlayerView.setPlayer(player);
-                MappingTrackSelector.MappedTrackInfo mappedTrackInfo = trackSelector.getCurrentMappedTrackInfo();
-                Log.d("mapinfor ", "" + mappedTrackInfo);
-                MediaItem mediaItem = MediaItem.fromUri("http://cdn-vttvas.s3.cloudstorage.com.vn/video1/dv/output/stream.mpd");
-               // MediaItem mediaItem = MediaItem.fromUri(urlVideo.getData().getUrlStreaming());
-                player.setMediaItem(mediaItem);
-                player.prepare();
-                player.setPlayWhenReady(true);
-                player.play();
-                Log.d("Tag Dolby ", " "+ VideoCodecChecker.issupportdolby());
 
-                player.addListener(new Player.Listener() {
+                Log.d("Tag Dolby 2", " "+ VideoCodecChecker.issupportdolby());
+//                trackSelector.setParameters(trackSelector.buildUponParameters().setPreferredAudioLanguage("en").clearSelectionOverrides(C.TRACK_TYPE_VIDEO));
+//
+//                DefaultRenderersFactory renderersFactory;
+//
+//                DefaultLoadControl loadControl = new DefaultLoadControl.Builder().setBufferDurationsMs(25000, 50000, 1500, 2000).build();
+//
+//                @DefaultRenderersFactory.ExtensionRendererMode int extensionRendererMode = DefaultRenderersFactory.EXTENSION_RENDERER_MODE_PREFER;
+//
+//                renderersFactory = new DefaultRenderersFactory(PlayingVideoAvtivity.this) .setExtensionRendererMode(extensionRendererMode);
+//
+//
+//                player = new ExoPlayer.Builder(PlayingVideoAvtivity.this, renderersFactory)
+//                        .setTrackSelector(trackSelector)
+//                        .setLoadControl(loadControl)
+//                        .build();
+//
+//
+////                player = new ExoPlayer.Builder(PlayingVideoAvtivity.this).setTrackSelector(trackSelector).build();
+////                player = new ExoPlayer.Builder(PlayingVideoAvtivity.this).setTrackSelector(trackSelector).build();
+//                styledPlayerView.setPlayer(player);
+//                MappingTrackSelector.MappedTrackInfo mappedTrackInfo = trackSelector.getCurrentMappedTrackInfo();
+//                Log.d("mapinfor ", "" + mappedTrackInfo);
+//                MediaItem mediaItem = MediaItem.fromUri("http://cdn-vttvas.s3.cloudstorage.com.vn/video1/dv/output/stream.mpd");
+//               // MediaItem mediaItem = MediaItem.fromUri(urlVideo.getData().getUrlStreaming());
+//                player.setMediaItem(mediaItem);
+//                player.prepare();
+//                player.setPlayWhenReady(true);
+//                player.play();
+//                MediaExtractor extractor = new MediaExtractor();
+//                MediaCodec decoder = null;
+//                try {
+//                    extractor.setDataSource("http://cdn-vttvas.s3.cloudstorage.com.vn/video1/dv/output/stream.mpd");
+//                } catch (IOException e) {
+//                    throw new RuntimeException(e);
+//                }
+//                for (int i = 0; i<extractor.getTrackCount();i++)
+//                {
+//                    MediaFormat format = extractor.getTrackFormat(i);
+//                    String mime = format.getString(MediaFormat.KEY_MIME);
+//                    if(mime.startsWith("video/"))
+//                    {
+//                        extractor.selectTrack(i);
+//                        try {
+//                            decoder = MediaCodec.createDecoderByType(mime);
+//                            decoder.configure(format,surface,null,0);
+//                            break;
+//                        } catch (IOException e) {
+//                            throw new RuntimeException(e);
+//                        }
+//
+//                    }
+//                }
+//                if(decoder == null)
+//                {
+//                    return;
+//                }
+//                decoder.start();
+                player = ExoPlayerFactory.newSimpleInstance(PlayingVideoAvtivity.this
+                       ,trackSelector, new DefaultLoadControl());
+                styledPlayerView.setPlayer(player);
+                ProgressiveMediaSource mediaSource = new ProgressiveMediaSource.Factory(
+                        new DefaultDataSourceFactory(PlayingVideoAvtivity.this,Util.getUserAgent(PlayingVideoAvtivity.this,""))
+                ).createMediaSource(Uri.parse(urlVideo.getData().getUrlStreaming()));
+                player.prepare(mediaSource);
+
+                player.addListener(new Player.EventListener() {
                     @Override
-                    public void onPlaybackStateChanged(int playbackState) {
-                        Player.Listener.super.onPlaybackStateChanged(playbackState);
+                    public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
+                        Player.EventListener.super.onPlayerStateChanged(playWhenReady, playbackState);
                         if(playbackState == Player.STATE_READY){
                             progressBar.setVisibility(View.GONE);
                             player.setPlayWhenReady(true);
+                            Log.d("ready ",""+player);
+
                         }else if(playbackState == Player.STATE_BUFFERING){
                             progressBar.setVisibility(View.VISIBLE);
                             styledPlayerView.setKeepScreenOn(true);
@@ -249,12 +329,15 @@ public class PlayingVideoAvtivity extends AppCompatActivity{
                         }
                     }
 
+                    @Override
+                    public void onPlayerError(ExoPlaybackException error) {
+                        Player.EventListener.super.onPlayerError(error);
+                        Log.d("error player " , " "+error);
+                    }
 
-                });
-                player.addListener(new Player.Listener() {
                     @Override
                     public void onTracksChanged(TrackGroupArray trackGroups, TrackSelectionArray trackSelections) {
-                        Player.Listener.super.onTracksChanged(trackGroups, trackSelections);
+                        Player.EventListener.super.onTracksChanged(trackGroups, trackSelections);
                         if(trackGroups.length > 0)
                         {
                             TrackGroup trackGroup = trackGroups.get(0);
@@ -271,6 +354,7 @@ public class PlayingVideoAvtivity extends AppCompatActivity{
                         }
                     }
                 });
+
             }
             @Override
             public void onFailure(Call<DataObjectUrlVideo> call, Throwable t) {
@@ -293,6 +377,7 @@ public class PlayingVideoAvtivity extends AppCompatActivity{
         return  true;
     }
 
+
     @Override
     protected void  onStop()
     {
@@ -303,6 +388,8 @@ public class PlayingVideoAvtivity extends AppCompatActivity{
         player = null;
 
     }
+
+
 
     private  void  openSettingPlayVideo(int gravity)
     {
@@ -348,19 +435,18 @@ public class PlayingVideoAvtivity extends AppCompatActivity{
 
                 if (!isShowingTrackSelectionDialog && TrackSelectionDialog.willHaveContent(trackSelector)) {
                     isShowingTrackSelectionDialog = true;
+
                     TrackSelectionDialog trackSelectionDialog = TrackSelectionDialog.createForTrackSelector(trackSelector,
                             /* onDismissListener= */ dismissedDialog -> isShowingTrackSelectionDialog = false);
                     trackSelectionDialog.show(getSupportFragmentManager(), /* tag= */ null);
-                    player.addListener(new Player.Listener() {
-
+                    player.addListener(new Player.EventListener() {
                         @Override
                         public void onTracksChanged(TrackGroupArray trackGroups, TrackSelectionArray trackSelections) {
-                            Player.Listener.super.onTracksChanged(trackGroups, trackSelections);
+                            Player.EventListener.super.onTracksChanged(trackGroups, trackSelections);
                             if (trackSelections.get(0) != null) {
                                 text_quality.setText(trackSelections.get(0).getFormat(0).height +"p");
                             }
                         }
-
                     });
                 }
             }

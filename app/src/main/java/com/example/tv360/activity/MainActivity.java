@@ -16,7 +16,7 @@ import com.example.tv360.adapter.ListFilmAdapter;
 import com.example.tv360.adapter.PlayingVideoTVAdapter;
 import com.example.tv360.adapter.RvFilmImageAdapter;
 import com.example.tv360.ui.TV.DashboardFragment;
-import com.example.tv360.ui.TV.TVFirstFragment;
+//import com.example.tv360.ui.TV.TVFirstFragment;
 import com.example.tv360.ui.TV.TVSecondFragment;
 import com.example.tv360.ui.home.HomeFragment;
 import com.example.tv360.ui.notifications.NotificationsFragment;
@@ -52,7 +52,7 @@ public class MainActivity extends AppCompatActivity implements RvFilmImageAdapte
     DashboardFragment dashboardFragment;
     NotificationsFragment notificationsFragment;
 
-    TVFirstFragment tvFirstFragment;
+//    TVFirstFragment tvFirstFragment;
     TVSecondFragment tvSecondFragment;
     boolean isdasfragment = false;
     boolean isnotityfragment = false;
@@ -96,11 +96,11 @@ public class MainActivity extends AppCompatActivity implements RvFilmImageAdapte
         fragmentbefore = R.id.navigation_home;
         getFragmentbefore = fragmenthome.getId();
         fragmentnav = navView.getId();
-        tvFirstFragment = new TVFirstFragment();
+//        tvFirstFragment = new TVFirstFragment();
         tvSecondFragment = new TVSecondFragment();
         draggablePanel = (DraggablePanel) findViewById(R.id.draggable_panel);
         draggablePanel.setFragmentManager(getSupportFragmentManager());
-        draggablePanel.setTopFragment(tvFirstFragment);
+//        draggablePanel.setTopFragment(tvFirstFragment);
         draggablePanel.setBottomFragment(tvSecondFragment);
         draggablePanel.setTopViewHeight(600);
         draggablePanel.setDraggableListener(new DraggableListener() {
@@ -112,7 +112,7 @@ public class MainActivity extends AppCompatActivity implements RvFilmImageAdapte
                     navView.setSelectedItemId(R.id.navigation_dashboard);
                     navView.setSelected(true);
                 }
-                tvFirstFragment.onPlayExo();
+//                tvFirstFragment.onPlayExo();
             }
 
             @Override
@@ -127,7 +127,7 @@ public class MainActivity extends AppCompatActivity implements RvFilmImageAdapte
             public void onClosedToLeft() {
                 isopened = false;
                 iscloseddraggable = true;
-                tvFirstFragment.onPauseExo();
+//                tvFirstFragment.onPauseExo();
 
             }
 
@@ -135,7 +135,7 @@ public class MainActivity extends AppCompatActivity implements RvFilmImageAdapte
             public void onClosedToRight() {
                 isopened = false;
                 iscloseddraggable = true;
-                tvFirstFragment.onPauseExo();
+//                tvFirstFragment.onPauseExo();
             }
 
         });
@@ -267,7 +267,7 @@ public class MainActivity extends AppCompatActivity implements RvFilmImageAdapte
         SharedPreferences.Editor editor = sharedPreferences_tv.edit();
         editor.putString(KEY_TV, intent.getStringExtra("id"));
         editor.apply();
-        tvFirstFragment.updateData(intent.getStringExtra("id"),intent.getStringExtra("type"));
+//        tvFirstFragment.updateData(intent.getStringExtra("id"),intent.getStringExtra("type"));
         tvSecondFragment.updateId(intent.getStringExtra("id"));
     }
 }

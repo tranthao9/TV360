@@ -20,7 +20,7 @@ public class VideoCodecChecker {
                 continue;
             }
             for (String type : info.getSupportedTypes()) {
-                if (type.equals("audio/ac4")) {
+                if (type.equals("audio/ac4")) { //ac4
                     dlbAC4IMSDevice = true;
                 }
             }

@@ -10,7 +10,7 @@ import android.widget.Button;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.tv360.R;
-import com.example.tv360.ui.TV.TVFirstFragment;
+//import com.example.tv360.ui.TV.TVFirstFragment;
 import com.example.tv360.ui.TV.TVSecondFragment;
 import com.github.pedrovgs.DraggablePanel;
 
@@ -28,7 +28,7 @@ public class DraggableActivity extends AppCompatActivity {
 
         draggablePanel = (DraggablePanel) findViewById(R.id.draggable_panel);
         draggablePanel.setFragmentManager(getSupportFragmentManager());
-        draggablePanel.setTopFragment(new TVFirstFragment());
+//        draggablePanel.setTopFragment(new TVFirstFragment());
         draggablePanel.setBottomFragment(new TVSecondFragment());
         draggablePanel.setTopViewHeight(500);
         draggablePanel.initializeView();

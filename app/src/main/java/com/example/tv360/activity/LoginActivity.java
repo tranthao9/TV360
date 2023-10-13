@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.provider.Settings;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -17,6 +18,7 @@ import android.widget.Toast;
 
 import com.example.tv360.Interface.LoginInterface;
 import com.example.tv360.R;
+import com.example.tv360.checkvideo.VideoCodecChecker;
 import com.example.tv360.model.DataObjectLogin;
 import com.example.tv360.model.DeviceInfo;
 import com.example.tv360.model.LoginModel;
@@ -104,6 +106,7 @@ public class LoginActivity extends AppCompatActivity implements LoginInterface {
             public void run() {
                 Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                 startActivity(intent);
+
                 Toast.makeText(LoginActivity.this,"Login success",Toast.LENGTH_SHORT).show();
             }
         };
