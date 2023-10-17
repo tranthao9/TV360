@@ -81,7 +81,7 @@ public class PlayingVideoAvtivity extends AppCompatActivity{
     ImageView fullscreen;
 
     Boolean isfullscreen = false;
-    HomeService apiserver ;
+    HomeService apiserver;
 
     ProgressBar progressBar;
 
@@ -190,33 +190,26 @@ public class PlayingVideoAvtivity extends AppCompatActivity{
                         }
                     }
                 });
-
-
-
                 Log.d("Tag Dolby 2", " "+ VideoCodecChecker.issupportdolby());
 
 
 //                MediaItem mediaItem = MediaItem.fromUri("http://cdn-vttvas.s3.cloudstorage.com.vn/video1/dv/output/stream.mpd");
-                hlsMediaSource = new HlsMediaSource.Factory(new DefaultHttpDataSourceFactory(Util.getUserAgent(PlayingVideoAvtivity.this, "exoplayer"))).createMediaSource(Uri.parse("http://cdn-vttvas.s3.cloudstorage.com.vn/video1/dv/output/stream.mpd"));
+                hlsMediaSource = new HlsMediaSource.Factory(new DefaultHttpDataSourceFactory(Util.getUserAgent(PlayingVideoAvtivity.this, "exoplayer"))).createMediaSource(Uri.parse(urlVideo.getData().getUrlStreaming()));
 
-
-                DefaultHttpDataSourceFactory mediaDataSourceFactory = new DefaultHttpDataSourceFactory(
-                        Util.getUserAgent(PlayingVideoAvtivity.this, "stackoverflow"));
-// do not meter bandwidth for manifest loading
-                DefaultHttpDataSourceFactory manifestDataSourceFactory = new DefaultHttpDataSourceFactory(
-                        Util.getUserAgent(PlayingVideoAvtivity.this, "stackoverflow"));
-// create the media source for DASH
-                MediaSource mediaSource = new DashMediaSource.Factory(
-                        new DefaultDashChunkSource.Factory(mediaDataSourceFactory),
-                        manifestDataSourceFactory)
-                        .createMediaSource(Uri.parse("http://cdn-vttvas.s3.cloudstorage.com.vn/video1/dv/output/stream.mpd"), null, null);
-
-// prepare the player
+// when playing with device support dolby.
+//                DefaultHttpDataSourceFactory mediaDataSourceFactory = new DefaultHttpDataSourceFactory(
+//                        Util.getUserAgent(PlayingVideoAvtivity.this, "tv360"));
+//                // do not meter bandwidth for manifest loading
+//                DefaultHttpDataSourceFactory manifestDataSourceFactory = new DefaultHttpDataSourceFactory(
+//                        Util.getUserAgent(PlayingVideoAvtivity.this, "tv360"));
+//                // create the media source for DASH
+//                MediaSource mediaSource = new DashMediaSource.Factory(
+//                        new DefaultDashChunkSource.Factory(mediaDataSourceFactory),
+//                        manifestDataSourceFactory)
+//                        .createMediaSource(Uri.parse(urlVideo.getData().getUrlStreaming()), null, null);
                 player.setPlayWhenReady(true);
-                player.prepare(mediaSource);
-
-//                player.prepare(hlsMediaSource);
-//                player.setPlayWhenReady(true);
+//                player.prepare(mediaSource);
+                player.prepare(hlsMediaSource);
 
                 player.addAnalyticsListener(new AnalyticsListener() {
                     @Override
