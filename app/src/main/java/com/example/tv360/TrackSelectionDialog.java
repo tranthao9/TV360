@@ -53,6 +53,7 @@ import com.google.android.exoplayer2.util.Log;
 import com.google.android.material.tabs.TabLayout;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -68,7 +69,6 @@ public final class TrackSelectionDialog extends DialogFragment {
     private int titleId;
     private DialogInterface.OnClickListener onClickListener;
     private DialogInterface.OnDismissListener onDismissListener;
-    private static boolean  isshow = false;
 
     /**
      * Returns whether a track selection dialog will have content to display if initialized with the
@@ -88,7 +88,7 @@ public final class TrackSelectionDialog extends DialogFragment {
         window.setGravity(Gravity.BOTTOM|Gravity.RIGHT);
         if(window == null) return;
         WindowManager.LayoutParams params = window.getAttributes();
-        params.width = 600;
+        params.height = 1500;
         window.setAttributes(params);
 
 //        ViewGroup.LayoutParams params = getDialog().getWindow().getAttributes();
@@ -121,12 +121,29 @@ public final class TrackSelectionDialog extends DialogFragment {
     public static TrackSelectionDialog createForTrackSelector(
             DefaultTrackSelector trackSelector, DialogInterface.OnDismissListener onDismissListener) {
         MappedTrackInfo mappedTrackInfo =
-                Assertions.checkNotNull(trackSelector.getCurrentMappedTrackInfo());
-
-
+                Assertions.checkNotNull(trackSelector.getCurrentMappedTrackInfo().);
         TrackSelectionDialog trackSelectionDialog = new TrackSelectionDialog();
-        DefaultTrackSelector.Parameters parameters = trackSelector.getParameters();
+        TrackGroupArray trackGroupArray = trackSelector.getCurrentMappedTrackInfo().getTrackGroups(0);
 
+        DefaultTrackSelector.ParametersBuilder parametersBuilder = new DefaultTrackSelector.ParametersBuilder();
+        int recderindex = 0;
+        int trackgroupindex = 0;
+        TrackGroup trackGroup = trackGroupArray.get(0);
+        int[] selectionTrack = new int[trackGroup.length];
+        int count = 0;
+        for (int i =0 ;i<trackGroup.length;i++){
+            if(trackGroup.getFormat(i).codecs.startsWith("dvh"));
+            {
+                selectionTrack[count++] = i;
+            }
+        }
+        int[] selectiontracks = Arrays.copyOf(selectionTrack,count);
+        parametersBuilder.setSelectionOverride(recderindex,trackSelector.getCurrentMappedTrackInfo().getTrackGroups(0),
+                new DefaultTrackSelector.SelectionOverride(
+                        trackgroupindex,selectiontracks
+                ));
+        trackSelector.setParameters(parametersBuilder);
+        DefaultTrackSelector.Parameters parameters = trackSelector.getParameters();
         trackSelectionDialog.init(
                 /* titleId= */ R.string.select_quality,
                 mappedTrackInfo,
@@ -135,7 +152,9 @@ public final class TrackSelectionDialog extends DialogFragment {
                 /* allowMultipleOverrides= */ false,
                 /* onClickListener= */ (dialog, which) -> {
                     DefaultTrackSelector.ParametersBuilder builder = parameters.buildUpon();
+                    Log.d("countrender",""+mappedTrackInfo.getRendererCount());
                     for (int i = 0; i < mappedTrackInfo.getRendererCount(); i++) {
+                        Log.d("countrender "+i,""+mappedTrackInfo.getRendererCount());
                         builder
                                 .clearSelectionOverrides(/* rendererIndex= */ i)
                                 .setRendererDisabled(
@@ -209,20 +228,27 @@ public final class TrackSelectionDialog extends DialogFragment {
         this.onClickListener = onClickListener;
         this.onDismissListener = onDismissListener;
         for (int i = 0; i < mappedTrackInfo.getRendererCount(); i++) {
-            if (showTabForRenderer(mappedTrackInfo, i)) {
-                int trackType = mappedTrackInfo.getRendererType(/* rendererIndex= */ i);
-                TrackGroupArray trackGroupArray = mappedTrackInfo.getTrackGroups(i);
-                TrackSelectionViewFragment tabFragment = new TrackSelectionViewFragment();
-                tabFragment.init(
-                        mappedTrackInfo,
-                        /* rendererIndex= */ i,
-                        initialParameters.getRendererDisabled(/* rendererIndex= */ i),
-                        initialParameters.getSelectionOverride(/* rendererIndex= */ i,trackGroupArray),
-                        allowAdaptiveSelections,
-                        allowMultipleOverrides);
-                tabFragments.put(i, tabFragment);
-                tabTrackTypes.add(trackType);
-                return;
+                if (showTabForRenderer(mappedTrackInfo, i)) {
+                    int trackType = mappedTrackInfo.getRendererType(/* rendererIndex= */ i);
+                    TrackGroupArray trackGroupArray = mappedTrackInfo.getTrackGroups(i);
+                    if(initialParameters.getSelectionOverride(/* rendererIndex= */ i,trackGroupArray) == null)
+                    {
+                        TrackSelectionViewFragment tabFragment = new TrackSelectionViewFragment();
+                        tabFragment.init(
+                                mappedTrackInfo,
+                                /* rendererIndex= */ i,
+                                initialParameters.getRendererDisabled(/* rendererIndex= */ i),
+                                initialParameters.getSelectionOverride(/* rendererIndex= */ i,trackGroupArray),
+                                allowAdaptiveSelections,
+                                allowMultipleOverrides);
+                        Log.d("getRendererDisabled",""+initialParameters.getRendererDisabled(/* rendererIndex= */ i));
+                        Log.d("getSelectionOverride",""+initialParameters.getSelectionOverride(/* rendererIndex= */ i,trackGroupArray));
+                        Log.d("allowAdaptiveSelections",""+allowAdaptiveSelections);
+                        Log.d("allowMultipleOverrides",""+allowMultipleOverrides);
+                        tabFragments.put(i, tabFragment);
+                        tabTrackTypes.add(trackType);
+                    }
+
             }
         }
     }
@@ -280,9 +306,9 @@ public final class TrackSelectionDialog extends DialogFragment {
         Button okButton = dialogView.findViewById(R.id.track_selection_dialog_ok_button);
         viewPager.setAdapter(new FragmentAdapter(getChildFragmentManager()));
         tabLayout.setupWithViewPager(viewPager);
-//    tabLayout.setVisibility(tabFragments.size() > 1 ? View.VISIBLE : View.GONE);
-        tabLayout.setVisibility(View.GONE);
 
+        Log.d("Tagment 2 ",""+tabFragments);
+        tabLayout.setVisibility(tabFragments.size() > 1 ? View.VISIBLE : View.GONE);
         cancelButton.setOnClickListener(view -> dismiss());
         okButton.setOnClickListener(
                 view -> {
@@ -336,6 +362,7 @@ public final class TrackSelectionDialog extends DialogFragment {
         @Override
         @NonNull
         public Fragment getItem(int position) {
+            Log.d("tabFragments",""+tabFragments.valueAt(position));
             return tabFragments.valueAt(position);
         }
 
@@ -402,17 +429,23 @@ public final class TrackSelectionDialog extends DialogFragment {
                             R.layout.exo_track_selection_dialog, container, /* attachToRoot= */ false);
             @SuppressLint({"MissingInflatedId", "LocalSuppress"})
             TrackSelectionView trackSelectionView = rootView.findViewById(R.id.exo_track_selection_view);
-
             trackSelectionView.setShowDisableOption(false);
             trackSelectionView.setAllowMultipleOverrides(false);
             trackSelectionView.setAllowAdaptiveSelections(false);
+            Log.d("createView "," "+ trackSelectionView+ "2");
+
             trackSelectionView.setTrackNameProvider(new TrackNameProvider() {
                 @Override
                 public String getTrackName(Format format) {
-                    return format.height + "p";
-                }
+                    if(format.codecs.startsWith("dvh"))
+                    {
+                        return format.height + "p";
+                    }
+                    return  null;
+                };
             });
 
+            Log.d("renderindex",""+rendererIndex);
             trackSelectionView.init(
                     mappedTrackInfo,
                     rendererIndex,
@@ -420,14 +453,6 @@ public final class TrackSelectionDialog extends DialogFragment {
                     overrides,
                     /* trackFormatComparator= */ null
                     /* listener= */);
-
-
-
-
-
-
-
-
             return rootView;
         }
 

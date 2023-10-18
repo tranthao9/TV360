@@ -28,7 +28,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:gravity="right|center"
-            android:text="Tự động( 480p )"
+            android:text="Tự động"
             android:textSize="14dp"
             android:id="@+id/exo_playback_quality_content"
             />

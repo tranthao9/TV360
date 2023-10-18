@@ -44,6 +44,7 @@ import com.google.android.exoplayer2.source.dash.DefaultDashChunkSource;
 import com.google.android.exoplayer2.source.hls.HlsMediaSource;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.trackselection.MappingTrackSelector;
+import com.google.android.exoplayer2.trackselection.TrackSelection;
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
 import com.google.android.exoplayer2.trackselection.TrackSelectionParameters;
 import com.google.android.exoplayer2.ui.PlayerView;
@@ -55,6 +56,7 @@ import com.google.android.exoplayer2.util.Util;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.PrimitiveIterator;
 
@@ -97,7 +99,7 @@ public class PlayingVideoAvtivity extends AppCompatActivity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-        this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN,WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
         getSupportActionBar().hide();
         setContentView(R.layout.activity_playing_video_avtivity);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -107,12 +109,13 @@ public class PlayingVideoAvtivity extends AppCompatActivity{
         String accessToken = sharedPref.getString(KEY_ACCESSTOKEN,"");
         String m_andoid = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
         styledPlayerView = findViewById(R.id.playvideo);
+
         trackSelector = new DefaultTrackSelector(PlayingVideoAvtivity.this);
         TrackSelectionParameters newParameters = trackSelector.getParameters()
                 .buildUpon()
-                .setForceHighestSupportedBitrate(true)
                 .build();
         trackSelector.setParameters((DefaultTrackSelector.Parameters)newParameters);
+
         player = new SimpleExoPlayer.Builder(PlayingVideoAvtivity.this).setTrackSelector(trackSelector).build();
         styledPlayerView.setPlayer(player);
         apiserver = ApiService.getlinknocontenttype(profileID,userID, m_andoid,"Bearer " + accessToken).create(HomeService.class);
@@ -160,7 +163,7 @@ public class PlayingVideoAvtivity extends AppCompatActivity{
                     public void onClick(View v) {
                         if(isfullscreen){
 
-                            getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
+                            getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN);
 
                             if(getSupportActionBar() != null){
                                 getSupportActionBar().show();
@@ -172,7 +175,7 @@ public class PlayingVideoAvtivity extends AppCompatActivity{
                             styledPlayerView.setLayoutParams(params);
                             isfullscreen = false;
                         }else {
-                            getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN
+                            getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
                                     |View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
                                     |View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
 
@@ -192,25 +195,29 @@ public class PlayingVideoAvtivity extends AppCompatActivity{
                 });
                 Log.d("Tag Dolby 2", " "+ VideoCodecChecker.issupportdolby());
 
+                if(VideoCodecChecker.issupportdolby())
+                {
+                    //when playing with device support dolby.
+                    DefaultHttpDataSourceFactory mediaDataSourceFactory = new DefaultHttpDataSourceFactory(
+                            Util.getUserAgent(PlayingVideoAvtivity.this, "tv360"));
+                    // do not meter bandwidth for manifest loading
+                    DefaultHttpDataSourceFactory manifestDataSourceFactory = new DefaultHttpDataSourceFactory(
+                            Util.getUserAgent(PlayingVideoAvtivity.this, "tv360"));
+                    // create the media source for DASH
+                    MediaSource mediaSource = new DashMediaSource.Factory(
+                            new DefaultDashChunkSource.Factory(mediaDataSourceFactory),
+                            manifestDataSourceFactory)
+                            .createMediaSource(Uri.parse("http://cdn-vttvas.s3.cloudstorage.com.vn/video1/dv/output/stream.mpd"), null, null);
+                    player.prepare(mediaSource);
+                }
 
-//                MediaItem mediaItem = MediaItem.fromUri("http://cdn-vttvas.s3.cloudstorage.com.vn/video1/dv/output/stream.mpd");
-                hlsMediaSource = new HlsMediaSource.Factory(new DefaultHttpDataSourceFactory(Util.getUserAgent(PlayingVideoAvtivity.this, "exoplayer"))).createMediaSource(Uri.parse(urlVideo.getData().getUrlStreaming()));
-
-// when playing with device support dolby.
-//                DefaultHttpDataSourceFactory mediaDataSourceFactory = new DefaultHttpDataSourceFactory(
-//                        Util.getUserAgent(PlayingVideoAvtivity.this, "tv360"));
-//                // do not meter bandwidth for manifest loading
-//                DefaultHttpDataSourceFactory manifestDataSourceFactory = new DefaultHttpDataSourceFactory(
-//                        Util.getUserAgent(PlayingVideoAvtivity.this, "tv360"));
-//                // create the media source for DASH
-//                MediaSource mediaSource = new DashMediaSource.Factory(
-//                        new DefaultDashChunkSource.Factory(mediaDataSourceFactory),
-//                        manifestDataSourceFactory)
-//                        .createMediaSource(Uri.parse(urlVideo.getData().getUrlStreaming()), null, null);
+                else
+                {
+                    //MediaItem mediaItem = MediaItem.fromUri("http://cdn-vttvas.s3.cloudstorage.com.vn/video1/dv/output/stream.mpd");
+                    hlsMediaSource = new HlsMediaSource.Factory(new DefaultHttpDataSourceFactory(Util.getUserAgent(PlayingVideoAvtivity.this, "exoplayer"))).createMediaSource(Uri.parse(urlVideo.getData().getUrlStreaming()));
+                    player.prepare(hlsMediaSource);
+                }
                 player.setPlayWhenReady(true);
-//                player.prepare(mediaSource);
-                player.prepare(hlsMediaSource);
-
                 player.addAnalyticsListener(new AnalyticsListener() {
                     @Override
                     public void onPlayerStateChanged(EventTime eventTime, boolean playWhenReady, int playbackState) {
@@ -220,12 +227,14 @@ public class PlayingVideoAvtivity extends AppCompatActivity{
                             player.setPlayWhenReady(true);
                             Log.d("ready ",""+player);
 
+
                         }else if(playbackState == Player.STATE_BUFFERING){
                             progressBar.setVisibility(View.VISIBLE);
                             styledPlayerView.setKeepScreenOn(true);
                         }else {
                             progressBar.setVisibility(View.GONE);
                             player.setPlayWhenReady(true);
+                            Log.d("ready 2",""+player);
                         }
                     }
 
@@ -241,14 +250,25 @@ public class PlayingVideoAvtivity extends AppCompatActivity{
                         if(trackGroups.length > 0)
                         {
                             TrackGroup trackGroup = trackGroups.get(0);
-                            for (int i=0;i<trackGroup.length;i++)
+                            for (int i=0;i<trackGroups.length;i++)
                             {
+                                TrackSelection trackSelection = trackSelections.get(i);
                                 Format format = trackGroup.getFormat(i);
                                 if(MimeTypes.isVideo(format.sampleMimeType))
                                 {
                                     String codec = format.codecs;
                                     Toast.makeText(PlayingVideoAvtivity.this,"codec "+codec,Toast.LENGTH_SHORT).show();
-                                    Log.d("Tag Dolby codec ", " "+ codec);
+                                }
+                            }
+                            TrackGroup trackGroup2 = trackGroups.get(1);
+                            for (int i=0;i<trackGroups.length;i++)
+                            {
+                                TrackSelection trackSelection = trackSelections.get(i);
+                                Format format = trackGroup2.getFormat(i);
+                                if(MimeTypes.isVideo(format.sampleMimeType))
+                                {
+                                    String codec = format.codecs;
+                                    Toast.makeText(PlayingVideoAvtivity.this,"codeavc "+codec,Toast.LENGTH_SHORT).show();
                                 }
                             }
                         };
@@ -264,6 +284,7 @@ public class PlayingVideoAvtivity extends AppCompatActivity{
 
 
 
+
     @Override
     protected void  onStop()
     {
@@ -273,6 +294,21 @@ public class PlayingVideoAvtivity extends AppCompatActivity{
         player.release();
         player = null;
 
+    }
+
+    private int[] finttrack(String prefix, int trackgroup)
+    {
+        TrackGroupArray trackGroupArray = trackSelector.getCurrentMappedTrackInfo().getTrackGroups(0);
+        TrackGroup trackGroup = trackGroupArray.get(trackgroup);
+        int[] selectionTrack = new int[trackGroup.length];
+        int count = 0;
+        for (int i =0 ;i<trackGroup.length;i++){
+            if(trackGroup.getFormat(i).codecs.startsWith(prefix));
+            {
+                selectionTrack[count++] = i;
+            }
+        }
+        return Arrays.copyOf(selectionTrack,count);
     }
 
     // index: 0 is mp4 track,1 is wav track
@@ -329,7 +365,6 @@ public class PlayingVideoAvtivity extends AppCompatActivity{
 
                 if (!isShowingTrackSelectionDialog && TrackSelectionDialog.willHaveContent(trackSelector)) {
                     isShowingTrackSelectionDialog = true;
-
                     TrackSelectionDialog trackSelectionDialog = TrackSelectionDialog.createForTrackSelector(trackSelector,
                             /* onDismissListener= */ dismissedDialog -> isShowingTrackSelectionDialog = false);
                     trackSelectionDialog.show(getSupportFragmentManager(), /* tag= */ null);
@@ -360,37 +395,27 @@ public class PlayingVideoAvtivity extends AppCompatActivity{
                 // the user clicked on colors[which]
 
                 if (which == 0) {
-
                     text_speed.setVisibility(View.VISIBLE);
                     text_speed.setText("0.25X");
                     PlaybackParameters param = new PlaybackParameters(0.5f);
                     player.setPlaybackParameters(param);
-
-
                 }
                 if (which == 1) {
-
                     text_speed.setVisibility(View.VISIBLE);
                     text_speed.setText("0.5X");
                     PlaybackParameters param = new PlaybackParameters(0.5f);
                     player.setPlaybackParameters(param);
-
-
                 }
                 if (which == 2) {
-
                     text_speed.setVisibility(View.GONE);
                     PlaybackParameters param = new PlaybackParameters(1f);
                     player.setPlaybackParameters(param);
-
-
                 }
                 if (which == 3) {
                     text_speed.setVisibility(View.VISIBLE);
                     text_speed.setText("1.5X");
                     PlaybackParameters param = new PlaybackParameters(1.5f);
                     player.setPlaybackParameters(param);
-
                 }
                 if (which == 4) {
                     text_speed.setVisibility(View.VISIBLE);
@@ -398,8 +423,6 @@ public class PlayingVideoAvtivity extends AppCompatActivity{
                     PlaybackParameters param = new PlaybackParameters(2f);
                     player.setPlaybackParameters(param);
                 }
-
-
             }
         });
         builder.show();
