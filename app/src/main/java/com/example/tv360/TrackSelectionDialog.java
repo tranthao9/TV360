@@ -121,7 +121,7 @@ public final class TrackSelectionDialog extends DialogFragment {
     public static TrackSelectionDialog createForTrackSelector(
             DefaultTrackSelector trackSelector, DialogInterface.OnDismissListener onDismissListener) {
         MappedTrackInfo mappedTrackInfo =
-                Assertions.checkNotNull(trackSelector.getCurrentMappedTrackInfo().);
+                Assertions.checkNotNull(trackSelector.getCurrentMappedTrackInfo());
         TrackSelectionDialog trackSelectionDialog = new TrackSelectionDialog();
         TrackGroupArray trackGroupArray = trackSelector.getCurrentMappedTrackInfo().getTrackGroups(0);
 
