@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:background="@drawable/bg_setting_playvideo"
+    android:padding="10dp">
+    <RadioGroup
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/group_radio_setting_quality_video"
+        android:orientation="vertical">
+        <RadioButton android:id="@+id/radio_auto"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="12dp"
+            android:text="Tự động"/>
+        <RadioButton android:id="@+id/radio_normal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="12dp"
+            android:text="Bình thường"/>
+        <RadioButton android:id="@+id/radio_better"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="12dp"
+            android:text="Tốt hơn"/>
+        <RadioButton android:id="@+id/radio_dolby"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="12dp"
+            android:text="Dolby"/>
+    </RadioGroup>
+</LinearLayout>

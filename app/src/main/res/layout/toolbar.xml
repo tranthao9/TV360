@@ -9,15 +9,20 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:weightSum="100">
+        android:weightSum="10">
         <ImageView
-            android:layout_width="70dp"
+            android:layout_width="0dp"
+            android:layout_weight="2"
             android:layout_height="wrap_content"
             android:src="@drawable/logo1"/>
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="2"
+            android:layout_height="40dp"/>
         <Button
             android:id="@+id/muagoi"
-            android:layout_marginLeft="100dp"
-            android:layout_width="100dp"
+            android:layout_width="0dp"
+            android:layout_weight="3"
             android:layout_height="40dp"
             android:layout_marginTop="18dp"
             android:backgroundTint="#F40505"
@@ -25,25 +30,25 @@
             android:textSize="10dp"/>
 
         <ImageView
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
+            android:layout_weight="1"
             android:layout_height="wrap_content"
             android:src="@drawable/baseline_notifications_none_24"
             android:id="@+id/notication"
-            android:layout_marginLeft="15dp"
             android:layout_marginTop="23dp"/>
         <ImageView
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
+            android:layout_weight="1"
             android:layout_height="wrap_content"
             android:src="@drawable/baseline_search_24"
             android:id="@+id/searchHeader"
-            android:layout_marginLeft="15dp"
             android:layout_marginTop="23dp"/>
         <ImageView
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
+            android:layout_weight="1"
             android:layout_height="wrap_content"
             android:src="@drawable/baseline_account_circle_24"
             android:id="@+id/profileHeader"
-            android:layout_marginLeft="15dp"
             android:layout_marginTop="23dp"/>
     </LinearLayout>
 </androidx.appcompat.widget.Toolbar>

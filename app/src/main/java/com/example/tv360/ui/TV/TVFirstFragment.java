@@ -33,6 +33,7 @@ import androidx.lifecycle.ViewModelProvider;
 import com.example.tv360.R;
 import com.example.tv360.TrackSelectionDialog;
 import com.example.tv360.activity.PlayingVideoAvtivity;
+import com.example.tv360.checkvideo.VideoCodecChecker;
 import com.example.tv360.model.DataObjectUrlVideo;
 import com.example.tv360.model.FilmModel;
 import com.example.tv360.model.HomeModel;
@@ -301,7 +302,7 @@ public class TVFirstFragment extends Fragment {
 
                 if (!isShowingTrackSelectionDialog && TrackSelectionDialog.willHaveContent(trackSelector)) {
                     isShowingTrackSelectionDialog = true;
-                    TrackSelectionDialog trackSelectionDialog = TrackSelectionDialog.createForTrackSelector(trackSelector,
+                    TrackSelectionDialog trackSelectionDialog = TrackSelectionDialog.createForTrackSelector(VideoCodecChecker.isDolbyVisionSupported(getContext()),trackSelector,
                             /* onDismissListener= */ dismissedDialog -> isShowingTrackSelectionDialog = false);
                     trackSelectionDialog.show(getActivity().getSupportFragmentManager(), /* tag= */ null);
 
