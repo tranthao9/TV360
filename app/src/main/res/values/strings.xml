@@ -3,7 +3,7 @@
     <string name="title_home">Trang chủ</string>
     <string name="title_dashboard">Truyền hình</string>
     <string name="title_notifications">Notifications</string>
-    <string name="select_quality">Select Quality</string>
+    <string name="select_quality">Chọn chất lượng</string>
     <string name="exo_track_selection_title_video">Video</string>
     <string name="exo_track_selection_title_audio">Audio</string>
     <string name="exo_track_selection_title_text">Text</string>

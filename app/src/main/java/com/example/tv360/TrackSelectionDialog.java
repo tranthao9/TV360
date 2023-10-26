@@ -25,11 +25,14 @@ import android.os.Bundle;
 import android.util.SparseArray;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.ListView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -38,10 +41,16 @@ import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
+import com.example.tv360.activity.LoginActivity;
+import com.example.tv360.adapter.CustomTrackAdapter;
+import com.example.tv360.adapter.CustomTrackSelection;
+import com.example.tv360.model.TrackInfo;
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.Format;
+import com.google.android.exoplayer2.source.TrackGroup;
 import com.google.android.exoplayer2.source.TrackGroupArray;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector.SelectionOverride;
@@ -57,6 +66,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Dialog to select tracks.
@@ -69,17 +79,19 @@ public final class TrackSelectionDialog extends DialogFragment {
 
     private int titleId;
 
-    private static int selected = 5;
+    private static int selected = 3, getSelected = 0 , trackindex = 0;
     private DialogInterface.OnClickListener onClickListener;
     private DialogInterface.OnDismissListener onDismissListener;
 
-    private static boolean issupportDolbyVisionP = false;
+    private static boolean issupportDolbyVisionP = false , isclick = false, finalclick = false, whennotdolby = false;
 
     private static Map<String, Integer> selectquality = new HashMap<>();
+    private static  List<TrackInfo> trackInfoList ;
 
     private  static  Button okButton;
 
-    private  static boolean isclick = false;
+    @SuppressLint({"MissingInflatedId", "LocalSuppress"})
+    private  TrackSelectionView trackSelectionView;
 
     /**
      * Returns whether a track selection dialog will have content to display if initialized with the
@@ -88,6 +100,25 @@ public final class TrackSelectionDialog extends DialogFragment {
     public static boolean willHaveContent(DefaultTrackSelector trackSelector) {
         MappedTrackInfo mappedTrackInfo = trackSelector.getCurrentMappedTrackInfo();
         return mappedTrackInfo != null && willHaveContent(mappedTrackInfo);
+    }
+
+    public  void  getData(int trackindexa, int selecteda,String fomat)
+    {
+        trackindex = trackindexa;
+        selected = selecteda;
+        for (TrackInfo t : trackInfoList)
+        {
+            if(t.getFormat().equals(fomat))
+            {
+                t.setIsslect(true);
+            }
+            else
+            {
+                t.setIsslect(false);
+            }
+        }
+        okButton.performClick();
+
     }
 
     @Override
@@ -100,12 +131,9 @@ public final class TrackSelectionDialog extends DialogFragment {
         if(window == null) return;
         WindowManager.LayoutParams params = window.getAttributes();
         params.height = 1150;
+        params.width = 1000;
+        params.gravity = Gravity.CENTER;
         window.setAttributes(params);
-
-//        ViewGroup.LayoutParams params = getDialog().getWindow().getAttributes();
-//        params.width = 200;
-//        params.height = RelativeLayout.LayoutParams.WRAP_CONTENT;
-//        getDialog().getWindow().setAttributes((android.view.WindowManager.LayoutParams) params);
     }
 
     /**
@@ -130,7 +158,7 @@ public final class TrackSelectionDialog extends DialogFragment {
      *                          dismissed.
      */
     public static TrackSelectionDialog createForTrackSelector(Boolean issupportDolbyVision,
-            DefaultTrackSelector trackSelector, DialogInterface.OnDismissListener onDismissListener) {
+                                                              DefaultTrackSelector trackSelector, DialogInterface.OnDismissListener onDismissListener) {
         issupportDolbyVisionP = issupportDolbyVision;
         MappedTrackInfo mappedTrackInfo =
                 Assertions.checkNotNull(trackSelector.getCurrentMappedTrackInfo());
@@ -143,10 +171,9 @@ public final class TrackSelectionDialog extends DialogFragment {
                 /* allowAdaptiveSelections= */ false,
                 /* allowMultipleOverrides= */ false,
                 /* onClickListener= */ (dialog, which) -> {
-                    DefaultTrackSelector.ParametersBuilder builder = parameters.buildUpon();
                     for (int i = 0; i < mappedTrackInfo.getRendererCount(); i++) {
                         if (mappedTrackInfo.getRendererType(i) == C.TRACK_TYPE_VIDEO) {
-                            Log.d("select pi",""+selected);
+                            Log.d("selected i ",""+selected);
                             trackSelector.setParameters(
                                     trackSelector.buildUponParameters()
                                             .setSelectionOverride(
@@ -154,12 +181,14 @@ public final class TrackSelectionDialog extends DialogFragment {
                                                     mappedTrackInfo.getTrackGroups(/* rendererIndex= */ i),
                                                     // this selects the first track of the second track group.
                                                     new DefaultTrackSelector.SelectionOverride(
-                                                            /* groupIndex= */ 1, /* tracks= */selected )));
+                                                            /* groupIndex= */ trackindex, /* tracks= */selected )));
+                            Toast.makeText(trackSelectionDialog.getContext(), "Bạn đang chạy với " + mappedTrackInfo.getTrackGroups(i).get(trackindex).getFormat(selected).codecs + "codec" + mappedTrackInfo.getTrackGroups(i).get(trackindex).getFormat(selected).height + "p",Toast.LENGTH_SHORT).show();
+
                         }
                     }
-                   ;
                 },
                 onDismissListener);
+        isclick = false;
         return trackSelectionDialog;
     }
 
@@ -229,7 +258,6 @@ public final class TrackSelectionDialog extends DialogFragment {
                             allowMultipleOverrides);
                     tabFragments.put(i, tabFragment);
                     tabTrackTypes.add(trackType);
-                    return;
             }
         }
     }
@@ -265,7 +293,6 @@ public final class TrackSelectionDialog extends DialogFragment {
         // the AlertDialog theme overlay with force-enabled title.
         AppCompatDialog dialog =
                 new AppCompatDialog(getActivity(), R.style.TrackSelectionDialogThemeOverlay);
-        dialog.setTitle(titleId);
         return dialog;
     }
 
@@ -372,7 +399,6 @@ public final class TrackSelectionDialog extends DialogFragment {
             // Retain instance across activity re-creation to prevent losing access to init data.
             setRetainInstance(true);
         }
-
         public void init(
                 MappedTrackInfo mappedTrackInfo,
                 int rendererIndex,
@@ -399,79 +425,198 @@ public final class TrackSelectionDialog extends DialogFragment {
             View rootView =
                     inflater.inflate(
                             R.layout.exo_track_selection_dialog, container, /* attachToRoot= */ false);
-            @SuppressLint({"MissingInflatedId", "LocalSuppress"})
-            TrackSelectionView trackSelectionView = rootView.findViewById(R.id.exo_track_selection_view);
-            trackSelectionView.setShowDisableOption(false);
-            trackSelectionView.setAllowMultipleOverrides(false);
-            trackSelectionView.setAllowAdaptiveSelections(false);
-            trackSelectionView.setTrackNameProvider(new TrackNameProvider() {
-                int i = 4;
-                int finalcodec = -1;
-                int selecteds = 0;
-
-                @Override
-                public String getTrackName(Format format) {
-                    if(format.codecs != null)
-                    {
-                        if(format.codecs.startsWith("dvh"))
+//            trackSelectionView = rootView.findViewById(R.id.exo_track_selection_view);
+//            trackSelectionView.setShowDisableOption(false);
+//            trackSelectionView.setAllowMultipleOverrides(false);
+//            trackSelectionView.setAllowAdaptiveSelections(false);
+            TrackGroup trackGroup;
+            if(trackInfoList == null)
+            {
+                trackInfoList = new ArrayList<>();
+                TrackInfo trackInfo = new TrackInfo("Tự động",true,0);
+                trackInfoList.add(trackInfo);
+                for (int i =0 ; i<mappedTrackInfo.getRendererType(rendererIndex);i++)
+                {
+                    try {
+                        trackGroup = mappedTrackInfo.getTrackGroups(rendererIndex).get(i);
+                        for (int j =0; j<mappedTrackInfo.getRendererCount();j++)
                         {
-                            if(!issupportDolbyVisionP)
+                            Format format = trackGroup.getFormat(j);
+                            if(format.codecs != null)
                             {
-                                i += 1;
-                                finalcodec = trackSelectionView.getChildCount();
+                                getSelected = 1;
+                                if(format.codecs.startsWith("dvh"))
+                                {
+                                    if(issupportDolbyVisionP)
+                                    {
+                                        trackInfo = new TrackInfo(trackGroup.getFormat(j).height + "p (Dolby)",false,j);
+                                    }
+                                    else
+                                    {
+                                        break;
+                                    }
+                                }
+                                else
+                                {
+                                    trackInfo = new TrackInfo(trackGroup.getFormat(j).height + "p",false,j);
+                                }
                             }
                             else
                             {
-                                trackSelectionView.getChildAt(trackSelectionView.getChildCount()-1).setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View v) {
-                                        selected = trackSelectionView.getChildCount() - 5;
-                                    }
-                                });
+                                getSelected = 0;
+                                trackInfo = new TrackInfo(trackGroup.getFormat(j).height + "p",false,j);
                             }
+                            trackInfoList.add(trackInfo);
                         }
-
-                        if(i > trackSelectionView.getChildCount() - 1)
-                        {
-                            trackSelectionView.getChildAt(trackSelectionView.getChildCount()-1).setVisibility(View.GONE);
-                        }
-                        else
-                        {
-                            if(finalcodec != -1)
-                            {
-                                trackSelectionView.getChildAt(finalcodec).setVisibility(View.GONE);
-                                finalcodec = -1;
-                            }
-                        }
-                        if(trackSelectionView.getChildAt(trackSelectionView.getChildCount()-1).toString().length() > 58)
-                        {
-
-                            selecteds = trackSelectionView.getChildCount() - 11;
-                            Log.d("view khi select ",""+trackSelectionView.getChildAt(trackSelectionView.getChildCount()-1).toString().substring(0,58));
-                            selectquality.put(trackSelectionView.getChildAt(trackSelectionView.getChildCount()-1).toString().substring(0,58),selecteds);
-                        }
-                        trackSelectionView.getChildAt(trackSelectionView.getChildCount()-1).setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                selected = selectquality.get(v.toString().substring(0,58)) ;
-                                okButton.performClick();
-                                isclick = true;
-                            }
-                        });
                     }
-                    return format.height + "p";
+                    catch (Exception ex)
+                    {
+                        break;
+                    }
 
-
-
-                };
-            });
-            trackSelectionView.init(
-                    mappedTrackInfo,
-                    rendererIndex,
-                    isDisabled,
-                    overrides,
-                    /* trackFormatComparator= */ null
-                    /* listener= */);
+                }
+            }
+//            trackSelectionView.setTrackNameProvider(new TrackNameProvider() {
+//                int i = 0;
+//                int finalcodec = -1;
+//                int selecteds = 0;
+//                @Override
+//                public String getTrackName(Format format) {
+//                    if(format.codecs != null)
+//                    {
+//                        TrackInfo trackInfo = new TrackInfo(format.height + "p",false);
+//                        trackInfoList.add(trackInfo);
+//                        if(issupportDolbyVisionP)
+//                        {
+//                            if(format.codecs.startsWith("dvh"))
+//                            {
+//                                getSelected += 1;
+//                                i += 1;
+//                                finalcodec = trackSelectionView.getChildCount();
+//                                if(trackSelectionView.getChildAt(trackSelectionView.getChildCount()-1).toString().length() > 60)
+//                                {
+//                                    selecteds = trackSelectionView.getChildCount() - 5;
+//                                    selectquality.put(trackSelectionView.getChildAt(trackSelectionView.getChildCount()-1).toString().substring(0,59),selecteds);
+//                                }
+//                                trackSelectionView.getChildAt(trackSelectionView.getChildCount()-1).setOnClickListener(new View.OnClickListener() {
+//                                    @Override
+//                                    public void onClick(View v) {
+//                                        selected = selectquality.get(v.toString().substring(0,59))  ;
+//                                        isclick = true;
+//                                        finalclick = true;
+//                                        trackindex = 0;
+//                                        okButton.performClick();
+//                                    }
+//                                });
+//                            }
+//                           else
+//                            {
+//                                if(trackSelectionView.getChildAt(trackSelectionView.getChildCount()-1).toString().length() > 60)
+//                                {
+//                                    selecteds = trackSelectionView.getChildCount() - 11;
+//                                    selectquality.put(trackSelectionView.getChildAt(trackSelectionView.getChildCount()-1).toString().substring(0,59),selecteds);
+//                                }
+//                                if(trackSelectionView.getChildCount() > (finalcodec) && finalcodec != -1)
+//                                {
+//                                    trackSelectionView.getChildAt(finalcodec).setOnClickListener(new View.OnClickListener() {
+//                                        @Override
+//                                        public void onClick(View v) {
+//                                            trackindex = 0;
+//                                            isclick = true;
+//                                            finalclick = true;
+//                                            selected = getSelected - 1;
+//                                            okButton.performClick();
+//                                        }
+//                                    });
+//                                    finalcodec = -1;
+//                                }
+//                                else
+//                                {
+//                                    trackSelectionView.getChildAt(trackSelectionView.getChildCount()-1).setOnClickListener(new View.OnClickListener() {
+//                                        @Override
+//                                        public void onClick(View v) {
+//                                            selected = selectquality.get(v.toString().substring(0,59)) ;
+//                                            isclick = true;
+//                                            finalclick = false;
+//                                            okButton.performClick();
+//                                        }
+//                                    });
+//                                }
+//
+//                            }
+//                            if(i > trackSelectionView.getChildCount() - 1)
+//                            {
+//                                return  format.height +"p (Dolby)";
+//                            }
+//                        }
+//                        else
+//                        {
+//                            finalclick = false;
+//                            if(format.codecs.startsWith("dvh"))
+//                            {
+//                                i += 1;
+//                                finalcodec = trackSelectionView.getChildCount();
+//                                getSelected += 1;
+//                            }
+//                            if(i > trackSelectionView.getChildCount() - 1)
+//                            {
+//                                trackSelectionView.getChildAt(trackSelectionView.getChildCount()-1).setVisibility(View.GONE);
+//                            }
+//                            else
+//                            {
+//                                if(finalcodec != -1)
+//                                {
+//                                    trackSelectionView.getChildAt(finalcodec).setVisibility(View.GONE);
+//                                    finalcodec = -1;
+//                                }
+//                            }
+//                            if(trackSelectionView.getChildAt(trackSelectionView.getChildCount()-1).toString().length() > 60)
+//                            {
+//                                selecteds = trackSelectionView.getChildCount() - 11;
+//                                selectquality.put(trackSelectionView.getChildAt(trackSelectionView.getChildCount()-1).toString().substring(0,59),selecteds);
+//                            }
+//                            trackSelectionView.getChildAt(trackSelectionView.getChildCount()-1).setOnClickListener(new View.OnClickListener() {
+//                                @Override
+//                                public void onClick(View v) {
+//                                    selected = selectquality.get(v.toString().substring(0,59)) ;
+//                                    isclick = true;
+//                                    okButton.performClick();
+//                                }
+//                            });
+//                        }
+//
+//                    }
+//                    else
+//                    {
+//                        whennotdolby = true;
+//                        getSelected += 1;
+//                        if(trackSelectionView.getChildAt(trackSelectionView.getChildCount()-1).toString().length() > 60)
+//                        {
+//                            selecteds = trackSelectionView.getChildCount() - 5;
+//                            selectquality.put(trackSelectionView.getChildAt(trackSelectionView.getChildCount()-1).toString().substring(0,59),selecteds);
+//                        }
+//                        trackSelectionView.getChildAt(trackSelectionView.getChildCount()-1).setOnClickListener(new View.OnClickListener() {
+//                            @Override
+//                            public void onClick(View v) {
+//                                selected = selectquality.get(v.toString().substring(0,59)) ;
+//                                isclick = true;
+//                                okButton.performClick();
+//                            }
+//                        });
+//                    }
+//                    return format.height + "p";
+//                };
+//            });
+            CustomTrackAdapter customTrackAdapter = new CustomTrackAdapter(getContext(),R.layout.custom_trackselectview,trackInfoList,issupportDolbyVisionP,getSelected);
+            ListView listView = rootView.findViewById(R.id.exo_track_selection_view);
+            listView.setAdapter(customTrackAdapter);
+//            trackSelectionView.init(
+//                    mappedTrackInfo,
+//                    rendererIndex,
+//                    isDisabled,
+//                    overrides,
+//                    /* trackFormatComparator= */ null
+//                    /* listener= */);
             return rootView;
         }
 

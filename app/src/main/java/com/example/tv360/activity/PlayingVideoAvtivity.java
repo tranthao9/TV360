@@ -197,7 +197,7 @@ public class PlayingVideoAvtivity extends AppCompatActivity{
                     }
                 });
                 Log.d("Tag Dolby 2", " "+ VideoCodecChecker.issupportdolby());
-//                Log.d("Tag Dolby 2 vision", " "+ VideoCodecChecker.isDolbyVisionSupported(PlayingVideoAvtivity.this));
+                Log.d("Tag Dolby 2 vision", " "+ VideoCodecChecker.isDolbyVisionSupported(PlayingVideoAvtivity.this));
                 trackSelector = new DefaultTrackSelector();
                 trackSelector.setParameters(
                         trackSelector.getParameters().buildUpon()
@@ -307,27 +307,6 @@ public class PlayingVideoAvtivity extends AppCompatActivity{
         });
     }
 
-    // index: 0 is mp4 track,2 is wav track
-    public void testTrack(int index)
-    {
-        @Nullable MappingTrackSelector.MappedTrackInfo mappedTrackInfo = trackSelector.getCurrentMappedTrackInfo();
-        if (mappedTrackInfo != null) {
-            for (int i = 0; i < mappedTrackInfo.getRendererCount(); i++) {
-                if (mappedTrackInfo.getRendererType(i) == C.TRACK_TYPE_AUDIO) {
-                    trackSelector.setParameters(
-                            trackSelector.buildUponParameters()
-                                    .setSelectionOverride(
-                                            i,
-                                            mappedTrackInfo.getTrackGroups(/* rendererIndex= */ i),
-                                            // this selects the first track of the second track group.
-                                            new DefaultTrackSelector.SelectionOverride(
-                                                    /* groupIndex= */ 1, /* tracks= */ 0)));
-                    break;
-                }
-            }
-        }
-    }
-
     private MediaSource buildMediaSource(Uri uri) {
 
         String userAgent = Util.getUserAgent(this, getString(R.string.app_name));
@@ -345,7 +324,7 @@ public class PlayingVideoAvtivity extends AppCompatActivity{
             MediaSource mediaSource = new DashMediaSource.Factory(
                     new DefaultDashChunkSource.Factory(mediaDataSourceFactory),
                     manifestDataSourceFactory)
-                    .createMediaSource(Uri.parse("http://cdn-vttvas.s3.cloudstorage.com.vn/video1/dv/output/stream.mpd"), null, null);
+                    .createMediaSource(Uri.parse("http://cdn-vttvas.s3.cloudstorage.com.vn/video1/dv/output/stream_4.mpd"), null, null);
             return mediaSource;
         }
     }
@@ -406,12 +385,11 @@ public class PlayingVideoAvtivity extends AppCompatActivity{
             public void onClick(View v) {
 
                 if (!isShowingTrackSelectionDialog && TrackSelectionDialog.willHaveContent(trackSelector)) {
-                    testTrack(0);
                     isShowingTrackSelectionDialog = true;
                     TrackSelectionDialog trackSelectionDialog = TrackSelectionDialog.createForTrackSelector(VideoCodecChecker.isDolbyVisionSupported(PlayingVideoAvtivity.this),trackSelector,
                             /* onDismissListener= */ dismissedDialog -> isShowingTrackSelectionDialog = false);
                     trackSelectionDialog.show(getSupportFragmentManager(), /* tag= */ null);
-
+                    dialog.dismiss();
                 }
             }
         });
