@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:weightSum="10"
-    android:paddingLeft="20dp"
+    android:paddingStart="20dp"
     >
-
     <TextView
         android:id="@+id/track_info"
         android:layout_width="0dp"
@@ -22,6 +21,5 @@
         android:layout_width="24dp"
         android:layout_height="24dp"
         android:layout_marginTop="10dp"
-
         android:src="@drawable/baseline_check_24_grey" />
 </LinearLayout>

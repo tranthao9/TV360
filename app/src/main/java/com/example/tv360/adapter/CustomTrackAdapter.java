@@ -22,12 +22,9 @@ import java.util.List;
 public class CustomTrackAdapter extends ArrayAdapter<TrackInfo> {
 
     private Context context;
-    private  int resource;
+    private  int resource, selected;
     private  List<TrackInfo> list;
     private  boolean issupportDolby;
-
-    private  int selected;
-
     private TrackSelectionDialog trackSelectionDialog = new TrackSelectionDialog();
     public CustomTrackAdapter(@NonNull Context context, int resource, @NonNull List<TrackInfo> objects,boolean issupportDolby,int selected) {
         super(context, resource, objects);
@@ -70,7 +67,6 @@ public class CustomTrackAdapter extends ArrayAdapter<TrackInfo> {
             row.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Log.d("Khi select ",""+trackInfo.getFormat());
                     Toast.makeText(context, "Bạn đang chạy với " + trackInfo.getFormat(),Toast.LENGTH_SHORT).show();
                     trackSelectionDialog.getData(selected,trackInfo.getPosition(),trackInfo.getFormat());
                 }

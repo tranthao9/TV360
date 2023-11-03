@@ -72,4 +72,13 @@ public interface HomeService {
 
     @POST("public/v1/search/remove")
     Call<DataObjectSearchContent> searchRemoveHistory(@Body KeywordHistory searchHistory);
+
+    //        http://local-a.tivi360.vn:30002/public/v1/composite/get-link?id=19394&type=vod&t=1698824659
+
+    @GET("public/v1/composite/get-link")
+    Call<DataObjectUrlVideo> getlinkvod(
+            @Query("id") String id,
+            @Query("type") String type,
+            @Query("type") String t)
+            ;
 }

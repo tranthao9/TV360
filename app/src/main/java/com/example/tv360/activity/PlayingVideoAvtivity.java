@@ -76,6 +76,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.PrimitiveIterator;
 
 import retrofit2.Call;
@@ -97,6 +98,8 @@ public class PlayingVideoAvtivity extends AppCompatActivity{
     String[] speed = {"0.25x", "0.5x", "Normal", "1.5x", "2x"};
     private boolean isShowingTrackSelectionDialog = false;
     private DefaultTrackSelector trackSelector;
+
+    String text_quality_content = "Tự động";
 
     ImageView fullscreen;
 
@@ -127,7 +130,10 @@ public class PlayingVideoAvtivity extends AppCompatActivity{
         String accessToken = sharedPref.getString(KEY_ACCESSTOKEN,"");
         String m_andoid = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
         styledPlayerView = findViewById(R.id.playvideo);
+//        http://local-a.tivi360.vn:30002/public/v1/composite/get-link?id=19394&type=vod&t=1698824659
         apiserver = ApiService.getlinknocontenttype(profileID,userID, m_andoid,"Bearer " + accessToken).create(HomeService.class);
+//        Call<DataObjectUrlVideo> data  = apiserver.getlinkvod("19394","vod","1698824659");
+        String id = getIntent().getStringExtra("id");
         Call<DataObjectUrlVideo> data  = apiserver.getlinka(getIntent().getStringExtra("id"), getIntent().getStringExtra("type"));
         data.enqueue(new Callback<DataObjectUrlVideo>() {
             @Override
@@ -196,17 +202,14 @@ public class PlayingVideoAvtivity extends AppCompatActivity{
                         }
                     }
                 });
-                Log.d("Tag Dolby 2", " "+ VideoCodecChecker.issupportdolby());
-                Log.d("Tag Dolby 2 vision", " "+ VideoCodecChecker.isDolbyVisionSupported(PlayingVideoAvtivity.this));
                 trackSelector = new DefaultTrackSelector();
                 trackSelector.setParameters(
                         trackSelector.getParameters().buildUpon()
-                                .setForceHighestSupportedBitrate(true)
                                 .build());
 
                 player = new SimpleExoPlayer.Builder(PlayingVideoAvtivity.this).setTrackSelector(trackSelector).build();
                 styledPlayerView.setPlayer(player);
-                if(VideoCodecChecker.issupportdolby())
+                if(VideoCodecChecker.issupportdolby() && Objects.equals(getIntent().getStringExtra("id"), "4658"))
                 {
                     //when playing with device support dolby.
                     DefaultHttpDataSourceFactory mediaDataSourceFactory = new DefaultHttpDataSourceFactory(
@@ -224,11 +227,9 @@ public class PlayingVideoAvtivity extends AppCompatActivity{
                 }
                 else
                 {
-                    //MediaItem mediaItem = MediaItem.fromUri("http://cdn-vttvas.s3.cloudstorage.com.vn/video1/dv/output/stream.mpd");
                     Log.d("sourceUrl ", ""+urlVideo);
                     hlsMediaSource = new HlsMediaSource.Factory(new DefaultHttpDataSourceFactory(Util.getUserAgent(PlayingVideoAvtivity.this, "exoplayer"))).createMediaSource(Uri.parse(urlVideo.getData().getUrlStreaming()));
                     player.prepare(hlsMediaSource);
-
                 }
                 player.setPlayWhenReady(true);
 //
@@ -246,56 +247,6 @@ public class PlayingVideoAvtivity extends AppCompatActivity{
                             progressBar.setVisibility(View.GONE);
                             player.setPlayWhenReady(true);
                         }
-                    }
-                    @Override
-                    public void onTracksChanged(EventTime eventTime, TrackGroupArray trackGroups, TrackSelectionArray trackSelections) {
-                        AnalyticsListener.super.onTracksChanged(eventTime, trackGroups, trackSelections);
-                        Format videoformat = player.getVideoFormat();
-                        Log.d("change track ", ""+videoformat);
-                        if(videoformat != null)
-                        {
-                            String mimeType = videoformat.sampleMimeType;
-                            int height = videoformat.height;
-                            int bit = videoformat.bitrate;
-
-                            Log.d("video dolby height ", ""+height);
-                            Log.d("video dolby bit ", ""+bit);
-                        }
-
-                        TrackGroupArray trackGroupArray = player.getCurrentTrackGroups();
-                        int rederindex = 0;
-                        TrackGroup trackGroup = trackGroupArray.get(rederindex);
-                        for (int i = 0; i< trackGroup.length;i++)
-                        {
-                            Format format = trackGroup.getFormat(i);
-                            Boolean isformat = player.getRendererType(rederindex) == C.TRACK_TYPE_VIDEO ? player.getVideoFormat() == format : player.getAudioFormat() == format;
-                            Log.d("isformat" , ""+isformat);
-                        }
-//                        if(trackGroups.length > 0)
-//                        {
-//                            TrackGroup trackGroup = trackGroups.get(0);
-//                            for (int i=0;i<trackGroups.length;i++)
-//                            {
-//                                TrackSelection trackSelection = trackSelections.get(i);
-//                                Format format = trackGroup.getFormat(i);
-//                                if(MimeTypes.isVideo(format.sampleMimeType))
-//                                {
-//                                    String codec = format.codecs;
-//                                    Toast.makeText(PlayingVideoAvtivity.this,"codec "+codec,Toast.LENGTH_SHORT).show();
-//                                }
-//                            }
-//                            TrackGroup trackGroup2 = trackGroups.get(1);
-//                            for (int i=0;i<trackGroups.length;i++)
-//                            {
-//                                TrackSelection trackSelection = trackSelections.get(i);
-//                                Format format = trackGroup2.getFormat(i);
-//                                if(MimeTypes.isVideo(format.sampleMimeType))
-//                                {
-//                                    String codec = format.codecs;
-//                                    Toast.makeText(PlayingVideoAvtivity.this,"codeavc "+codec,Toast.LENGTH_SHORT).show();
-//                                }
-//                            }
-//                        };
                     }
                 });
 
@@ -328,7 +279,6 @@ public class PlayingVideoAvtivity extends AppCompatActivity{
             return mediaSource;
         }
     }
-
     @Override
     protected void  onStop()
     {
@@ -336,7 +286,7 @@ public class PlayingVideoAvtivity extends AppCompatActivity{
         styledPlayerView.setPlayer(null);
         player.setPlayWhenReady(false);
         player.release();
-        player = null;
+        TrackSelectionDialog.returnTrack();
 
     }
 
@@ -370,16 +320,15 @@ public class PlayingVideoAvtivity extends AppCompatActivity{
 
         LinearLayoutCompat qualitiesbtn = dialog.findViewById(R.id.exo_playback_quality);
         text_speed = dialog.findViewById(R.id.exo_playback_speed_content);
-
         text_quality = dialog.findViewById(R.id.exo_playback_quality_content);
+        text_quality.setText(text_quality_content);
+
         speedBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 changeSpeed();
             }
         });
-
-
         qualitiesbtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -389,7 +338,21 @@ public class PlayingVideoAvtivity extends AppCompatActivity{
                     TrackSelectionDialog trackSelectionDialog = TrackSelectionDialog.createForTrackSelector(VideoCodecChecker.isDolbyVisionSupported(PlayingVideoAvtivity.this),trackSelector,
                             /* onDismissListener= */ dismissedDialog -> isShowingTrackSelectionDialog = false);
                     trackSelectionDialog.show(getSupportFragmentManager(), /* tag= */ null);
+                    player.addAnalyticsListener(new AnalyticsListener() {
+                        @Override
+                        public void onTracksChanged(EventTime eventTime, TrackGroupArray trackGroups, TrackSelectionArray trackSelections) {
+                            AnalyticsListener.super.onTracksChanged(eventTime, trackGroups, trackSelections);
+                            Format format = trackSelections.get(0).getFormat(0);
+                            if(format.codecs != null)
+                            {
+                                if(format.codecs.startsWith("dvh")) text_quality_content = format.height + "p (Dolby)";
+                                else  text_quality_content = format.height + "p";
+                            }
+                            else text_quality_content = format.height + "p";
+                        }
+                    });
                     dialog.dismiss();
+
                 }
             }
         });

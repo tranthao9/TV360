@@ -18,19 +18,18 @@ package com.example.tv360;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.DialogInterface;
-import android.content.res.ColorStateList;
 import android.content.res.Resources;
-import android.os.Build;
+import android.graphics.PixelFormat;
 import android.os.Bundle;
 import android.util.SparseArray;
 import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -41,12 +40,9 @@ import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
-import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
-import com.example.tv360.activity.LoginActivity;
 import com.example.tv360.adapter.CustomTrackAdapter;
-import com.example.tv360.adapter.CustomTrackSelection;
 import com.example.tv360.model.TrackInfo;
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.Format;
@@ -55,7 +51,6 @@ import com.google.android.exoplayer2.source.TrackGroupArray;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector.SelectionOverride;
 import com.google.android.exoplayer2.trackselection.MappingTrackSelector.MappedTrackInfo;
-import com.google.android.exoplayer2.ui.TrackNameProvider;
 import com.google.android.exoplayer2.ui.TrackSelectionView;
 import com.google.android.exoplayer2.util.Assertions;
 import com.google.android.exoplayer2.util.Log;
@@ -66,7 +61,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * Dialog to select tracks.
@@ -77,21 +71,14 @@ public final class TrackSelectionDialog extends DialogFragment {
     private final SparseArray<TrackSelectionViewFragment> tabFragments;
     private final ArrayList<Integer> tabTrackTypes;
 
-    private int titleId;
-
     private static int selected = 3, getSelected = 0 , trackindex = 0;
     private DialogInterface.OnClickListener onClickListener;
     private DialogInterface.OnDismissListener onDismissListener;
 
-    private static boolean issupportDolbyVisionP = false , isclick = false, finalclick = false, whennotdolby = false;
-
-    private static Map<String, Integer> selectquality = new HashMap<>();
+    private static boolean issupportDolbyVisionP = false ;
     private static  List<TrackInfo> trackInfoList ;
 
     private  static  Button okButton;
-
-    @SuppressLint({"MissingInflatedId", "LocalSuppress"})
-    private  TrackSelectionView trackSelectionView;
 
     /**
      * Returns whether a track selection dialog will have content to display if initialized with the
@@ -102,20 +89,18 @@ public final class TrackSelectionDialog extends DialogFragment {
         return mappedTrackInfo != null && willHaveContent(mappedTrackInfo);
     }
 
+    public static void  returnTrack()
+    {
+        trackInfoList = null;
+        getSelected = 0;
+    }
     public  void  getData(int trackindexa, int selecteda,String fomat)
     {
         trackindex = trackindexa;
         selected = selecteda;
         for (TrackInfo t : trackInfoList)
         {
-            if(t.getFormat().equals(fomat))
-            {
-                t.setIsslect(true);
-            }
-            else
-            {
-                t.setIsslect(false);
-            }
+            t.setIsslect(t.getFormat().equals(fomat));
         }
         okButton.performClick();
 
@@ -124,14 +109,11 @@ public final class TrackSelectionDialog extends DialogFragment {
     @Override
     public void onResume() {
         super.onResume();
-
         Window window = getDialog().getWindow();
-
-        window.setGravity(Gravity.BOTTOM|Gravity.RIGHT);
         if(window == null) return;
         WindowManager.LayoutParams params = window.getAttributes();
-        params.height = 1150;
-        params.width = 1000;
+        params.width = (int) getResources().getDimension(R.dimen.dialog_width);
+        params.height = (selected + 3) * (int) getResources().getDimension(R.dimen.dialog_height);
         params.gravity = Gravity.CENTER;
         window.setAttributes(params);
     }
@@ -143,6 +125,7 @@ public final class TrackSelectionDialog extends DialogFragment {
     public static boolean willHaveContent(MappedTrackInfo mappedTrackInfo) {
         for (int i = 0; i < mappedTrackInfo.getRendererCount(); i++) {
             if (showTabForRenderer(mappedTrackInfo, i)) {
+                selected = mappedTrackInfo.getTrackGroups(i).get(0).length - 1;
                 return true;
             }
         }
@@ -165,7 +148,6 @@ public final class TrackSelectionDialog extends DialogFragment {
         TrackSelectionDialog trackSelectionDialog = new TrackSelectionDialog();
         DefaultTrackSelector.Parameters parameters = trackSelector.getParameters();
         trackSelectionDialog.init(
-                /* titleId= */ R.string.select_quality,
                 mappedTrackInfo,
                 /* initialParameters = */ parameters,
                 /* allowAdaptiveSelections= */ false,
@@ -173,7 +155,6 @@ public final class TrackSelectionDialog extends DialogFragment {
                 /* onClickListener= */ (dialog, which) -> {
                     for (int i = 0; i < mappedTrackInfo.getRendererCount(); i++) {
                         if (mappedTrackInfo.getRendererType(i) == C.TRACK_TYPE_VIDEO) {
-                            Log.d("selected i ",""+selected);
                             trackSelector.setParameters(
                                     trackSelector.buildUponParameters()
                                             .setSelectionOverride(
@@ -183,45 +164,9 @@ public final class TrackSelectionDialog extends DialogFragment {
                                                     new DefaultTrackSelector.SelectionOverride(
                                                             /* groupIndex= */ trackindex, /* tracks= */selected )));
                             Toast.makeText(trackSelectionDialog.getContext(), "Bạn đang chạy với " + mappedTrackInfo.getTrackGroups(i).get(trackindex).getFormat(selected).codecs + "codec" + mappedTrackInfo.getTrackGroups(i).get(trackindex).getFormat(selected).height + "p",Toast.LENGTH_SHORT).show();
-
                         }
                     }
                 },
-                onDismissListener);
-        isclick = false;
-        return trackSelectionDialog;
-    }
-
-    /**
-     * Creates a dialog for given {@link MappedTrackInfo} and {@link DefaultTrackSelector.Parameters}.
-     *
-     * @param titleId                 The resource id of the dialog title.
-     * @param mappedTrackInfo         The {@link MappedTrackInfo} to display.
-     * @param initialParameters       The {@link DefaultTrackSelector.Parameters} describing the initial
-     *                                track selection.
-     * @param allowAdaptiveSelections Whether adaptive selections (consisting of more than one track)
-     *                                can be made.
-     * @param allowMultipleOverrides  Whether tracks from multiple track groups can be selected.
-     * @param onClickListener         {@link DialogInterface.OnClickListener} called when tracks are selected.
-     * @param onDismissListener       {@link DialogInterface.OnDismissListener} called when the dialog is
-     *                                dismissed.
-     */
-    public static TrackSelectionDialog createForMappedTrackInfoAndParameters(
-            int titleId,
-            MappedTrackInfo mappedTrackInfo,
-            DefaultTrackSelector.Parameters initialParameters,
-            boolean allowAdaptiveSelections,
-            boolean allowMultipleOverrides,
-            DialogInterface.OnClickListener onClickListener,
-            DialogInterface.OnDismissListener onDismissListener) {
-        TrackSelectionDialog trackSelectionDialog = new TrackSelectionDialog();
-        trackSelectionDialog.init(
-                titleId,
-                mappedTrackInfo,
-                initialParameters,
-                allowAdaptiveSelections,
-                allowMultipleOverrides,
-                onClickListener,
                 onDismissListener);
         return trackSelectionDialog;
     }
@@ -234,14 +179,12 @@ public final class TrackSelectionDialog extends DialogFragment {
     }
 
     private void init(
-            int titleId,
             MappedTrackInfo mappedTrackInfo,
             DefaultTrackSelector.Parameters initialParameters,
             boolean allowAdaptiveSelections,
             boolean allowMultipleOverrides,
             DialogInterface.OnClickListener onClickListener,
             DialogInterface.OnDismissListener onDismissListener) {
-        this.titleId = titleId;
         this.onClickListener = onClickListener;
         this.onDismissListener = onDismissListener;
         for (int i = 0; i < mappedTrackInfo.getRendererCount(); i++) {
@@ -260,29 +203,6 @@ public final class TrackSelectionDialog extends DialogFragment {
                     tabTrackTypes.add(trackType);
             }
         }
-    }
-
-    /**
-     * Returns whether a renderer is disabled.
-     *
-     * @param rendererIndex Renderer index.
-     * @return Whether the renderer is disabled.
-     */
-    public boolean getIsDisabled(int rendererIndex) {
-        TrackSelectionViewFragment rendererView = tabFragments.get(rendererIndex);
-        return rendererView != null && rendererView.isDisabled;
-    }
-
-    /**
-     * Returns the list of selected track selection overrides for the specified renderer. There will
-     * be at most one override for each track group.
-     *
-     * @param rendererIndex Renderer index.
-     * @return The list of track selection overrides for this renderer.
-     */
-    public List<SelectionOverride> getOverrides(int rendererIndex) {
-        TrackSelectionViewFragment rendererView = tabFragments.get(rendererIndex);
-        return rendererView == null ? Collections.emptyList() : rendererView.overrides;
     }
 
     @Override
@@ -360,7 +280,6 @@ public final class TrackSelectionDialog extends DialogFragment {
         public FragmentAdapter(FragmentManager fragmentManager) {
             super(fragmentManager, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
         }
-
         @Override
         @NonNull
         public Fragment getItem(int position) {
@@ -416,7 +335,6 @@ public final class TrackSelectionDialog extends DialogFragment {
             this.allowAdaptiveSelections = allowAdaptiveSelections;
             this.allowMultipleOverrides = allowMultipleOverrides;
         }
-
         @Override
         public View onCreateView(
                 LayoutInflater inflater,
@@ -425,10 +343,6 @@ public final class TrackSelectionDialog extends DialogFragment {
             View rootView =
                     inflater.inflate(
                             R.layout.exo_track_selection_dialog, container, /* attachToRoot= */ false);
-//            trackSelectionView = rootView.findViewById(R.id.exo_track_selection_view);
-//            trackSelectionView.setShowDisableOption(false);
-//            trackSelectionView.setAllowMultipleOverrides(false);
-//            trackSelectionView.setAllowAdaptiveSelections(false);
             TrackGroup trackGroup;
             if(trackInfoList == null)
             {
@@ -438,185 +352,38 @@ public final class TrackSelectionDialog extends DialogFragment {
                 for (int i =0 ; i<mappedTrackInfo.getRendererType(rendererIndex);i++)
                 {
                     try {
-                        trackGroup = mappedTrackInfo.getTrackGroups(rendererIndex).get(i);
-                        for (int j =0; j<mappedTrackInfo.getRendererCount();j++)
-                        {
-                            Format format = trackGroup.getFormat(j);
-                            if(format.codecs != null)
+                            trackGroup = mappedTrackInfo.getTrackGroups(rendererIndex).get(i);
+                            for (int j =0; j<mappedTrackInfo.getRendererCount();j++)
                             {
-                                getSelected = 1;
-                                if(format.codecs.startsWith("dvh"))
+                                Format format = trackGroup.getFormat(j);
+                                if(format.codecs != null)
                                 {
-                                    if(issupportDolbyVisionP)
+                                    if(format.codecs.startsWith("dvh"))
                                     {
-                                        trackInfo = new TrackInfo(trackGroup.getFormat(j).height + "p (Dolby)",false,j);
+                                        if(issupportDolbyVisionP) trackInfo = new TrackInfo(trackGroup.getFormat(j).height + "p (Dolby)",false,j);
+                                        else  break;
                                     }
-                                    else
-                                    {
-                                        break;
-                                    }
+                                    else trackInfo = new TrackInfo(trackGroup.getFormat(j).height + "p",false,j);
                                 }
                                 else
                                 {
                                     trackInfo = new TrackInfo(trackGroup.getFormat(j).height + "p",false,j);
                                 }
+                                trackInfoList.add(trackInfo);
                             }
-                            else
-                            {
-                                getSelected = 0;
-                                trackInfo = new TrackInfo(trackGroup.getFormat(j).height + "p",false,j);
-                            }
-                            trackInfoList.add(trackInfo);
-                        }
+                            getSelected = i;
                     }
                     catch (Exception ex)
                     {
-                        break;
+                        i += 1;
                     }
 
                 }
             }
-//            trackSelectionView.setTrackNameProvider(new TrackNameProvider() {
-//                int i = 0;
-//                int finalcodec = -1;
-//                int selecteds = 0;
-//                @Override
-//                public String getTrackName(Format format) {
-//                    if(format.codecs != null)
-//                    {
-//                        TrackInfo trackInfo = new TrackInfo(format.height + "p",false);
-//                        trackInfoList.add(trackInfo);
-//                        if(issupportDolbyVisionP)
-//                        {
-//                            if(format.codecs.startsWith("dvh"))
-//                            {
-//                                getSelected += 1;
-//                                i += 1;
-//                                finalcodec = trackSelectionView.getChildCount();
-//                                if(trackSelectionView.getChildAt(trackSelectionView.getChildCount()-1).toString().length() > 60)
-//                                {
-//                                    selecteds = trackSelectionView.getChildCount() - 5;
-//                                    selectquality.put(trackSelectionView.getChildAt(trackSelectionView.getChildCount()-1).toString().substring(0,59),selecteds);
-//                                }
-//                                trackSelectionView.getChildAt(trackSelectionView.getChildCount()-1).setOnClickListener(new View.OnClickListener() {
-//                                    @Override
-//                                    public void onClick(View v) {
-//                                        selected = selectquality.get(v.toString().substring(0,59))  ;
-//                                        isclick = true;
-//                                        finalclick = true;
-//                                        trackindex = 0;
-//                                        okButton.performClick();
-//                                    }
-//                                });
-//                            }
-//                           else
-//                            {
-//                                if(trackSelectionView.getChildAt(trackSelectionView.getChildCount()-1).toString().length() > 60)
-//                                {
-//                                    selecteds = trackSelectionView.getChildCount() - 11;
-//                                    selectquality.put(trackSelectionView.getChildAt(trackSelectionView.getChildCount()-1).toString().substring(0,59),selecteds);
-//                                }
-//                                if(trackSelectionView.getChildCount() > (finalcodec) && finalcodec != -1)
-//                                {
-//                                    trackSelectionView.getChildAt(finalcodec).setOnClickListener(new View.OnClickListener() {
-//                                        @Override
-//                                        public void onClick(View v) {
-//                                            trackindex = 0;
-//                                            isclick = true;
-//                                            finalclick = true;
-//                                            selected = getSelected - 1;
-//                                            okButton.performClick();
-//                                        }
-//                                    });
-//                                    finalcodec = -1;
-//                                }
-//                                else
-//                                {
-//                                    trackSelectionView.getChildAt(trackSelectionView.getChildCount()-1).setOnClickListener(new View.OnClickListener() {
-//                                        @Override
-//                                        public void onClick(View v) {
-//                                            selected = selectquality.get(v.toString().substring(0,59)) ;
-//                                            isclick = true;
-//                                            finalclick = false;
-//                                            okButton.performClick();
-//                                        }
-//                                    });
-//                                }
-//
-//                            }
-//                            if(i > trackSelectionView.getChildCount() - 1)
-//                            {
-//                                return  format.height +"p (Dolby)";
-//                            }
-//                        }
-//                        else
-//                        {
-//                            finalclick = false;
-//                            if(format.codecs.startsWith("dvh"))
-//                            {
-//                                i += 1;
-//                                finalcodec = trackSelectionView.getChildCount();
-//                                getSelected += 1;
-//                            }
-//                            if(i > trackSelectionView.getChildCount() - 1)
-//                            {
-//                                trackSelectionView.getChildAt(trackSelectionView.getChildCount()-1).setVisibility(View.GONE);
-//                            }
-//                            else
-//                            {
-//                                if(finalcodec != -1)
-//                                {
-//                                    trackSelectionView.getChildAt(finalcodec).setVisibility(View.GONE);
-//                                    finalcodec = -1;
-//                                }
-//                            }
-//                            if(trackSelectionView.getChildAt(trackSelectionView.getChildCount()-1).toString().length() > 60)
-//                            {
-//                                selecteds = trackSelectionView.getChildCount() - 11;
-//                                selectquality.put(trackSelectionView.getChildAt(trackSelectionView.getChildCount()-1).toString().substring(0,59),selecteds);
-//                            }
-//                            trackSelectionView.getChildAt(trackSelectionView.getChildCount()-1).setOnClickListener(new View.OnClickListener() {
-//                                @Override
-//                                public void onClick(View v) {
-//                                    selected = selectquality.get(v.toString().substring(0,59)) ;
-//                                    isclick = true;
-//                                    okButton.performClick();
-//                                }
-//                            });
-//                        }
-//
-//                    }
-//                    else
-//                    {
-//                        whennotdolby = true;
-//                        getSelected += 1;
-//                        if(trackSelectionView.getChildAt(trackSelectionView.getChildCount()-1).toString().length() > 60)
-//                        {
-//                            selecteds = trackSelectionView.getChildCount() - 5;
-//                            selectquality.put(trackSelectionView.getChildAt(trackSelectionView.getChildCount()-1).toString().substring(0,59),selecteds);
-//                        }
-//                        trackSelectionView.getChildAt(trackSelectionView.getChildCount()-1).setOnClickListener(new View.OnClickListener() {
-//                            @Override
-//                            public void onClick(View v) {
-//                                selected = selectquality.get(v.toString().substring(0,59)) ;
-//                                isclick = true;
-//                                okButton.performClick();
-//                            }
-//                        });
-//                    }
-//                    return format.height + "p";
-//                };
-//            });
             CustomTrackAdapter customTrackAdapter = new CustomTrackAdapter(getContext(),R.layout.custom_trackselectview,trackInfoList,issupportDolbyVisionP,getSelected);
             ListView listView = rootView.findViewById(R.id.exo_track_selection_view);
             listView.setAdapter(customTrackAdapter);
-//            trackSelectionView.init(
-//                    mappedTrackInfo,
-//                    rendererIndex,
-//                    isDisabled,
-//                    overrides,
-//                    /* trackFormatComparator= */ null
-//                    /* listener= */);
+            listView.setLayoutParams(new LinearLayout.LayoutParams(800,LinearLayout.LayoutParams.WRAP_CONTENT));
             return rootView;
         }
 

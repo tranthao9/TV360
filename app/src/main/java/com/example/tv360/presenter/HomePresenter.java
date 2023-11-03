@@ -42,10 +42,7 @@ public class HomePresenter {
         List<HomeModel> listfilm = new ArrayList<>();
         for (HomeModel a : homeModelList)
         {
-            if(a.getType().equals("COLLECTION") || a.getType().equals("BANNER"))
-            {
-                listfilm.add(a);
-            }
+            listfilm.add(a);
 
         }
         return  listfilm;
@@ -73,7 +70,7 @@ public class HomePresenter {
         List<HomeModel> listfilm = new ArrayList<>();
         for (HomeModel a : homeModelList)
         {
-            if(a.getType().equals("COLLECTION") && a.getContent() != null )
+            if(!a.getType().equals("BANNER") && a.getContent() != null )
             {
                 if(a.getContent().size() != 0)
                 {

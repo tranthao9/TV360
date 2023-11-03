@@ -10,6 +10,7 @@ import android.content.pm.ActivityInfo;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
+import android.nfc.Tag;
 import android.os.Bundle;
 
 
@@ -41,15 +42,19 @@ import com.example.tv360.retrofit.ApiService;
 import com.example.tv360.retrofit.HomeService;
 import com.example.tv360.viewmodel.SharedTVViewModel;
 import com.google.android.exoplayer2.ExoPlayer;
+import com.google.android.exoplayer2.Format;
 import com.google.android.exoplayer2.PlaybackParameters;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.analytics.AnalyticsListener;
+import com.google.android.exoplayer2.source.TrackGroupArray;
 import com.google.android.exoplayer2.source.hls.HlsMediaSource;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
+import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
 import com.google.android.exoplayer2.trackselection.TrackSelectionParameters;
 import com.google.android.exoplayer2.ui.PlayerView;
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
+import com.google.android.exoplayer2.util.Log;
 import com.google.android.exoplayer2.util.Util;
 
 import java.util.ArrayList;
@@ -88,6 +93,8 @@ public class TVFirstFragment extends Fragment {
     private static  final  String SHARED_TV_PLAYING = "playingtv";
 
     private  static  final  String KEY_TV = "id";
+
+    String text_quality_content = "Tự động";
 
     PlayerView styledPlayerViewTV;
     View view;
@@ -192,9 +199,7 @@ public class TVFirstFragment extends Fragment {
                                 if(((AppCompatActivity)getActivity()).getSupportActionBar() != null){
                                     ((AppCompatActivity)getActivity()).getSupportActionBar().show();
                                 }
-
                                 getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-
                                 ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams) styledPlayerViewTV.getLayoutParams();
                                 params.width = params.MATCH_PARENT;
                                 params.height = (int) ( 200 * getActivity().getApplicationContext().getResources().getDisplayMetrics().density);
@@ -288,14 +293,13 @@ public class TVFirstFragment extends Fragment {
         text_speed = dialog.findViewById(R.id.exo_playback_speed_content);
 
         text_quality = dialog.findViewById(R.id.exo_playback_quality_content);
+        text_quality.setText(text_quality_content);
         speedBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 changeSpeed();
             }
         });
-
-
         qualitiesbtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -304,8 +308,25 @@ public class TVFirstFragment extends Fragment {
                     isShowingTrackSelectionDialog = true;
                     TrackSelectionDialog trackSelectionDialog = TrackSelectionDialog.createForTrackSelector(VideoCodecChecker.isDolbyVisionSupported(getContext()),trackSelector,
                             /* onDismissListener= */ dismissedDialog -> isShowingTrackSelectionDialog = false);
-                    trackSelectionDialog.show(getActivity().getSupportFragmentManager(), /* tag= */ null);
 
+                    trackSelectionDialog.show(getActivity().getSupportFragmentManager(), /* tag= */ null);
+                    playerTV.addListener(new Player.EventListener() {
+                        @Override
+                        public void onTracksChanged(TrackGroupArray trackGroups, TrackSelectionArray trackSelections) {
+                            Player.EventListener.super.onTracksChanged(trackGroups, trackSelections);
+                            if(trackSelections.get(0) != null)
+                            {
+                                Format format = trackSelections.get(0).getFormat(0);
+                                if(format.codecs != null)
+                                {
+                                    if(format.codecs.startsWith("dvh")) text_quality_content = format.height + "p (Dolby)";
+                                    else  text_quality_content = format.height + "p";
+                                }
+                                else text_quality_content = format.height + "p";
+                            }
+                        }
+                    });
+                    dialog.dismiss();
                 }
             }
 

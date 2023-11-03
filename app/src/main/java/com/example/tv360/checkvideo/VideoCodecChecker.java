@@ -29,10 +29,8 @@ public class VideoCodecChecker {
             for (String type : info.getSupportedTypes()) {
                 if (type.equals("audio/ac4")) { //ac4
                     dlbAC4IMSDevice = true;
-
                 }
             }
-
         }
         return dlbAC4IMSDevice;
     }
@@ -41,34 +39,21 @@ public class VideoCodecChecker {
     {
         Display screen = null;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
-            screen = screen = context.getDisplay();
+            screen = context.getDisplay();
         }
-        Log.d("screen dolby vision",""+screen);
+        if(screen == null) return  false;
         Display.HdrCapabilities capabilities = screen.getHdrCapabilities();
         return !(Arrays.stream(capabilities.getSupportedHdrTypes()).filter(x -> x == Display.HdrCapabilities.HDR_TYPE_DOLBY_VISION).boxed().collect(Collectors.toCollection(ArrayList::new)).isEmpty());
     }
-    public  static  String getVideoc(String path)
-    {
-        MediaExtractor mediaExtractor = new MediaExtractor();
-        try {
-            mediaExtractor.setDataSource(path);
-            int a = mediaExtractor.getTrackCount();
-            for (int i = 0; i< a;i++)
-            {
-                MediaFormat mediaFormat = mediaExtractor.getTrackFormat(i);
-                String mime = mediaFormat.getString(MediaFormat.KEY_MIME);
-                if(mime.startsWith("video/"))
-                {
-                    return  mime;
-                }
-            }
 
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+    public  static  int GetConfiguration(Context context)
+    {
+        if(issupportdolby() && isDolbyVisionSupported(context)) return  2;
+        else
+        {
+            if(isDolbyVisionSupported(context)) return 0;
+            else if (issupportdolby()) return  1;
+            else return  -1;
         }
-        finally {
-            mediaExtractor.release();
-        }
-        return  "";
     }
 }
